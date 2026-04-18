@@ -1,0 +1,41 @@
+import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
+
+export default function KinesportFurd() {
+  return (
+    <main className="min-h-screen bg-site-bg flex flex-col items-center justify-center px-6 text-center">
+      <motion.div
+        initial={{ opacity: 0, y: 32 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        className="max-w-lg"
+      >
+        <div className="inline-flex items-center gap-3 px-3 py-1 rounded-full bg-green-accent/10 mb-8">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-deep shrink-0">
+            <path d="M12 6v6l4 2" />
+            <circle cx="12" cy="12" r="10" />
+          </svg>
+          <span className="text-green-deep font-syne font-bold text-xs tracking-widest">KINESPORT FURD</span>
+        </div>
+
+        <h1 className="font-syne font-bold text-4xl md:text-5xl text-text-primary leading-tight mb-5">
+          Page en<br /><span className="gradient-text">développement</span>
+        </h1>
+
+        <p className="font-inter text-text-secondary text-lg leading-relaxed mb-10">
+          Cette section est en cours de construction.
+        </p>
+
+        <Link to="/">
+          <motion.span
+            className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-green-accent text-white font-syne font-bold tracking-wide"
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.97 }}
+          >
+            ← Retour à l'accueil
+          </motion.span>
+        </Link>
+      </motion.div>
+    </main>
+  )
+}

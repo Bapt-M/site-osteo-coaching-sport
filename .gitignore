@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.DS_Store
+.env
+videos/
+.claude/
+.worktrees/
+.superpowers/
+*.avi
+OSTÉO ET COACHING DU SPORT/
+AVANT - OSTEO ET COACHING DU SPORT - LOGOTYPE SITE BLANC - 2025.png
+OSTEO ET COACHING DU SPORT - Webdesign - Version 3.pdf

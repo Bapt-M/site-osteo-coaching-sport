@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Palette ─────────────────────────────────────────────────
+   Toutes les couleurs du site sont définies ici.
+   Format RGB sans parenthèses pour compatibilité Tailwind /opacity.
+   ──────────────────────────────────────────────────────────── */
+:root {
+  /* Bleu principal (66 95 115 = #425F73) */
+  --c-accent:         66 95 115;
+  --c-accent-light:  107 144 168;   /* #6B90A8 */
+  --c-accent-lighter:138 175 197;   /* #8AAFC5 */
+  --c-accent-dark:    45  74  92;   /* #2D4A5C */
+  --c-accent-deeper:  26  50  68;   /* #1A3244 */
+
+  /* Fonds sombres */
+  --c-deep:           13  30  43;   /* #0D1E2B */
+  --c-footer:          9  21  32;   /* #091520 */
+
+  /* Fond clair & textes */
+  --c-bg:            250 250 250;   /* #FAFAFA */
+  --c-text-primary:   26  40  50;   /* #1A2832 */
+  --c-text-secondary: 61  88 112;   /* #3D5870 */
+
+  /* Valeurs hex pour styles inline (gradients, etc.) */
+  --c-accent-hex:        #425F73;
+  --c-accent-light-hex:  #6B90A8;
+  --c-accent-lighter-hex:#8AAFC5;
+  --c-accent-dark-hex:   #2D4A5C;
+  --c-deep-hex:          #0D1E2B;
+  --c-deep-darker-hex:   #060F18;
+  --c-deep-mid-hex:      #102436;
+  --c-footer-hex:        #091520;
+}
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body {
+    @apply font-inter bg-site-bg text-text-primary overflow-x-hidden;
+  }
+  a { @apply no-underline; }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/80 backdrop-blur-xl border border-white/60;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+  }
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, var(--c-accent-hex), var(--c-accent-light-hex));
+  }
+}
