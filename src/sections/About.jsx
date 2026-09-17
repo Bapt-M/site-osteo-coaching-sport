@@ -7,7 +7,7 @@ const slideIn = (direction) => ({
 
 export default function About() {
   return (
-    <section id="about" className="py-24 md:py-36 px-6 bg-site-bg">
+    <section id="about" className="py-24 md:py-36 px-6 bg-site-bg overflow-x-clip">
       <div className="max-w-[1360px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
         {/* Image */}
         <motion.div
@@ -25,7 +25,7 @@ export default function About() {
               onError={e => { e.target.style.display = 'none' }}
             />
             <div className="absolute bottom-6 left-6 right-6 glass rounded-xl p-4">
-              <div className="font-syne font-bold text-text-primary">Emmanuel Krieger</div>
+              <div className="font-poppins font-bold text-text-primary">Emmanuel Krieger</div>
               <div className="font-inter text-sm text-text-secondary mt-0.5">Ostéopathe D.O. · Coach sportif</div>
             </div>
           </div>
@@ -39,10 +39,10 @@ export default function About() {
           whileInView="visible"
           viewport={{ once: true, margin: '-80px' }}
         >
-          <div className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-deep font-syne font-bold text-xs tracking-widest mb-6">
+          <div className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-deep font-poppins font-bold text-xs tracking-widest mb-6">
             À PROPOS
           </div>
-          <h2 className="font-syne font-bold text-4xl md:text-5xl text-text-primary leading-tight mb-6">
+          <h2 className="font-poppins font-bold text-4xl md:text-5xl text-text-primary leading-tight mb-6">
             Une approche <span className="gradient-text">globale</span><br />de votre santé
           </h2>
           <p className="font-inter text-text-secondary text-lg leading-relaxed mb-4">
@@ -53,7 +53,7 @@ export default function About() {
           </p>
           <motion.a
             href="#services"
-            className="inline-flex items-center gap-2 font-syne font-bold text-green-deep border-b-2 border-green-accent pb-0.5"
+            className="inline-flex items-center gap-2 font-poppins font-bold text-green-deep border-b-2 border-green-accent pb-0.5"
             whileHover={{ x: 4 }}
             transition={{ duration: 0.2 }}
           >

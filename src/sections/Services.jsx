@@ -23,7 +23,7 @@ export default function Services() {
   const [open, setOpen] = useState(null)
 
   return (
-    <section id="services" className="py-24 md:py-36 px-6 bg-green-deep">
+    <section id="services" className="py-24 md:py-36 px-6 bg-green-deep overflow-x-clip">
       <div className="max-w-[1360px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
         <div>
           <motion.div
@@ -32,10 +32,10 @@ export default function Services() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <div className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-accent font-syne font-bold text-xs tracking-widest mb-6">
+            <div className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-accent font-poppins font-bold text-xs tracking-widest mb-6">
               PRESTATIONS
             </div>
-            <h2 className="font-syne font-bold text-4xl md:text-5xl text-white leading-tight mb-4">
+            <h2 className="font-poppins font-bold text-4xl md:text-5xl text-white leading-tight mb-4">
               Mes <span className="gradient-text">services</span>
             </h2>
             <p className="font-inter text-white/60 text-lg mb-12">
@@ -72,7 +72,7 @@ export default function Services() {
           <div className="absolute inset-0 bg-gradient-to-t from-green-deep/80 to-transparent" />
           <motion.a
             href="#contact"
-            className="absolute bottom-8 left-8 right-8 py-4 rounded-xl bg-green-accent text-white font-syne font-bold text-center tracking-wide"
+            className="absolute bottom-8 left-8 right-8 py-4 rounded-xl bg-green-accent text-white font-poppins font-bold text-center tracking-wide"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
@@ -89,7 +89,7 @@ function ServiceItem({ service, isOpen, onToggle }) {
 
   return (
     <div className="relative border-t border-white/10 py-5 overflow-hidden">
-      <span className="absolute right-0 top-0 font-syne font-bold text-8xl text-white/[0.04] leading-none select-none pointer-events-none">
+      <span className="absolute right-0 top-0 font-poppins font-bold text-8xl text-white/[0.04] leading-none select-none pointer-events-none">
         {service.num}
       </span>
 
@@ -99,8 +99,8 @@ function ServiceItem({ service, isOpen, onToggle }) {
         whileTap={{ scale: 0.99 }}
       >
         <div className="flex items-center gap-4">
-          <span className="font-syne font-bold text-green-accent text-sm w-5">{service.num}</span>
-          <span className="font-syne font-bold text-white text-lg md:text-xl">{service.title}</span>
+          <span className="font-poppins font-bold text-green-accent text-sm w-5">{service.num}</span>
+          <span className="font-poppins font-bold text-white text-lg md:text-xl">{service.title}</span>
         </div>
         <motion.span
           className="text-green-accent font-bold text-xl shrink-0"
@@ -126,7 +126,7 @@ function ServiceItem({ service, isOpen, onToggle }) {
             <motion.a
               href={service.href}
               onClick={e => { e.preventDefault(); navigate(service.href) }}
-              className="inline-block mt-3 ml-9 font-syne font-bold text-green-accent text-sm hover:underline"
+              className="inline-block mt-3 ml-9 font-poppins font-bold text-green-accent text-sm hover:underline"
               whileHover={{ x: 4 }}
               transition={{ duration: 0.2 }}
             >

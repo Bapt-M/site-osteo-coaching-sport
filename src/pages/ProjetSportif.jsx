@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import usePageTitle from '../hooks/usePageTitle'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -29,6 +30,8 @@ const ATHLETES = [
 ]
 
 export default function ProjetSportif() {
+  usePageTitle('Projet sportif personnalisé')
+
   return (
     <main className="bg-site-bg">
       {/* Hero */}
@@ -40,10 +43,10 @@ export default function ProjetSportif() {
         <div className="absolute inset-0 bg-gradient-to-b from-green-deep/40 via-green-deep/60 to-green-deep" />
         <div className="relative z-10 max-w-[1360px] mx-auto px-6 md:px-12 pt-32">
           <motion.div variants={stagger} initial="hidden" animate="visible">
-            <motion.div variants={fadeUp} className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-accent font-syne font-bold text-xs tracking-widest mb-6">
+            <motion.div variants={fadeUp} className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-accent font-poppins font-bold text-xs tracking-widest mb-6">
               SUR MESURE
             </motion.div>
-            <motion.h1 variants={fadeUp} className="font-syne font-black text-white text-5xl md:text-7xl leading-none mb-6">
+            <motion.h1 variants={fadeUp} className="font-poppins font-black text-white text-5xl md:text-7xl leading-none mb-6">
               Projet sportif<br /><span className="text-green-accent">personnalisé</span>
             </motion.h1>
             <motion.p variants={fadeUp} className="font-inter text-white/70 text-xl max-w-xl leading-relaxed">
@@ -61,7 +64,7 @@ export default function ProjetSportif() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 1 }}
-            className="font-syne font-bold text-text-primary text-2xl md:text-3xl italic leading-relaxed"
+            className="font-poppins font-bold text-text-primary text-2xl md:text-3xl italic leading-relaxed"
           >
             "Ne dit-on pas que qui peut le plus peut le moins…"
           </motion.p>
@@ -78,10 +81,10 @@ export default function ProjetSportif() {
             transition={{ duration: 0.7 }}
             className="mb-16"
           >
-            <div className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-deep font-syne font-bold text-xs tracking-widest mb-4">
+            <div className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-deep font-poppins font-bold text-xs tracking-widest mb-4">
               PRISE EN CHARGE
             </div>
-            <h2 className="font-syne font-bold text-text-primary text-4xl md:text-5xl">
+            <h2 className="font-poppins font-bold text-text-primary text-4xl md:text-5xl">
               Une approche<br />globale et individualisée
             </h2>
           </motion.div>
@@ -99,10 +102,10 @@ export default function ProjetSportif() {
                 variants={fadeUp}
                 className="border border-text-primary/10 rounded-2xl p-8 hover:border-green-accent/40 transition-colors"
               >
-                <div className="font-syne font-black text-4xl text-green-accent/15 mb-3 leading-none">
+                <div className="font-poppins font-black text-4xl text-green-accent/15 mb-3 leading-none">
                   {String(i + 1).padStart(2, '0')}
                 </div>
-                <h3 className="font-syne font-bold text-text-primary text-xl mb-2">{c.label}</h3>
+                <h3 className="font-poppins font-bold text-text-primary text-xl mb-2">{c.label}</h3>
                 <p className="font-inter text-text-secondary leading-relaxed">{c.desc}</p>
               </motion.div>
             ))}
@@ -120,10 +123,10 @@ export default function ProjetSportif() {
             transition={{ duration: 0.7 }}
             className="mb-16"
           >
-            <div className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-accent font-syne font-bold text-xs tracking-widest mb-4">
+            <div className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-accent font-poppins font-bold text-xs tracking-widest mb-4">
               ATHLÈTES QUI NOUS ACCOMPAGNENT
             </div>
-            <h2 className="font-syne font-bold text-white text-4xl">
+            <h2 className="font-poppins font-bold text-white text-4xl">
               Julien Motz, Samir Baala,<br /><span className="text-green-accent">et bien d'autres…</span>
             </h2>
           </motion.div>
@@ -148,7 +151,7 @@ export default function ProjetSportif() {
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-5">
-                  <div className="font-syne font-bold text-white text-base">{a.nom}</div>
+                  <div className="font-poppins font-bold text-white text-base">{a.nom}</div>
                   <div className="font-inter text-white/50 text-sm mt-0.5">{a.detail}</div>
                 </div>
               </motion.div>
@@ -176,13 +179,13 @@ export default function ProjetSportif() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            <h2 className="font-syne font-bold text-text-primary text-4xl mb-4">Vous avez un projet ?</h2>
+            <h2 className="font-poppins font-bold text-text-primary text-4xl mb-4">Vous avez un projet ?</h2>
             <p className="font-inter text-text-secondary text-lg mb-10 max-w-lg mx-auto">
               Tout commence par un bilan ostéopathique complet et un rendez-vous de définition d'objectifs.
             </p>
             <motion.a
               href="/#contact"
-              className="inline-block px-10 py-4 rounded-full bg-green-deep text-white font-syne font-bold text-base hover:bg-green-accent hover:text-white transition-colors"
+              className="inline-block px-10 py-4 rounded-full bg-green-deep text-white font-poppins font-bold text-base hover:bg-green-accent hover:text-white transition-colors"
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
             >

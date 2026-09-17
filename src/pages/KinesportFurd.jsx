@@ -1,7 +1,10 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
+import usePageTitle from '../hooks/usePageTitle'
 
 export default function KinesportFurd() {
+  usePageTitle('Programme et suivi de remise en forme')
+
   return (
     <main className="min-h-screen bg-site-bg flex flex-col items-center justify-center px-6 text-center">
       <motion.div
@@ -15,11 +18,11 @@ export default function KinesportFurd() {
             <path d="M12 6v6l4 2" />
             <circle cx="12" cy="12" r="10" />
           </svg>
-          <span className="text-green-deep font-syne font-bold text-xs tracking-widest">KINESPORT FURD</span>
+          <span className="text-green-deep font-poppins font-bold text-xs tracking-widest">KINESPORT FURD</span>
         </div>
 
-        <h1 className="font-syne font-bold text-4xl md:text-5xl text-text-primary leading-tight mb-5">
-          Page en<br /><span className="gradient-text">développement</span>
+        <h1 className="font-poppins font-bold text-4xl md:text-5xl text-text-primary leading-tight mb-5">
+          Programme &amp; suivi<br /><span className="gradient-text">de remise en forme</span>
         </h1>
 
         <p className="font-inter text-text-secondary text-lg leading-relaxed mb-10">
@@ -28,7 +31,7 @@ export default function KinesportFurd() {
 
         <Link to="/">
           <motion.span
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-green-accent text-white font-syne font-bold tracking-wide"
+            className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-green-accent text-white font-poppins font-bold tracking-wide"
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.97 }}
           >

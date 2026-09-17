@@ -131,7 +131,7 @@ export default {
         'footer-bg': '#0d1a0e',
       },
       fontFamily: {
-        syne: ['Syne', 'sans-serif'],
+        Syne: ['Syne', 'sans-serif'],
         inter: ['Inter', 'sans-serif'],
       },
       backdropBlur: {

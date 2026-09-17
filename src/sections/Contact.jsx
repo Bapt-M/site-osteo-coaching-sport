@@ -16,7 +16,7 @@ const slideIn = (direction) => ({
 
 export default function Contact() {
   return (
-    <section id="contact" className="py-24 md:py-36 px-6 bg-site-bg">
+    <section id="contact" className="py-24 md:py-36 px-6 bg-site-bg overflow-x-clip">
       <div className="max-w-[1360px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
 
         {/* Image */}
@@ -40,10 +40,10 @@ export default function Contact() {
           className="flex flex-col gap-5"
         >
           <div>
-            <div className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-deep font-syne font-bold text-xs tracking-widest mb-5">
+            <div className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-deep font-poppins font-bold text-xs tracking-widest mb-5">
               CONTACT &amp; HORAIRES
             </div>
-            <h2 className="font-syne font-bold text-4xl md:text-5xl text-text-primary">
+            <h2 className="font-poppins font-bold text-4xl md:text-5xl text-text-primary">
               Prendre rendez-vous
             </h2>
           </div>
@@ -53,7 +53,7 @@ export default function Contact() {
             <div className="flex items-start gap-3">
               <span className="text-green-deep mt-0.5 shrink-0">📍</span>
               <div>
-                <p className="text-text-secondary/60 text-xs font-syne uppercase tracking-widest mb-1">Adresse</p>
+                <p className="text-text-secondary/60 text-xs font-poppins uppercase tracking-widest mb-1">Adresse</p>
                 <p className="text-text-primary font-inter text-sm leading-relaxed">34 Rue de Strasbourg<br />67117 Furdenheim</p>
               </div>
             </div>
@@ -61,7 +61,7 @@ export default function Contact() {
             <div className="flex items-start gap-3">
               <span className="text-green-deep mt-0.5 shrink-0">📞</span>
               <div>
-                <p className="text-text-secondary/60 text-xs font-syne uppercase tracking-widest mb-1">Téléphone</p>
+                <p className="text-text-secondary/60 text-xs font-poppins uppercase tracking-widest mb-1">Téléphone</p>
                 <p className="text-text-primary font-inter text-sm">+33 6 XX XX XX XX</p>
               </div>
             </div>
@@ -70,7 +70,7 @@ export default function Contact() {
           {/* CTA */}
           <motion.a
             href="#"
-            className="flex w-full justify-center py-4 rounded-xl bg-green-accent text-white font-syne font-bold text-base tracking-wide"
+            className="flex w-full justify-center py-4 rounded-xl bg-green-accent text-white font-poppins font-bold text-base tracking-wide"
             whileHover={{ scale: 1.02, backgroundColor: 'var(--c-accent-light-hex)' }}
             whileTap={{ scale: 0.98 }}
           >
@@ -80,7 +80,7 @@ export default function Contact() {
           {/* Horaires */}
           <div className="rounded-2xl border border-black/10 bg-black/[0.03] overflow-hidden">
             <div className="px-6 py-4 border-b border-black/10">
-              <p className="text-text-secondary/60 text-xs font-syne uppercase tracking-widest">Horaires d'ouverture</p>
+              <p className="text-text-secondary/60 text-xs font-poppins uppercase tracking-widest">Horaires d'ouverture</p>
             </div>
             {HOURS.map((h, i) => (
               <motion.div
@@ -92,7 +92,7 @@ export default function Contact() {
                 transition={{ delay: i * 0.05, duration: 0.4 }}
               >
                 <span className="font-inter text-text-primary text-sm">{h.day}</span>
-                <span className="font-syne font-bold text-green-deep text-sm">{h.hours}</span>
+                <span className="font-poppins font-bold text-green-deep text-sm">{h.hours}</span>
               </motion.div>
             ))}
           </div>

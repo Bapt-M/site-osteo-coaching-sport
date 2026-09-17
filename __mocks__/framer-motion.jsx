@@ -1,6 +1,6 @@
 import React from 'react'
 
-const tags = ['div','section','nav','header','footer','span','p','h1','h2','h3','h4','ul','li','a','button','img','video']
+const tags = ['div','section','article','aside','main','nav','header','footer','span','p','h1','h2','h3','h4','ul','li','a','button','img','video']
 
 export const motion = Object.fromEntries(
   tags.map(tag => [tag, React.forwardRef(({ children, ...props }, ref) => {
@@ -11,9 +11,12 @@ export const motion = Object.fromEntries(
 )
 
 export const AnimatePresence = ({ children }) => <>{children}</>
-export const useScroll = () => ({ scrollY: { get: () => 0 }, scrollYProgress: { get: () => 0 } })
+const motionValue = (v = 0) => ({ get: () => v, set: () => {}, on: () => () => {}, onChange: () => () => {} })
+export const useScroll = () => ({ scrollY: motionValue(0), scrollYProgress: motionValue(0) })
 export const useTransform = (_, __, output) => Array.isArray(output) ? output[0] : 0
-export const useMotionValue = (v) => ({ get: () => v, set: () => {}, onChange: () => () => {} })
+export const useMotionValue = (v) => motionValue(v)
 export const useSpring = (v) => v
+export const useMotionTemplate = (strings, ...vals) =>
+  strings.reduce((acc, str, i) => acc + str + (vals[i]?.get?.() ?? vals[i] ?? ''), '')
 export const useInView = () => [null, false]
 export const useAnimation = () => ({ start: () => {}, set: () => {} })

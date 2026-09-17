@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence, useScroll, useTransform, useMotionTemplate } from 'framer-motion'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 
+// Libellés courts des quatre services du hero + l'histoire. « Intervention
+// en entreprise » reste accessible depuis le pied de page.
 const navLinks = [
-  { label: 'Histoire', href: '/histoire' },
-  { label: 'Bilan Ostéopathique', href: '/bilan-osteopathique' },
-  { label: 'Suivi Sportif', href: '/suivi-sportif' },
-  { label: 'Intervention Entreprise', href: '/intervention-entreprise' },
-  { label: 'Projet Sportif', href: '/projet-sportif' },
+  { label: 'Histoire & formation', href: '/histoire' },
+  { label: 'Bilan ostéopathique', href: '/bilan-osteopathique' },
+  { label: 'Suivi haut niveau', href: '/suivi-sportif' },
+  { label: 'Projet sportif', href: '/projet-sportif' },
+  { label: 'Remise en forme', href: '/kinesport-furd' },
 ]
 
 const TEXT_LIGHT = '#ffffff'
@@ -57,7 +59,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link to="/">
             <motion.div
-              className="font-syne font-bold text-xs leading-tight tracking-wide cursor-pointer"
+              className="font-poppins font-bold text-xs leading-tight tracking-wide cursor-pointer"
               animate={{ color: textColor }}
               transition={{ duration: 0.18 }}
             >
@@ -150,7 +152,7 @@ export default function Navbar() {
                 >
                   <a
                     href={link.href}
-                    className="block py-4 border-b border-white/10 font-syne font-bold text-white text-3xl tracking-tight hover:text-cyan-accent transition-colors"
+                    className="block py-4 border-b border-white/10 font-poppins font-bold text-white text-3xl tracking-tight hover:text-cyan-accent transition-colors"
                     onClick={(e) => { e.preventDefault(); setMenuOpen(false); navigate(link.href) }}
                   >
                     {link.label}
@@ -169,7 +171,7 @@ export default function Navbar() {
             >
               <a
                 href="#contact"
-                className="block w-full text-center px-8 py-4 rounded-full bg-green-accent text-white font-syne font-bold text-base tracking-wide"
+                className="block w-full text-center px-8 py-4 rounded-full bg-green-accent text-white font-poppins font-bold text-base tracking-wide"
                 onClick={() => setMenuOpen(false)}
               >
                 Prendre rendez-vous

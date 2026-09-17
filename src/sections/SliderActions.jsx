@@ -8,7 +8,7 @@ const SLIDES = [
     desc: "Traitement des douleurs musculaires, articulaires et tendineuses liées à la pratique sportive. Une approche manuelle précise pour vous remettre en mouvement.",
     cta: 'Découvrir',
     href: '/bilan-osteopathique',
-    bg: '/images/OSTEO-pic-5.jpg',
+    bg: '/images/slider-osteo.jpg',
     accent: 'from-[var(--c-accent-hex)] to-[var(--c-accent-dark-hex)]',
     dot: 'var(--c-accent-hex)',
   },
@@ -17,7 +17,7 @@ const SLIDES = [
     desc: "Programmes d'entraînement sur mesure adaptés à vos objectifs, votre niveau et votre emploi du temps. Une méthode unique alliant performance et plaisir.",
     cta: 'Découvrir',
     href: '/projet-sportif',
-    bg: '/images/OSTEO-pic-7.jpg',
+    bg: '/images/slider-coaching.jpg',
     accent: 'from-[var(--c-accent-light-hex)] to-[var(--c-accent-hex)]',
     dot: 'var(--c-accent-light-hex)',
   },
@@ -26,7 +26,7 @@ const SLIDES = [
     desc: "Renforcement musculaire, mobilité et travail de l'endurance pour repousser vos limites. Des protocoles adaptés à chaque discipline sportive.",
     cta: 'En savoir plus',
     href: '/projet-sportif',
-    bg: '/images/OSTEO-pic-9.jpg',
+    bg: '/images/slider-prepa.jpg',
     accent: 'from-[var(--c-accent-lighter-hex)] to-[var(--c-accent-light-hex)]',
     dot: 'var(--c-accent-lighter-hex)',
   },
@@ -35,7 +35,7 @@ const SLIDES = [
     desc: "Analyse régulière de vos progrès, ajustement continu des programmes et accompagnement sur le long terme pour atteindre votre meilleur niveau.",
     cta: 'En savoir plus',
     href: '/suivi-sportif',
-    bg: '/images/OSTEO-pic-10.jpg',
+    bg: '/images/slider-suivi.jpg',
     accent: 'from-[var(--c-accent-dark-hex)] to-[var(--c-deep-hex)]',
     dot: 'var(--c-accent-dark-hex)',
   },
@@ -54,9 +54,11 @@ export default function SliderActions() {
           <SlideBackground key={i} slide={slide} index={i} rawIndex={rawIndex} />
         ))}
 
-        {/* Overlay bleu sombre transparent — fond homogène + protection texte à gauche */}
-        <div className="absolute inset-0 z-10" style={{ background: 'rgba(13,30,43,0.72)' }} />
-        <div className="absolute inset-0 z-10" style={{ background: 'linear-gradient(to right, rgba(13,30,43,0.45) 0%, transparent 65%)' }} />
+        {/* Pas de voile sur la photo : un seul dégradé, à gauche, sous le texte. */}
+        <div
+          className="absolute inset-0 z-10"
+          style={{ background: 'linear-gradient(to right, rgba(13,30,43,0.88) 0%, rgba(13,30,43,0.62) 34%, rgba(13,30,43,0.12) 62%, transparent 78%)' }}
+        />
 
         <div className="absolute inset-0 z-20 flex flex-col justify-center px-8 md:px-24 max-w-3xl">
           {SLIDES.map((slide, i) => (
@@ -103,23 +105,25 @@ function SlideContent({ slide, index, rawIndex, total }) {
     >
       <div className="flex items-center gap-3 mb-6">
         <span
-          className={`inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br ${slide.accent} font-syne font-bold text-white text-sm`}
+          className={`inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br ${slide.accent} font-poppins font-bold text-white text-sm`}
         >
           {slide.num}
         </span>
         <span className="text-white/30">—</span>
-        <span className="text-white/30 font-syne text-sm">0{total}</span>
+        <span className="text-white/30 font-poppins text-sm">0{total}</span>
       </div>
-      <h2 className="font-syne font-bold text-5xl md:text-7xl text-white leading-tight mb-6 whitespace-pre-line">
+      <h2 className="font-poppins font-bold text-5xl md:text-7xl text-white leading-tight mb-6 whitespace-pre-line"
+        style={{ textShadow: '0 2px 18px rgba(0,0,0,0.6)' }}>
         {slide.title}
       </h2>
-      <p className="font-inter text-white/70 text-lg max-w-lg mb-8 leading-relaxed">
+      <p className="font-inter text-white/85 text-lg max-w-lg mb-8 leading-relaxed"
+        style={{ textShadow: '0 1px 10px rgba(0,0,0,0.65)' }}>
         {slide.desc}
       </p>
       <motion.a
         href={slide.href}
         onClick={e => { e.preventDefault(); navigate(slide.href) }}
-        className={`inline-flex items-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r ${slide.accent} text-white font-syne font-bold tracking-wide`}
+        className={`inline-flex items-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r ${slide.accent} text-white font-poppins font-bold tracking-wide`}
         whileHover={{ scale: 1.04 }}
         whileTap={{ scale: 0.97 }}
       >

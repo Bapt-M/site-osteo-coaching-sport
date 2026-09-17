@@ -13,15 +13,28 @@ test('affiche le titre principal', () => {
 
 test('affiche la section origines', () => {
   render(<Histoire />, { wrapper: Wrapper })
-  expect(screen.getByText(/kleinfrankenheim/i)).toBeInTheDocument()
+  expect(screen.getAllByText(/kleinfrankenheim/i).length).toBeGreaterThan(0)
 })
 
 test('affiche la section parcours professionnel', () => {
   render(<Histoire />, { wrapper: Wrapper })
-  expect(screen.getByText(/sig/i)).toBeInTheDocument()
+  expect(screen.getAllByText(/SIG Strasbourg/).length).toBeGreaterThan(0)
 })
 
 test('affiche la section diplômes', () => {
   render(<Histoire />, { wrapper: Wrapper })
-  expect(screen.getByText(/diplômes/i)).toBeInTheDocument()
+  expect(screen.getAllByText(/diplômes/i).length).toBeGreaterThan(0)
+})
+
+test('affiche les hommages', () => {
+  render(<Histoire />, { wrapper: Wrapper })
+  expect(screen.getAllByText(/Fred FORTE/).length).toBeGreaterThan(0)
+  expect(screen.getAllByText(/Thierry RUPERT/).length).toBeGreaterThan(0)
+})
+
+test('affiche les témoignages', () => {
+  render(<Histoire />, { wrapper: Wrapper })
+  expect(screen.getByText(/Matthieu LORENTZ/)).toBeInTheDocument()
+  expect(screen.getByText(/Richard BILLANT/)).toBeInTheDocument()
+  expect(screen.getByText(/Paris McCURDY/)).toBeInTheDocument()
 })

@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import usePageTitle from '../hooks/usePageTitle'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -32,6 +33,8 @@ const FORMATS = [
 ]
 
 export default function InterventionEntreprise() {
+  usePageTitle('Intervention en entreprise')
+
   return (
     <main className="bg-site-bg">
       {/* Hero */}
@@ -43,10 +46,10 @@ export default function InterventionEntreprise() {
         <div className="absolute inset-0 bg-gradient-to-b from-green-deep/40 via-green-deep/60 to-green-deep" />
         <div className="relative z-10 max-w-[1360px] mx-auto px-6 md:px-12 pt-32">
           <motion.div variants={stagger} initial="hidden" animate="visible">
-            <motion.div variants={fadeUp} className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-accent font-syne font-bold text-xs tracking-widest mb-6">
+            <motion.div variants={fadeUp} className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-accent font-poppins font-bold text-xs tracking-widest mb-6">
               ENTREPRISE
             </motion.div>
-            <motion.h1 variants={fadeUp} className="font-syne font-black text-white text-5xl md:text-7xl leading-none mb-6">
+            <motion.h1 variants={fadeUp} className="font-poppins font-black text-white text-5xl md:text-7xl leading-none mb-6">
               Intervention<br /><span className="text-green-accent">en entreprise</span>
             </motion.h1>
             <motion.p variants={fadeUp} className="font-inter text-white/70 text-xl max-w-xl leading-relaxed">
@@ -66,10 +69,10 @@ export default function InterventionEntreprise() {
             transition={{ duration: 0.7 }}
             className="mb-16"
           >
-            <div className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-deep font-syne font-bold text-xs tracking-widest mb-4">
+            <div className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-deep font-poppins font-bold text-xs tracking-widest mb-4">
               FORMATS
             </div>
-            <h2 className="font-syne font-bold text-text-primary text-4xl md:text-5xl">Trois façons d'intervenir</h2>
+            <h2 className="font-poppins font-bold text-text-primary text-4xl md:text-5xl">Trois façons d'intervenir</h2>
           </motion.div>
 
           <div className="space-y-16">
@@ -85,10 +88,10 @@ export default function InterventionEntreprise() {
                 <div className="flex-1">
                   <div className="flex flex-wrap gap-2 mb-4">
                     {f.tags.map(t => (
-                      <span key={t} className="px-3 py-1 rounded-full text-xs font-syne font-bold bg-green-accent/10 text-green-deep">{t}</span>
+                      <span key={t} className="px-3 py-1 rounded-full text-xs font-poppins font-bold bg-green-accent/10 text-green-deep">{t}</span>
                     ))}
                   </div>
-                  <h3 className="font-syne font-bold text-text-primary text-2xl md:text-3xl mb-4">{f.title}</h3>
+                  <h3 className="font-poppins font-bold text-text-primary text-2xl md:text-3xl mb-4">{f.title}</h3>
                   <p className="font-inter text-text-secondary text-lg leading-relaxed">{f.desc}</p>
                 </div>
                 <div className="flex-1 rounded-2xl overflow-hidden aspect-[16/9]">
@@ -109,13 +112,13 @@ export default function InterventionEntreprise() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            <h2 className="font-syne font-bold text-white text-4xl mb-4">Un projet en entreprise ?</h2>
+            <h2 className="font-poppins font-bold text-white text-4xl mb-4">Un projet en entreprise ?</h2>
             <p className="font-inter text-white/60 text-lg mb-10 max-w-lg mx-auto">
               Les modalités sont définies lors d'un entretien préalable, selon vos besoins et votre contexte.
             </p>
             <motion.a
               href="/#contact"
-              className="inline-block px-10 py-4 rounded-full bg-green-accent text-white font-syne font-bold text-base"
+              className="inline-block px-10 py-4 rounded-full bg-green-accent text-white font-poppins font-bold text-base"
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
             >

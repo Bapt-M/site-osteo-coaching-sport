@@ -2,7 +2,7 @@
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: "Syne", sans-serif;
   background: #f7f9f7;
   color: #263238;
   overflow-x: hidden;
@@ -579,7 +579,7 @@ a { text-decoration: none; }
 .quote-mark {
   font-size: 52px;
   color: #e8f5e9;
-  font-family: Georgia, serif;
+  font-family: "Syne", sans-serif;
   line-height: 1;
   margin-bottom: 8px;
 }

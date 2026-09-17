@@ -4,6 +4,6 @@ import Footer from './Footer'
 
 test('rend la marque et les liens légaux', () => {
   render(<MemoryRouter><Footer /></MemoryRouter>)
-  expect(screen.getByText(/OSTÉO/i)).toBeInTheDocument()
-  expect(screen.getByText(/Mentions légales/i)).toBeInTheDocument()
+  expect(screen.getAllByText(/OSTÉO/i).length).toBeGreaterThan(0)
+  expect(screen.getAllByText(/Mentions légales/i).length).toBeGreaterThan(0)
 })

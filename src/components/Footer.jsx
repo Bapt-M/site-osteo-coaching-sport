@@ -1,12 +1,14 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 
+// La page /intervention-entreprise existe toujours mais n'est plus liée
+// depuis la navigation (conservée en archive).
 const PAGES = [
-  { label: 'Histoire et Formation', href: '/histoire' },
-  { label: 'Bilan Ostéopathique', href: '/bilan-osteopathique' },
-  { label: 'Suivi Sportif', href: '/suivi-sportif' },
-  { label: 'Intervention Entreprise', href: '/intervention-entreprise' },
-  { label: 'Projet Sportif', href: '/projet-sportif' },
+  { label: 'Histoire et formation', href: '/histoire' },
+  { label: 'Bilan, traitement et soin ostéopathique', href: '/bilan-osteopathique' },
+  { label: 'Suivi des sportifs de haut niveau', href: '/suivi-sportif' },
+  { label: 'Projet sportif personnalisé', href: '/projet-sportif' },
+  { label: 'Programme et suivi de remise en forme', href: '/kinesport-furd' },
 ]
 
 export default function Footer() {
@@ -21,7 +23,7 @@ export default function Footer() {
 
         {/* Identité */}
         <div>
-          <div className="font-syne font-bold text-lg leading-tight mb-4">
+          <div className="font-poppins font-bold text-lg leading-tight mb-4">
             OSTÉO<br /><span className="font-normal text-green-accent">ET COACHING</span><br />DU SPORT
           </div>
           <p className="text-white/50 text-sm font-inter leading-relaxed">
@@ -35,7 +37,7 @@ export default function Footer() {
 
         {/* Navigation */}
         <div className="flex flex-col gap-3">
-          <h4 className="font-syne font-bold text-xs tracking-widest text-white/40 uppercase mb-1">Pages</h4>
+          <h4 className="font-poppins font-bold text-xs tracking-widest text-white/40 uppercase mb-1">Pages</h4>
           {PAGES.map(({ label, href }) => (
             <Link
               key={href}
@@ -49,7 +51,7 @@ export default function Footer() {
 
         {/* Contact */}
         <div className="flex flex-col gap-3">
-          <h4 className="font-syne font-bold text-xs tracking-widest text-white/40 uppercase mb-1">Contact</h4>
+          <h4 className="font-poppins font-bold text-xs tracking-widest text-white/40 uppercase mb-1">Contact</h4>
           <a
             href="#contact"
             className="inline-flex items-center gap-2 text-white/70 hover:text-green-accent transition-colors text-sm font-inter"
@@ -57,7 +59,7 @@ export default function Footer() {
             Prendre rendez-vous
           </a>
           <div className="mt-2 flex flex-col gap-3">
-            <h4 className="font-syne font-bold text-xs tracking-widest text-white/40 uppercase">Légal</h4>
+            <h4 className="font-poppins font-bold text-xs tracking-widest text-white/40 uppercase">Légal</h4>
             {['Mentions légales'].map(label => (
               <a key={label} href="#" className="text-white/70 hover:text-green-accent transition-colors text-sm font-inter">
                 {label}

@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import usePageTitle from '../hooks/usePageTitle'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -29,7 +30,7 @@ const STEPS = [
 ]
 
 const GALERIE = [
-  { src: '/images/Ben_manipulation.jpg', alt: 'Cabinet ostéopathique' },
+  { src: '/images/bilan-manipulation.jpg', alt: 'Manipulation ostéopathique en cabinet' },
   { src: '/images/cabinet-2.jpg', alt: 'Séance ostéopathique' },
   { src: '/images/balneo.jpg', alt: 'Traitement manuel' },
   { src: '/images/manu_manipulation.jpg', alt: 'Consultation' },
@@ -38,6 +39,8 @@ const GALERIE = [
 ]
 
 export default function BilanOsteopathique() {
+  usePageTitle('Bilan, traitement et soin ostéopathique')
+
   return (
     <main className="bg-site-bg">
       {/* Hero */}
@@ -49,11 +52,11 @@ export default function BilanOsteopathique() {
         <div className="absolute inset-0 bg-gradient-to-b from-green-deep/40 via-green-deep/60 to-green-deep" />
         <div className="relative z-10 max-w-[1360px] mx-auto px-6 md:px-12 pt-32">
           <motion.div variants={stagger} initial="hidden" animate="visible">
-            <motion.div variants={fadeUp} className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-accent font-syne font-bold text-xs tracking-widest mb-6">
-              OSTÉOPATHIE
+            <motion.div variants={fadeUp} className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-accent font-poppins font-bold text-xs tracking-widest mb-6">
+              EN CABINET
             </motion.div>
-            <motion.h1 variants={fadeUp} className="font-syne font-black text-white text-5xl md:text-7xl leading-none mb-6">
-              Bilan &amp;<br /><span className="text-green-accent">Traitement</span>
+            <motion.h1 variants={fadeUp} className="font-poppins font-black text-white text-5xl md:text-7xl leading-none mb-6">
+              Bilan, traitement<br /><span className="text-green-accent">&amp; soin ostéopathique</span>
             </motion.h1>
             <motion.p variants={fadeUp} className="font-inter text-white/70 text-xl max-w-xl leading-relaxed">
               Une approche globale et individualisée du soin ostéopathique — en cabinet, adaptée à chaque patient.
@@ -72,10 +75,10 @@ export default function BilanOsteopathique() {
             transition={{ duration: 0.7 }}
             className="mb-16"
           >
-            <div className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-deep font-syne font-bold text-xs tracking-widest mb-4">
+            <div className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-deep font-poppins font-bold text-xs tracking-widest mb-4">
               DÉROULEMENT
             </div>
-            <h2 className="font-syne font-bold text-text-primary text-4xl md:text-5xl">Comment ça fonctionne</h2>
+            <h2 className="font-poppins font-bold text-text-primary text-4xl md:text-5xl">Comment ça fonctionne</h2>
           </motion.div>
 
           <motion.div
@@ -91,8 +94,8 @@ export default function BilanOsteopathique() {
                 variants={fadeUp}
                 className="border border-text-primary/10 rounded-2xl p-8 hover:border-green-accent/40 transition-colors"
               >
-                <div className="font-syne font-black text-5xl text-green-accent/20 mb-4 leading-none">{step.num}</div>
-                <h3 className="font-syne font-bold text-text-primary text-xl mb-3">{step.title}</h3>
+                <div className="font-poppins font-black text-5xl text-green-accent/20 mb-4 leading-none">{step.num}</div>
+                <h3 className="font-poppins font-bold text-text-primary text-xl mb-3">{step.title}</h3>
                 <p className="font-inter text-text-secondary leading-relaxed">{step.body}</p>
               </motion.div>
             ))}
@@ -130,13 +133,13 @@ export default function BilanOsteopathique() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            <h2 className="font-syne font-bold text-white text-4xl mb-6">Prendre rendez-vous</h2>
+            <h2 className="font-poppins font-bold text-white text-4xl mb-6">Prendre rendez-vous</h2>
             <p className="font-inter text-white/60 text-lg mb-10 max-w-lg mx-auto">
               Le premier rendez-vous est une séance ostéopathique complète. Aucun bilan préalable nécessaire.
             </p>
             <motion.a
               href="/#contact"
-              className="inline-block px-10 py-4 rounded-full bg-green-accent text-white font-syne font-bold text-base"
+              className="inline-block px-10 py-4 rounded-full bg-green-accent text-white font-poppins font-bold text-base"
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
             >

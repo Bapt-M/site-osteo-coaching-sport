@@ -22,8 +22,9 @@ export default {
         'footer-bg':      '#091520',
       },
       fontFamily: {
-        syne: ['Syne', 'sans-serif'],
+        poppins: ['Poppins', 'sans-serif'],
         inter: ['Inter', 'sans-serif'],
+        roboto: ['Roboto', 'sans-serif'],
       },
       backdropBlur: {
         xl: '20px',
