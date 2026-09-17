@@ -20,7 +20,7 @@ export default function About() {
           <div className="relative rounded-2xl overflow-hidden aspect-[4/5]">
             <img
               src="/images/manu-padel-square.jpg"
-              alt="Emmanuel Krieger ostéopathe"
+              alt="Emmanuel Krieger au Padel Square"
               className="w-full h-full object-cover"
               onError={e => { e.target.style.display = 'none' }}
             />
