@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion'
 import usePageTitle from '../hooks/usePageTitle'
+import { FORMATS } from '../content/data/entreprise'
+import { useTextes } from '../content/ContenuProvider'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -11,29 +13,9 @@ const stagger = {
   visible: { transition: { staggerChildren: 0.1 } },
 }
 
-const FORMATS = [
-  {
-    title: 'Bien-être au travail',
-    tags: ['QVT', 'Prévention TMS', 'Journées santé'],
-    desc: "Interventions sur site pour des séances d'ostéopathie individuelles ou collectives. Prévention des troubles musculo-squelettiques, amélioration des conditions de travail.",
-    img: '/images/terrain-1.jpg',
-  },
-  {
-    title: 'Événementiels',
-    tags: ['Co-working', 'Team building', 'Conférences'],
-    desc: "Présence lors de vos événements d'entreprise — journées santé, espaces bien-être, moments de cohésion. Un service distinctif pour vos collaborateurs.",
-    img: '/images/terrain-2.jpg',
-  },
-  {
-    title: 'Club Med',
-    tags: ['Villages Club Med', 'Sur disponibilités'],
-    desc: "Interventions et accompagnements au sein de différents villages Club Med. Format à définir lors d'un entretien préalable selon le village et les dates.",
-    img: '/images/malaga.jpg',
-  },
-]
-
 export default function InterventionEntreprise() {
   usePageTitle('Intervention en entreprise')
+  const textes = useTextes()
 
   return (
     <main className="bg-site-bg">
@@ -47,13 +29,13 @@ export default function InterventionEntreprise() {
         <div className="relative z-10 max-w-[1360px] mx-auto px-6 md:px-12 pt-32">
           <motion.div variants={stagger} initial="hidden" animate="visible">
             <motion.div variants={fadeUp} className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-accent font-poppins font-bold text-xs tracking-widest mb-6">
-              ENTREPRISE
+              {textes['entreprise.surtitre']}
             </motion.div>
             <motion.h1 variants={fadeUp} className="font-poppins font-black text-white text-5xl md:text-7xl leading-none mb-6">
-              Intervention<br /><span className="text-green-accent">en entreprise</span>
+              {textes['entreprise.titre1']}<br /><span className="text-green-accent">{textes['entreprise.titre2']}</span>
             </motion.h1>
             <motion.p variants={fadeUp} className="font-inter text-white/70 text-xl max-w-xl leading-relaxed">
-              Ostéopathie directement sur site — pour le bien-être de vos équipes, la prévention des TMS et des événements santé mémorables.
+              {textes['entreprise.chapo']}
             </motion.p>
           </motion.div>
         </div>
@@ -70,7 +52,7 @@ export default function InterventionEntreprise() {
             className="mb-16"
           >
             <div className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-deep font-poppins font-bold text-xs tracking-widest mb-4">
-              FORMATS
+              {textes['entreprise.formats.surtitre']}
             </div>
             <h2 className="font-poppins font-bold text-text-primary text-4xl md:text-5xl">Trois façons d'intervenir</h2>
           </motion.div>
@@ -122,7 +104,7 @@ export default function InterventionEntreprise() {
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
             >
-              Nous contacter →
+              {textes['entreprise.cta.bouton']}
             </motion.a>
           </motion.div>
         </div>

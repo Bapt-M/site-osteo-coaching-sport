@@ -1,6 +1,6 @@
 import React from 'react'
 
-const tags = ['div','section','article','aside','main','nav','header','footer','span','p','h1','h2','h3','h4','ul','li','a','button','img','video']
+const tags = ['div','section','article','aside','main','figure','figcaption','nav','header','footer','span','p','h1','h2','h3','h4','ul','li','a','button','img','video']
 
 export const motion = Object.fromEntries(
   tags.map(tag => [tag, React.forwardRef(({ children, ...props }, ref) => {

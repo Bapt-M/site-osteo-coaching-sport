@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion'
 import usePageTitle from '../hooks/usePageTitle'
+import { COMPOSANTES, ATHLETES } from '../content/data/projet'
+import { useTextes } from '../content/ContenuProvider'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -11,26 +13,9 @@ const stagger = {
   visible: { transition: { staggerChildren: 0.1 } },
 }
 
-const COMPOSANTES = [
-  { label: 'Préparation physique', desc: 'Renforcement, endurance, mobilité — adaptés à votre discipline.' },
-  { label: 'Préparation mentale', desc: 'Gestion du stress, concentration, confiance en compétition.' },
-  { label: 'Suivi ostéopathique', desc: 'Prévention des blessures, récupération optimisée, longévité.' },
-  { label: 'Réseau de spécialistes', desc: 'Coordination avec podologue, médecins du sport, nutritionniste.' },
-  { label: 'Logistique compétition', desc: 'Déplacements, hébergement, accompagnement terrain en compétition.' },
-  { label: "Participation à des épreuves", desc: "Jusqu'à la compétition finale, aux côtés d'athlètes de haut niveau." },
-]
-
-const ATHLETES = [
-  { nom: 'Julien Motz', detail: '42ème français en padel', img: '/images/julien-motz.jpg' },
-  { nom: 'Yanis Muesser', detail: '15ème français en padel', img: '/images/yannis-musser.png' },
-  { nom: 'Driss El Himer', detail: 'Demi-fondiste — champion de France', img: '/images/driss-el-himer.png' },
-  { nom: 'Samir Baala', detail: 'Champion du monde du 1500m', img: '/images/samir-baala.png' },
-  { nom: 'Alexis Koessler', detail: 'Figure du sport alsacien', img: '/images/alexis-koessler.png' },
-  { nom: 'Mathieu Lorentz', detail: 'Athlète de haut niveau', img: '/images/mathieu-lorentz.png' },
-]
-
 export default function ProjetSportif() {
   usePageTitle('Projet sportif personnalisé')
+  const textes = useTextes()
 
   return (
     <main className="bg-site-bg">
@@ -44,13 +29,13 @@ export default function ProjetSportif() {
         <div className="relative z-10 max-w-[1360px] mx-auto px-6 md:px-12 pt-32">
           <motion.div variants={stagger} initial="hidden" animate="visible">
             <motion.div variants={fadeUp} className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-accent font-poppins font-bold text-xs tracking-widest mb-6">
-              SUR MESURE
+              {textes['projet.surtitre']}
             </motion.div>
             <motion.h1 variants={fadeUp} className="font-poppins font-black text-white text-5xl md:text-7xl leading-none mb-6">
-              Projet sportif<br /><span className="text-green-accent">personnalisé</span>
+              {textes['projet.titre1']}<br /><span className="text-green-accent">{textes['projet.titre2']}</span>
             </motion.h1>
             <motion.p variants={fadeUp} className="font-inter text-white/70 text-xl max-w-xl leading-relaxed">
-              Vous avez un objectif sportif ? Après un bilan complet, nous définissons ensemble un projet cohérent, réaliste et totalement individualisé.
+              {textes['projet.chapo']}
             </motion.p>
           </motion.div>
         </div>
@@ -82,7 +67,7 @@ export default function ProjetSportif() {
             className="mb-16"
           >
             <div className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-deep font-poppins font-bold text-xs tracking-widest mb-4">
-              PRISE EN CHARGE
+              {textes['projet.prise.surtitre']}
             </div>
             <h2 className="font-poppins font-bold text-text-primary text-4xl md:text-5xl">
               Une approche<br />globale et individualisée
@@ -124,7 +109,7 @@ export default function ProjetSportif() {
             className="mb-16"
           >
             <div className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-accent font-poppins font-bold text-xs tracking-widest mb-4">
-              ATHLÈTES QUI NOUS ACCOMPAGNENT
+              {textes['projet.athletes.surtitre']}
             </div>
             <h2 className="font-poppins font-bold text-white text-4xl">
               Julien Motz, Samir Baala,<br /><span className="text-green-accent">et bien d'autres…</span>
@@ -189,7 +174,7 @@ export default function ProjetSportif() {
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
             >
-              Discutons de votre projet →
+              {textes['projet.bouton']}
             </motion.a>
           </motion.div>
         </div>

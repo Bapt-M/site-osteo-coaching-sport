@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useTextes } from '../content/ContenuProvider'
 
 // Photo de fond : arbre-raquette entouré de balles de padel.
 const HERO_IMG = '/images/hero-padel.jpg'
@@ -46,21 +47,21 @@ const HAZE = '205, 216, 226'
 // clonage, `depth` place la balle dans le feuillage (0) ou au premier
 // plan (1) : taille, brume et netteté en découlent.
 const LEAVES = [
-  { label: "SUIVI DES\nSPORTIFS DE\nHAUT NIVEAU",                    href: '/suivi-sportif',       pos: { left: '32%', top: '26%' }, rot: -18, depth: 0 },
-  { label: "PROJET\nSPORTIF\nPERSONNALISÉ",                          href: '/projet-sportif',      pos: { left: '67%', top: '26%' }, rot: 127, depth: 0 },
-  { label: "BILAN,\nTRAITEMENT\nET SOIN\nOSTÉOPATHIQUE\nEN CABINET",  href: '/bilan-osteopathique', pos: { left: '27%', top: '50%' }, rot: 62,  depth: 1 },
-  { label: "PROGRAMME\nET SUIVI DE\nREMISE\nEN FORME",                href: '/kinesport-furd',      pos: { left: '70%', top: '50%' }, rot: -96, depth: 1 },
+  { cle: 'balle.suivi',  href: '/suivi-sportif',       pos: { left: '32%', top: '26%' }, rot: -18, depth: 0 },
+  { cle: 'balle.projet', href: '/projet-sportif',      pos: { left: '67%', top: '26%' }, rot: 127, depth: 0 },
+  { cle: 'balle.bilan',  href: '/bilan-osteopathique', pos: { left: '27%', top: '50%' }, rot: 62,  depth: 1 },
+  { cle: 'balle.remise', href: '/kinesport-furd',      pos: { left: '70%', top: '50%' }, rot: -96, depth: 1 },
 ]
 
 // Pas d'ombre dans la balle : le titre passe en bleu profond de la charte,
 // qui tient le contraste sur le jaune-vert sans assombrir la balle.
 const LEAF_STYLE = {
-  fontSize: 'clamp(0.9rem, 3vw, 1.6rem)',
-  color: '#ffffff',
-  letterSpacing: '0.05em',
-  lineHeight: 1.3,
+  fontSize: 'clamp(0.58rem, 1.3vw, 1.3rem)',
+  letterSpacing: '0.04em',
+  lineHeight: 1.25,
   whiteSpace: 'pre',
-  textShadow: '0 1px 2px rgba(5, 5, 5, 0.5)',
+  // Halo clair plutôt qu'ombre sombre : le texte est foncé.
+  textShadow: '0 1px 2px rgb(7, 7, 7)',
 }
 
 // Axe vertical du tronc, en fraction de la largeur de la photo. Mesuré :
@@ -121,7 +122,7 @@ function Leaf({ label, href, pos, rot = 0, depth = 1 }) {
       <motion.div variants={fadeUp} className="w-full h-full">
       <Link
         to={href}
-        className="group relative block w-full h-full rounded-full pointer-events-auto"
+        className="group relative block w-full h-full rounded-full pointer-events-auto cursor-pointer"
       >
         <span
           className="absolute inset-0 rounded-full overflow-hidden transition-transform duration-300 group-hover:scale-105"
@@ -145,7 +146,7 @@ function Leaf({ label, href, pos, rot = 0, depth = 1 }) {
         </span>
         <span className="absolute inset-0 flex items-center justify-center px-[8%]">
           <span
-            className="font-poppins font-extrabold uppercase text-green-deep text-center group-hover:text-green-accent transition-colors"
+            className="font-poppins font-extrabold uppercase text-white text-center cursor-pointer group-hover:text-white transition-colors"
             style={LEAF_STYLE}
           >
             {label}
@@ -158,6 +159,7 @@ function Leaf({ label, href, pos, rot = 0, depth = 1 }) {
 }
 
 export default function Hero() {
+  const textes = useTextes()
   const heroRef = useRef(null)
   const box = useCoverBox(heroRef)
   const stageStyle = {
@@ -201,7 +203,7 @@ export default function Hero() {
 
       {/* ── DESKTOP (≥850px) — les 4 balles, aux coins du feuillage ── */}
       <div className="hidden desktop:block absolute inset-0 z-20 pointer-events-none">
-        {LEAVES.map(leaf => <Leaf key={leaf.href} {...leaf} />)}
+        {LEAVES.map(leaf => <Leaf key={leaf.href} {...leaf} label={textes[leaf.cle]} />)}
       </div>
 
       {/* ── Citation + histoire, alignées sur le tronc (tous formats) ──
@@ -213,39 +215,41 @@ export default function Hero() {
         {/* citation — son bas reste au niveau de l'ancienne ligne 3 */}
         <div
           className="absolute -translate-x-1/2 -translate-y-full text-center"
-          style={{ left: trunkLeft, top: '75%', width: 'min(100%, 88vw)', marginTop: '-0.75rem' }}
+          style={{ left: trunkLeft, top: 'min(75%, calc(100% - 215px))',
+                   width: 'min(100%, 88vw)', marginTop: '-0.75rem' }}
         >
           <motion.p
             variants={fadeUp}
             className="text-white font-poppins uppercase"
             style={{ fontSize: 'clamp(1.1rem, 5.2vw, 3rem)', textShadow: '0 2px 14px rgba(0,0,0,0.85), 0 0 30px rgba(0,0,0,0.5)' }}
           >
-            UN DES HOMMES DE L'OMBRE
+            {textes['hero.citation']}
           </motion.p>
         </div>
 
         {/* histoire et formation — centre de l'ancienne ligne 4 */}
         <div
           className="absolute -translate-x-1/2 -translate-y-1/2 text-center"
-          style={{ left: trunkLeft, top: '87.5%', width: 'max-content', maxWidth: '88vw' }}
+          style={{ left: trunkLeft, top: 'min(83%, calc(100% - 150px))',
+                   width: 'max-content', maxWidth: '88vw' }}
         >
           <motion.div variants={fadeUp}>
             <Link
               to="/histoire"
-              className="font-poppins font-extrabold uppercase text-white pointer-events-auto hover:text-cyan-accent transition-colors"
+              className="font-poppins font-extrabold uppercase text-white pointer-events-auto cursor-pointer hover:text-cyan-accent transition-colors"
               style={OVER_PHOTO_STYLE}
             >
-              HISTOIRE ET FORMATION
+              {textes['hero.histoire']}
             </Link>
           </motion.div>
         </div>
 
       </div>
 
-      {/* Pied de hero — EMMANUEL KRIEGER (desktop uniquement) */}
-      <motion.div variants={fadeUp} className="hidden desktop:block absolute bottom-0 left-0 z-20 pb-6 px-8 desktop:px-12">
-        <div className="text-white font-poppins font-bold text-sm tracking-[0.3em]" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.85)' }}>EMMANUEL KRIEGER</div>
-        <div className="text-white/80 font-inter text-xs tracking-wider mt-1" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.85)' }}>OSTÉOPATHE ET COACHING DU SPORT À FURDENHEIM</div>
+      {/* Pied de hero — EMMANUEL KRIEGER (tous formats) */}
+      <motion.div variants={fadeUp} className="absolute bottom-0 left-0 z-20 pb-4 desktop:pb-6 px-6 desktop:px-12">
+        <div className="text-white font-poppins font-bold tracking-[0.22em]" style={{ fontSize: 'clamp(1.05rem, 4.6vw, 2rem)', textShadow: '0 2px 10px rgba(0,0,0,0.85)' }}>{textes['hero.nom']}</div>
+        <div className="text-white/90 font-inter tracking-wider mt-1.5" style={{ fontSize: 'clamp(0.72rem, 3.4vw, 1.5rem)', textShadow: '0 2px 10px rgba(0,0,0,0.85)' }}>{textes['hero.fonction']}</div>
       </motion.div>
     </motion.section>
   )

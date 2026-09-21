@@ -1615,7 +1615,7 @@ export default function Contact() {
 
           <div className="glass rounded-2xl p-6 mb-6 bg-white/5 border-white/10">
             <p className="font-inter text-white/70 mb-2">📍 34 Rue de Strasbourg, 67280 Furdenheim</p>
-            <p className="font-inter text-white/70">📞 +33 6 XX XX XX XX</p>
+            <p className="font-inter text-white/70">📞 +33 6 61 19 64 84</p>
           </div>
 
           <motion.a

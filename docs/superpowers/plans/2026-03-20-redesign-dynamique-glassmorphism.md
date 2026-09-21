@@ -1164,7 +1164,7 @@ git commit -m "feat: section témoignages avec cards glassmorphism"
       <h2>Prendre rendez-vous</h2>
       <div class="contact-glass">
         <p class="contact-address">📍 34 Rue de Strasbourg, 6117 Puidonhans</p>
-        <p class="contact-address">📞 +33 6 XX XX XX XX</p>
+        <p class="contact-address">📞 +33 6 61 19 64 84</p>
       </div>
       <a href="#" class="contact-cta">Réserver en ligne →</a>
       <div class="contact-glass">

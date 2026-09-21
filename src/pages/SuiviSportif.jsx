@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion'
 import usePageTitle from '../hooks/usePageTitle'
+import { MODALITES, REFERENCES } from '../content/data/suivi'
+import { useTextes } from '../content/ContenuProvider'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -11,43 +13,9 @@ const stagger = {
   visible: { transition: { staggerChildren: 0.12 } },
 }
 
-const MODALITES = [
-  { icon: '📅', title: 'Suivi régulier en cabinet' },
-  { icon: '📡', title: 'Suivi à distance' },
-  { icon: '🏆', title: 'Accompagnement lors des compétitions' },
-  { icon: '🏋️', title: 'Interventions pendant les périodes de préparation' },
-]
-
-const REFERENCES = [
-  {
-    nom: 'SIG Basket Strasbourg',
-    img: '/images/sig-vestiaire.jpg',
-    texte: "Après avoir écrit à toutes les ligues sportives d'Alsace, mon CV est transmis à la SIG Strasbourg, nouvellement promue en Pro A. Contre toute attente, je suis retenu après des échanges avec le médecin Nicolas Sarbacher et les dirigeants, à la demande de Christophe Vitoux. Je découvre alors le sport de très haut niveau et fais une rencontre déterminante : Frédéric Forte, dont l'influence humaine et professionnelle marquera profondément mon parcours.",
-  },
-  {
-    nom: 'Équipe de France U21',
-    img: '/images/equipe-france-u21.jpg',
-    texte: "En parallèle de la SIG, j'intègre le staff médical de l'Équipe de France U21 de basket-ball, aux côtés de la génération dorée : Tony Parker, Boris Diaw, Ronny Turiaf, Mickaël Gelabale, sous la direction de l'exceptionnel Richard Billant.",
-  },
-  {
-    nom: 'INSEP',
-    img: '/images/insep.jpg',
-    texte: "Au fil de ces années à la SIG et avec l'Équipe de France, je côtoie l'INSEP et de nombreux athlètes de haut niveau, ostéopathes, préparateurs physiques et entraîneurs d'exception. Un environnement qui forge profondément ma vision du soin sportif.",
-  },
-  {
-    nom: 'Yanis Muesser',
-    img: '/images/yanis-muesser-soin.jpg',
-    texte: "15ème joueur français de padel, Yanis Muesser est aujourd'hui accompagné en ostéopathie et en coaching : soins en cabinet entre les tournois, suivi de la charge d'entraînement et préparation aux échéances. Un suivi complet, du traitement de la douleur à la performance.",
-  },
-  {
-    nom: 'Keith Jennings',
-    img: '/images/keith-jennings.jpg',
-    texte: "Joueur emblématique de la SIG Basket et de la NBA, Keith Jennings fait partie des athlètes que j'ai eu le privilège d'accompagner. Des moments de terrain, de vestiaire et de temps morts qui restent parmi les plus marquants de ces années au plus haut niveau.",
-  },
-]
-
 export default function SuiviSportif() {
   usePageTitle('Suivi des sportifs de haut niveau')
+  const textes = useTextes()
 
   return (
     <main className="bg-site-bg">
@@ -61,13 +29,13 @@ export default function SuiviSportif() {
         <div className="relative z-10 max-w-[1360px] mx-auto px-6 md:px-12 pt-32">
           <motion.div variants={stagger} initial="hidden" animate="visible">
             <motion.div variants={fadeUp} className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-accent font-poppins font-bold text-xs tracking-widest mb-6">
-              HAUT NIVEAU
+              {textes['suivi.surtitre']}
             </motion.div>
             <motion.h1 variants={fadeUp} className="font-poppins font-black text-white text-5xl md:text-7xl leading-none mb-6" aria-label="suivi sportif">
-              Suivi des sportifs<br /><span className="text-green-accent">de haut niveau</span>
+              {textes['suivi.titre1']}<br /><span className="text-green-accent">{textes['suivi.titre2']}</span>
             </motion.h1>
             <motion.p variants={fadeUp} className="font-inter text-white/70 text-xl max-w-xl leading-relaxed">
-              L'ensemble des outils et techniques ostéopathiques disponibles est utilisé pour optimiser la performance, la récupération et la longévité sportive.
+              {textes['suivi.chapo']}
             </motion.p>
           </motion.div>
         </div>
@@ -85,16 +53,16 @@ export default function SuiviSportif() {
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
             <div className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-deep font-poppins font-bold text-xs tracking-widest mb-6">
-              APPROCHE
+              {textes['suivi.approche.surtitre']}
             </div>
             <h2 className="font-poppins font-bold text-text-primary text-4xl md:text-5xl mb-8 leading-tight">
               Un suivi ostéopathique<br />spécifique
             </h2>
             <p className="font-inter text-text-secondary text-lg leading-relaxed mb-6">
-              Mise en place d'un suivi ostéopathique spécifique pour les sportifs de haut niveau.
+              {textes['suivi.approche.titre']}
             </p>
             <p className="font-inter text-text-secondary text-lg leading-relaxed">
-              L'ensemble des outils et techniques ostéopathiques disponibles est utilisé pour optimiser la performance, la récupération et la longévité sportive.
+              {textes['suivi.approche.texte']}
             </p>
           </motion.div>
 
@@ -132,10 +100,10 @@ export default function SuiviSportif() {
             className="mb-16"
           >
             <div className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-deep font-poppins font-bold text-xs tracking-widest mb-4">
-              RÉSULTATS
+              {textes['suivi.resultats.surtitre']}
             </div>
             <h2 className="font-poppins font-bold text-text-primary text-4xl md:text-5xl leading-tight">
-              Avant &amp; après
+              {textes['suivi.resultats.titre']}
             </h2>
           </motion.div>
 
@@ -173,10 +141,10 @@ export default function SuiviSportif() {
             className="mb-16"
           >
             <div className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-accent font-poppins font-bold text-xs tracking-widest mb-4">
-              PARCOURS
+              {textes['suivi.refs.surtitre']}
             </div>
             <h2 className="font-poppins font-bold text-white text-4xl md:text-5xl leading-tight">
-              Clubs & athlètes<br /><span className="text-green-accent">accompagnés</span>
+              {textes['suivi.refs.titre1']}<br /><span className="text-green-accent">{textes['suivi.refs.titre2']}</span>
             </h2>
           </motion.div>
 
@@ -187,7 +155,7 @@ export default function SuiviSportif() {
             viewport={{ once: true }}
             className="grid grid-cols-1 md:grid-cols-2 gap-8"
           >
-            {REFERENCES.map((ref) => (
+            {REFERENCES.map((ref, i) => (
               <motion.div
                 key={ref.nom}
                 variants={fadeUp}
@@ -203,12 +171,12 @@ export default function SuiviSportif() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 px-6 pb-4">
-                    <div className="font-poppins font-bold text-white text-xl">{ref.nom}</div>
+                    <div className="font-poppins font-bold text-white text-xl">{textes[`reference.${i}.nom`]}</div>
                   </div>
                 </div>
                 {/* Texte complet */}
                 <div className="bg-white/5 border border-white/10 rounded-b-2xl px-6 py-5">
-                  <p className="font-inter text-white/75 text-sm leading-relaxed">{ref.texte}</p>
+                  <p className="font-inter text-white/75 text-sm leading-relaxed">{textes[`reference.${i}.texte`]}</p>
                 </div>
               </motion.div>
             ))}

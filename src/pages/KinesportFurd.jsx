@@ -1,9 +1,11 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import usePageTitle from '../hooks/usePageTitle'
+import { useTextes } from '../content/ContenuProvider'
 
 export default function KinesportFurd() {
   usePageTitle('Programme et suivi de remise en forme')
+  const textes = useTextes()
 
   return (
     <main className="min-h-screen bg-site-bg flex flex-col items-center justify-center px-6 text-center">
@@ -18,15 +20,15 @@ export default function KinesportFurd() {
             <path d="M12 6v6l4 2" />
             <circle cx="12" cy="12" r="10" />
           </svg>
-          <span className="text-green-deep font-poppins font-bold text-xs tracking-widest">KINESPORT FURD</span>
+          <span className="text-green-deep font-poppins font-bold text-xs tracking-widest">{textes['remise.surtitre']}</span>
         </div>
 
         <h1 className="font-poppins font-bold text-4xl md:text-5xl text-text-primary leading-tight mb-5">
-          Programme &amp; suivi<br /><span className="gradient-text">de remise en forme</span>
+          {textes['remise.titre1']}<br /><span className="gradient-text">{textes['remise.titre2']}</span>
         </h1>
 
         <p className="font-inter text-text-secondary text-lg leading-relaxed mb-10">
-          Cette section est en cours de construction.
+          {textes['remise.texte']}
         </p>
 
         <Link to="/">

@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion'
 import usePageTitle from '../hooks/usePageTitle'
+import { STEPS, GALERIE } from '../content/data/bilan'
+import { useTextes } from '../content/ContenuProvider'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -11,35 +13,9 @@ const stagger = {
   visible: { transition: { staggerChildren: 0.1 } },
 }
 
-const STEPS = [
-  {
-    num: '01',
-    title: 'Premier rendez-vous',
-    body: "La première séance est consacrée à une ostéopathie complète et à l'évaluation de vos besoins réels. Bilan complet de votre état, de vos antécédents sportifs et de vos objectifs.",
-  },
-  {
-    num: '02',
-    title: 'Calendrier personnalisé',
-    body: "À l'issue du bilan, un calendrier de suivi personnalisé est proposé — adapté à votre rythme, votre discipline et vos objectifs. Fréquence et durée définies ensemble.",
-  },
-  {
-    num: '03',
-    title: 'Forfait annuel',
-    body: "Possibilité de mettre en place un forfait annuel selon les objectifs et la fréquence nécessaire. Une solution pour un suivi continu, optimisé et économique.",
-  },
-]
-
-const GALERIE = [
-  { src: '/images/bilan-manipulation.jpg', alt: 'Manipulation ostéopathique en cabinet' },
-  { src: '/images/cabinet-2.jpg', alt: 'Séance ostéopathique' },
-  { src: '/images/balneo.jpg', alt: 'Traitement manuel' },
-  { src: '/images/manu_manipulation.jpg', alt: 'Consultation' },
-  { src: '/images/cabinet-5.jpg', alt: 'Cabinet — vue 2' },
-  { src: '/images/cabinet-6.jpg', alt: 'Suivi patient' },
-]
-
 export default function BilanOsteopathique() {
   usePageTitle('Bilan, traitement et soin ostéopathique')
+  const textes = useTextes()
 
   return (
     <main className="bg-site-bg">
@@ -53,13 +29,13 @@ export default function BilanOsteopathique() {
         <div className="relative z-10 max-w-[1360px] mx-auto px-6 md:px-12 pt-32">
           <motion.div variants={stagger} initial="hidden" animate="visible">
             <motion.div variants={fadeUp} className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-accent font-poppins font-bold text-xs tracking-widest mb-6">
-              EN CABINET
+              {textes['bilan.surtitre']}
             </motion.div>
             <motion.h1 variants={fadeUp} className="font-poppins font-black text-white text-5xl md:text-7xl leading-none mb-6">
-              Bilan, traitement<br /><span className="text-green-accent">&amp; soin ostéopathique</span>
+              {textes['bilan.titre1']}<br /><span className="text-green-accent">{textes['bilan.titre2']}</span>
             </motion.h1>
             <motion.p variants={fadeUp} className="font-inter text-white/70 text-xl max-w-xl leading-relaxed">
-              Une approche globale et individualisée du soin ostéopathique — en cabinet, adaptée à chaque patient.
+              {textes['bilan.chapo']}
             </motion.p>
           </motion.div>
         </div>
@@ -76,9 +52,9 @@ export default function BilanOsteopathique() {
             className="mb-16"
           >
             <div className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-deep font-poppins font-bold text-xs tracking-widest mb-4">
-              DÉROULEMENT
+              {textes['bilan.etapes.surtitre']}
             </div>
-            <h2 className="font-poppins font-bold text-text-primary text-4xl md:text-5xl">Comment ça fonctionne</h2>
+            <h2 className="font-poppins font-bold text-text-primary text-4xl md:text-5xl">{textes['bilan.etapes.titre']}</h2>
           </motion.div>
 
           <motion.div
@@ -133,9 +109,9 @@ export default function BilanOsteopathique() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            <h2 className="font-poppins font-bold text-white text-4xl mb-6">Prendre rendez-vous</h2>
+            <h2 className="font-poppins font-bold text-white text-4xl mb-6">{textes['bilan.cta.titre']}</h2>
             <p className="font-inter text-white/60 text-lg mb-10 max-w-lg mx-auto">
-              Le premier rendez-vous est une séance ostéopathique complète. Aucun bilan préalable nécessaire.
+              {textes['bilan.cta.texte']}
             </p>
             <motion.a
               href="/#contact"
@@ -143,7 +119,7 @@ export default function BilanOsteopathique() {
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
             >
-              Prendre rendez-vous →
+              {textes['bilan.cta.bouton']}
             </motion.a>
           </motion.div>
         </div>

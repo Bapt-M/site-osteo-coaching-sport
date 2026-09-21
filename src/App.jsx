@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { Suspense, lazy } from 'react'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import Home from './pages/Home'
 import Histoire from './pages/Histoire'
 import BilanOsteopathique from './pages/BilanOsteopathique'
@@ -7,12 +8,19 @@ import InterventionEntreprise from './pages/InterventionEntreprise'
 import ProjetSportif from './pages/ProjetSportif'
 import KinesportFurd from './pages/KinesportFurd'
 import Navbar from './components/Navbar'
+import ScrollManager from './components/ScrollManager'
 import Footer from './components/Footer'
+import { ContenuProvider } from './content/ContenuProvider'
 
-export default function App() {
+// L'administration n'est chargée que si on s'y rend.
+const Admin = lazy(() => import('./pages/Admin'))
+
+/** L'administration a sa propre mise en page : ni barre de navigation, ni pied de page. */
+function Site() {
+  const admin = useLocation().pathname.startsWith('/admin')
   return (
-    <BrowserRouter>
-      <Navbar />
+    <>
+      {!admin && <Navbar />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/histoire" element={<Histoire />} />
@@ -21,8 +29,24 @@ export default function App() {
         <Route path="/intervention-entreprise" element={<InterventionEntreprise />} />
         <Route path="/projet-sportif" element={<ProjetSportif />} />
         <Route path="/kinesport-furd" element={<KinesportFurd />} />
+        <Route path="/admin" element={
+          <Suspense fallback={<div className="min-h-screen bg-green-deep" />}>
+            <Admin />
+          </Suspense>
+        } />
       </Routes>
-      <Footer />
+      {!admin && <Footer />}
+    </>
+  )
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <ContenuProvider>
+        <ScrollManager />
+        <Site />
+      </ContenuProvider>
     </BrowserRouter>
   )
 }

@@ -391,7 +391,7 @@ const TIMELINE = [
   {
     period: 'Padel & Aujourd\'hui',
     years: '2025–',
-    text: 'Découverte du padel au Club Med Opio. Pratique quotidienne pour en maîtriser toutes les exigences. Accompagnement de Julien Motz (42ème français) et Yanis Muesser (15ème français).',
+    text: 'Découverte du padel au Club Med Opio. Pratique quotidienne pour en maîtriser toutes les exigences. Accompagnement de Julien Motz (28èmefrançais) et Yanis Muesser (15ème français).',
     img: '/images/julien-motz.jpg',
   },
 ]
@@ -1228,7 +1228,7 @@ const COMPOSANTES = [
 ]
 
 const ATHLETES = [
-  { nom: 'Julien Motz', detail: '42ème français en padel', img: '/images/julien-motz.jpg' },
+  { nom: 'Julien Motz', detail: '28èmefrançais en padel', img: '/images/julien-motz.jpg' },
   { nom: 'Yanis Muesser', detail: '15ème français en padel', img: '/images/yannis-musser.jpg' },
   { nom: 'Driss El Himer', detail: 'Demi-fondiste — champion de France', img: null },
   { nom: 'Samir Baala', detail: 'Champion du monde du 1500m', img: null },

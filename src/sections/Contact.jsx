@@ -1,13 +1,6 @@
 import { motion } from 'framer-motion'
-
-const HOURS = [
-  { day: 'Lundi',    hours: '08:00 – 20:00' },
-  { day: 'Mardi',    hours: '08:00 – 20:00' },
-  { day: 'Mercredi', hours: '08:00 – 20:00' },
-  { day: 'Jeudi',    hours: '08:00 – 20:00' },
-  { day: 'Vendredi', hours: '08:00 – 18:00' },
-  { day: 'Samedi',   hours: '08:00 – 12:00' },
-]
+import { useTextes } from '../content/ContenuProvider'
+import { HOURS } from '../content/data/contact'
 
 const slideIn = (direction) => ({
   hidden: { opacity: 0, x: direction === 'left' ? -60 : 60 },
@@ -15,6 +8,7 @@ const slideIn = (direction) => ({
 })
 
 export default function Contact() {
+  const textes = useTextes()
   return (
     <section id="contact" className="py-24 md:py-36 px-6 bg-site-bg overflow-x-clip">
       <div className="max-w-[1360px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
@@ -41,10 +35,10 @@ export default function Contact() {
         >
           <div>
             <div className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-deep font-poppins font-bold text-xs tracking-widest mb-5">
-              CONTACT &amp; HORAIRES
+              {textes['contact.surtitre']}
             </div>
             <h2 className="font-poppins font-bold text-4xl md:text-5xl text-text-primary">
-              Prendre rendez-vous
+              {textes['contact.titre']}
             </h2>
           </div>
 
@@ -53,16 +47,16 @@ export default function Contact() {
             <div className="flex items-start gap-3">
               <span className="text-green-deep mt-0.5 shrink-0">📍</span>
               <div>
-                <p className="text-text-secondary/60 text-xs font-poppins uppercase tracking-widest mb-1">Adresse</p>
-                <p className="text-text-primary font-inter text-sm leading-relaxed">34 Rue de Strasbourg<br />67117 Furdenheim</p>
+                <p className="text-text-secondary/60 text-xs font-poppins uppercase tracking-widest mb-1">{textes['contact.adresse.titre']}</p>
+                <p className="text-text-primary font-inter text-sm leading-relaxed whitespace-pre-line">{textes['contact.adresse']}</p>
               </div>
             </div>
             <div className="border-t border-black/10" />
             <div className="flex items-start gap-3">
               <span className="text-green-deep mt-0.5 shrink-0">📞</span>
               <div>
-                <p className="text-text-secondary/60 text-xs font-poppins uppercase tracking-widest mb-1">Téléphone</p>
-                <p className="text-text-primary font-inter text-sm">+33 6 XX XX XX XX</p>
+                <p className="text-text-secondary/60 text-xs font-poppins uppercase tracking-widest mb-1">{textes['contact.tel.titre']}</p>
+                <p className="text-text-primary font-inter text-sm">{textes['contact.tel']}</p>
               </div>
             </div>
           </div>
@@ -74,13 +68,13 @@ export default function Contact() {
             whileHover={{ scale: 1.02, backgroundColor: 'var(--c-accent-light-hex)' }}
             whileTap={{ scale: 0.98 }}
           >
-            Réserver en ligne →
+            {textes['contact.bouton']}
           </motion.a>
 
           {/* Horaires */}
           <div className="rounded-2xl border border-black/10 bg-black/[0.03] overflow-hidden">
             <div className="px-6 py-4 border-b border-black/10">
-              <p className="text-text-secondary/60 text-xs font-poppins uppercase tracking-widest">Horaires d'ouverture</p>
+              <p className="text-text-secondary/60 text-xs font-poppins uppercase tracking-widest">{textes['contact.horaires.titre']}</p>
             </div>
             {HOURS.map((h, i) => (
               <motion.div
@@ -91,8 +85,8 @@ export default function Contact() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.05, duration: 0.4 }}
               >
-                <span className="font-inter text-text-primary text-sm">{h.day}</span>
-                <span className="font-poppins font-bold text-green-deep text-sm">{h.hours}</span>
+                <span className="font-inter text-text-primary text-sm">{textes[`jour.${i}.day`]}</span>
+                <span className="font-poppins font-bold text-green-deep text-sm">{textes[`jour.${i}.hours`]}</span>
               </motion.div>
             ))}
           </div>

@@ -1,45 +1,22 @@
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
+import { useTextes } from '../content/ContenuProvider'
+import { SLIDES } from '../content/data/slides'
 
-const SLIDES = [
-  {
-    num: '01', title: 'Ostéopathie\ndu sport',
-    desc: "Traitement des douleurs musculaires, articulaires et tendineuses liées à la pratique sportive. Une approche manuelle précise pour vous remettre en mouvement.",
-    cta: 'Découvrir',
-    href: '/bilan-osteopathique',
-    bg: '/images/slider-osteo.jpg',
-    accent: 'from-[var(--c-accent-hex)] to-[var(--c-accent-dark-hex)]',
-    dot: 'var(--c-accent-hex)',
-  },
-  {
-    num: '02', title: 'Coaching\npersonnalisé',
-    desc: "Programmes d'entraînement sur mesure adaptés à vos objectifs, votre niveau et votre emploi du temps. Une méthode unique alliant performance et plaisir.",
-    cta: 'Découvrir',
-    href: '/projet-sportif',
-    bg: '/images/slider-coaching.jpg',
-    accent: 'from-[var(--c-accent-light-hex)] to-[var(--c-accent-hex)]',
-    dot: 'var(--c-accent-light-hex)',
-  },
-  {
-    num: '03', title: 'Préparation\nphysique',
-    desc: "Renforcement musculaire, mobilité et travail de l'endurance pour repousser vos limites. Des protocoles adaptés à chaque discipline sportive.",
-    cta: 'En savoir plus',
-    href: '/projet-sportif',
-    bg: '/images/slider-prepa.jpg',
-    accent: 'from-[var(--c-accent-lighter-hex)] to-[var(--c-accent-light-hex)]',
-    dot: 'var(--c-accent-lighter-hex)',
-  },
-  {
-    num: '04', title: 'Suivi de\nperformance',
-    desc: "Analyse régulière de vos progrès, ajustement continu des programmes et accompagnement sur le long terme pour atteindre votre meilleur niveau.",
-    cta: 'En savoir plus',
-    href: '/suivi-sportif',
-    bg: '/images/slider-suivi.jpg',
-    accent: 'from-[var(--c-accent-dark-hex)] to-[var(--c-deep-hex)]',
-    dot: 'var(--c-accent-dark-hex)',
-  },
-]
+/** Vrai en dessous du point de rupture `desktop` (850 px). */
+function useEstMobile() {
+  const [mobile, setMobile] = useState(false)
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return
+    const mq = window.matchMedia('(max-width: 849px)')
+    const sync = () => setMobile(mq.matches)
+    sync()
+    mq.addEventListener('change', sync)
+    return () => mq.removeEventListener('change', sync)
+  }, [])
+  return mobile
+}
 
 export default function SliderActions() {
   const trackRef = useRef(null)
@@ -85,15 +62,18 @@ export default function SliderActions() {
 
 function SlideBackground({ slide, index, rawIndex }) {
   const opacity = useTransform(rawIndex, [index - 0.5, index, index + 0.5], [0, 1, 0])
+  const mobile = useEstMobile()
+  const fond = mobile && slide.bgMobile ? slide.bgMobile : slide.bg
   return (
     <motion.div
       className="absolute inset-0 bg-cover bg-center"
-      style={{ backgroundImage: `url(${slide.bg})`, opacity }}
+      style={{ backgroundImage: `url(${fond})`, opacity }}
     />
   )
 }
 
 function SlideContent({ slide, index, rawIndex, total }) {
+  const textes = useTextes()
   const opacity = useTransform(rawIndex, [index - 0.4, index, index + 0.4], [0, 1, 0])
   const y = useTransform(rawIndex, [index - 0.5, index, index + 0.5], [40, 0, -40])
   const navigate = useNavigate()
@@ -114,11 +94,11 @@ function SlideContent({ slide, index, rawIndex, total }) {
       </div>
       <h2 className="font-poppins font-bold text-5xl md:text-7xl text-white leading-tight mb-6 whitespace-pre-line"
         style={{ textShadow: '0 2px 18px rgba(0,0,0,0.6)' }}>
-        {slide.title}
+        {textes[slide.cleTitre]}
       </h2>
       <p className="font-inter text-white/85 text-lg max-w-lg mb-8 leading-relaxed"
         style={{ textShadow: '0 1px 10px rgba(0,0,0,0.65)' }}>
-        {slide.desc}
+        {textes[slide.cleTexte]}
       </p>
       <motion.a
         href={slide.href}
@@ -127,7 +107,7 @@ function SlideContent({ slide, index, rawIndex, total }) {
         whileHover={{ scale: 1.04 }}
         whileTap={{ scale: 0.97 }}
       >
-        {slide.cta} →
+        {textes[slide.cleCta]} →
       </motion.a>
     </motion.div>
   )

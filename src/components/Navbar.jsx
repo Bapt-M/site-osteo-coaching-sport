@@ -1,21 +1,23 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence, useScroll, useTransform, useMotionTemplate } from 'framer-motion'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { useTextes } from '../content/ContenuProvider'
 
 // Libellés courts des quatre services du hero + l'histoire. « Intervention
 // en entreprise » reste accessible depuis le pied de page.
 const navLinks = [
-  { label: 'Histoire & formation', href: '/histoire' },
-  { label: 'Bilan ostéopathique', href: '/bilan-osteopathique' },
-  { label: 'Suivi haut niveau', href: '/suivi-sportif' },
-  { label: 'Projet sportif', href: '/projet-sportif' },
-  { label: 'Remise en forme', href: '/kinesport-furd' },
+  { cle: 'nav.histoire', href: '/histoire' },
+  { cle: 'nav.bilan',    href: '/bilan-osteopathique' },
+  { cle: 'nav.suivi',    href: '/suivi-sportif' },
+  { cle: 'nav.projet',   href: '/projet-sportif' },
+  { cle: 'nav.remise',   href: '/kinesport-furd' },
 ]
 
 const TEXT_LIGHT = '#ffffff'
 const TEXT_DARK  = '#1A2832'
 
 export default function Navbar() {
+  const textes = useTextes()
   const [menuOpen, setMenuOpen]   = useState(false)
   const [scrolled, setScrolled]   = useState(false)
   const { scrollY } = useScroll()
@@ -59,7 +61,8 @@ export default function Navbar() {
           {/* Logo */}
           <Link to="/">
             <motion.div
-              className="font-poppins font-bold text-xs leading-tight tracking-wide cursor-pointer"
+              className="font-poppins font-bold leading-tight tracking-wide cursor-pointer"
+              style={{ fontSize: '1.2rem' }}
               animate={{ color: textColor }}
               transition={{ duration: 0.18 }}
             >
@@ -70,8 +73,8 @@ export default function Navbar() {
           {/* Liens desktop */}
           <div className="hidden desktop:flex items-center gap-8">
             {(!isHome || pastHero) && navLinks.map(link => (
-              <NavLink key={link.label} href={link.href} textColor={textColor}>
-                {link.label}
+              <NavLink key={link.href} href={link.href} textColor={textColor}>
+                {textes[link.cle]}
               </NavLink>
             ))}
             <motion.a
@@ -80,7 +83,7 @@ export default function Navbar() {
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
             >
-              Prendre rendez-vous
+              {textes['nav.rdv']}
             </motion.a>
           </div>
 
@@ -144,7 +147,7 @@ export default function Navbar() {
             <div className="flex-1 flex flex-col justify-center px-10 gap-1">
               {navLinks.map((link, i) => (
                 <motion.div
-                  key={link.label}
+                  key={link.href}
                   initial={{ opacity: 0, x: -40 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -40 }}
@@ -155,7 +158,7 @@ export default function Navbar() {
                     className="block py-4 border-b border-white/10 font-poppins font-bold text-white text-3xl tracking-tight hover:text-cyan-accent transition-colors"
                     onClick={(e) => { e.preventDefault(); setMenuOpen(false); navigate(link.href) }}
                   >
-                    {link.label}
+                    {textes[link.cle]}
                   </a>
                 </motion.div>
               ))}

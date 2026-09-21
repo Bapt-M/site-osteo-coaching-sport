@@ -38,3 +38,9 @@ test('affiche les témoignages', () => {
   expect(screen.getByText(/Richard BILLANT/)).toBeInTheDocument()
   expect(screen.getByText(/Paris McCURDY/)).toBeInTheDocument()
 })
+
+test('affiche la galerie padel', () => {
+  render(<Histoire />, { wrapper: Wrapper })
+  expect(screen.getAllByText(/une nouvelle passion/i).length).toBeGreaterThan(0)
+  expect(screen.getAllByAltText(/Club Med Opio/i).length).toBeGreaterThan(0)
+})
