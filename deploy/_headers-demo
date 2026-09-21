@@ -1,0 +1,10 @@
+# En-têtes appliqués UNIQUEMENT aux déploiements de démonstration : branche
+# `dev` et aperçus de pull request. Jamais à la production — la copie de ce
+# fichier dans dist/ est déclenchée par contexte dans netlify.toml.
+#
+# Sans cette règle, Google indexerait la démo, qui viendrait concurrencer
+# osteo-et-coaching-du-sport.com dans les résultats de recherche avec un
+# contenu identique.
+
+/*
+  X-Robots-Tag: noindex, nofollow

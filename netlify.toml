@@ -1,0 +1,28 @@
+# ============================================================================
+#  Déploiement Netlify
+#
+#  master → production        → https://osteo-et-coaching-du-sport.com
+#  dev    → démonstration     → https://dev--<site>.netlify.app
+#
+#  Les redirections du site vivent dans public/_redirects : Vite les recopie
+#  dans dist/ et elles doivent s'appliquer à TOUS les contextes.
+# ============================================================================
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Vite 8 exige Node >= 20.19. On fige la version pour que le build reste
+  # reproductible le jour où Netlify changera sa valeur par défaut.
+  NODE_VERSION = "22"
+
+# Des [[headers]] déclarés ici seraient globaux, production comprise. Pour
+# n'interdire l'indexation que sur les déploiements de démonstration, on
+# dépose un _headers dédié dans dist/ à la fin du build de ces contextes.
+
+[context.branch-deploy]
+  command = "npm run build && cp deploy/_headers-demo dist/_headers"
+
+[context.deploy-preview]
+  command = "npm run build && cp deploy/_headers-demo dist/_headers"
