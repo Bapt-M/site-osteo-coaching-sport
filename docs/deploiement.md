@@ -2,44 +2,43 @@
 
 ## Les deux environnements
 
-| Branche  | Adresse                                                              | Rôle                            |
-|----------|----------------------------------------------------------------------|---------------------------------|
-| `master` | https://demonstration-site-osteo-et-coaching-du-sport.netlify.app     | Le site officiel                |
-| `dev`    | https://dev--demonstration-site-osteo-et-coaching-du-sport.netlify.app | Démo à partager pour validation |
-
-Le domaine https://osteo-et-coaching-du-sport.com sera branché sur `master`
-et deviendra l'adresse publique officielle. Le nom `demonstration-site-…`
-n'est qu'un reliquat de la création du projet Netlify : il n'a aucune
-incidence, et restera invisible une fois le domaine en place.
+| Branche         | Adresse                                                | Rôle                            |
+|-----------------|--------------------------------------------------------|---------------------------------|
+| `master`        | https://osteo-et-coaching-du-sport.com                  | Le site officiel                |
+| `demonstration` | https://demonstration.osteo-et-coaching-du-sport.com    | Démo à partager pour validation |
 
 Chaque `git push` déclenche le déploiement de la branche correspondante.
 La démo porte un en-tête `noindex` : Google ne l'indexera jamais.
 
+> La branche de démo s'appelle `demonstration`, pas `dev` : les sous-domaines
+> de branche Netlify suivent le motif imposé `<nom-de-branche>.<domaine>`.
+> Renommer la branche renommerait l'URL de démo.
+
 ## Travailler puis faire valider
 
 ```bash
-git switch dev
+git switch demonstration
 # ... modifications ...
 git add -A
 git commit -m "description de la modification"
 git push
 ```
 
-Netlify reconstruit la démo en ~1 min. Partagez l'adresse `dev--…` pour
-recueillir la validation.
+Netlify reconstruit la démo en ~1 min. Partagez
+https://demonstration.osteo-et-coaching-du-sport.com pour la validation.
 
 ## Mettre en ligne une fois validé
 
 ```bash
 git switch master
-git merge dev
+git merge demonstration
 git push
 ```
 
-Le site officiel se met à jour. Puis on repart de `dev` :
+Le site officiel se met à jour. Puis on repart de la branche de démo :
 
 ```bash
-git switch dev
+git switch demonstration
 git merge master
 ```
 
@@ -48,7 +47,7 @@ git merge master
 Aucune commande : Netlify → *Deploys* → choisir le déploiement précédent →
 *Publish deploy*. La remise en ligne est immédiate.
 
-## ⚠️ Ce que la branche `dev` n'isole PAS
+## ⚠️ Ce que la branche `demonstration` n'isole PAS
 
 Les textes modifiés depuis `/admin` sont stockés dans **Supabase, qui est
 partagé entre la démo et la production**. Un texte enregistré depuis

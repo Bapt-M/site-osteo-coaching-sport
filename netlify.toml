@@ -1,8 +1,12 @@
 # ============================================================================
 #  Déploiement Netlify
 #
-#  master → production        → https://osteo-et-coaching-du-sport.com
-#  dev    → démonstration     → https://dev--<site>.netlify.app
+#  master        → production → https://osteo-et-coaching-du-sport.com
+#  demonstration → démo       → https://demonstration.osteo-et-coaching-du-sport.com
+#
+#  La branche de démo s'appelle `demonstration` et non `dev` : les
+#  sous-domaines de branche Netlify suivent le motif imposé
+#  <nom-de-branche>.<domaine>. Renommer la branche renommerait l'URL.
 #
 #  Les redirections du site vivent dans public/_redirects : Vite les recopie
 #  dans dist/ et elles doivent s'appliquer à TOUS les contextes.
