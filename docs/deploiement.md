@@ -2,10 +2,15 @@
 
 ## Les deux environnements
 
-| Branche  | Adresse                              | Rôle                          |
-|----------|--------------------------------------|-------------------------------|
-| `master` | https://osteo-et-coaching-du-sport.com | Le site officiel              |
-| `dev`    | `https://dev--<site>.netlify.app`    | Démo à partager pour validation |
+| Branche  | Adresse                                                              | Rôle                            |
+|----------|----------------------------------------------------------------------|---------------------------------|
+| `master` | https://demonstration-site-osteo-et-coaching-du-sport.netlify.app     | Le site officiel                |
+| `dev`    | https://dev--demonstration-site-osteo-et-coaching-du-sport.netlify.app | Démo à partager pour validation |
+
+Le domaine https://osteo-et-coaching-du-sport.com sera branché sur `master`
+et deviendra l'adresse publique officielle. Le nom `demonstration-site-…`
+n'est qu'un reliquat de la création du projet Netlify : il n'a aucune
+incidence, et restera invisible une fois le domaine en place.
 
 Chaque `git push` déclenche le déploiement de la branche correspondante.
 La démo porte un en-tête `noindex` : Google ne l'indexera jamais.
