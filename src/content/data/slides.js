@@ -4,7 +4,7 @@
 export const SLIDES = [
   {
     num: '01', cleTitre: 'slide1.titre', cleTexte: 'slide1.texte',
-    cta: 'Découvrir',
+    cleCta: 'slide1.cta',
     href: '/bilan-osteopathique',
     bg: '/images/slider-osteo.jpg',
     accent: 'from-[var(--c-accent-hex)] to-[var(--c-accent-dark-hex)]',
@@ -12,7 +12,7 @@ export const SLIDES = [
   },
   {
     num: '02', cleTitre: 'slide2.titre', cleTexte: 'slide2.texte',
-    cta: 'Découvrir',
+    cleCta: 'slide2.cta',
     href: '/projet-sportif',
     bg: '/images/slider-coaching.jpg',
     // En portrait, on cadre sur les deux joueurs de gauche.
@@ -22,7 +22,7 @@ export const SLIDES = [
   },
   {
     num: '03', cleTitre: 'slide3.titre', cleTexte: 'slide3.texte',
-    cta: 'En savoir plus',
+    cleCta: 'slide3.cta',
     href: '/projet-sportif',
     bg: '/images/slider-prepa.jpg',
     // Le montage deux panneaux n'a pas de sens en portrait : sur mobile on
@@ -33,7 +33,7 @@ export const SLIDES = [
   },
   {
     num: '04', cleTitre: 'slide4.titre', cleTexte: 'slide4.texte',
-    cta: 'En savoir plus',
+    cleCta: 'slide4.cta',
     href: '/suivi-sportif',
     bg: '/images/slider-suivi.jpg',
     bgMobile: '/images/slider-suivi-mobile.jpg',

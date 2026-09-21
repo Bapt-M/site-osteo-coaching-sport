@@ -5,6 +5,7 @@ import { COMPOSANTES, ATHLETES } from './data/projet'
 import { FORMATS } from './data/entreprise'
 import { TESTIMONIALS } from './data/temoignages'
 import { HOURS } from './data/contact'
+import { SECTIONS as ML_SECTIONS, PARAGRAPHES as ML_PARAS } from './data/mentions'
 
 /* ── Fabriques ──────────────────────────────────────────────────────── */
 
@@ -98,8 +99,8 @@ export const PAGES = [
         champ('contact.titre',          'Titre',             'Prendre rendez-vous'),
         champ('contact.adresse.titre',  'Libellé adresse',   'Adresse'),
         champ('contact.adresse',        'Adresse',           '34 Rue de Strasbourg\n67117 Furdenheim', true),
-        champ('contact.tel.titre',      'Libellé téléphone', 'Téléphone'),
-        champ('contact.tel',            'Téléphone',         '+33 6 61 19 64 84'),
+        champ('contact.mail.titre',     'Libellé e-mail',    'E-mail'),
+        champ('contact.mail',           'Adresse e-mail',    'krieger.manu@orange.fr'),
         champ('contact.bouton',         'Bouton',            'Réserver en ligne →'),
       ]},
       { id: 'horaires', titre: 'Horaires d’ouverture', champs: [
@@ -243,6 +244,28 @@ export const PAGES = [
       { id: 'cta', titre: 'Contact', champs: [
         champ('entreprise.cta.texte',  'Texte',  'Les modalités sont définies lors d’un entretien préalable, selon vos besoins et votre contexte.', true),
         champ('entreprise.cta.bouton', 'Bouton', 'Nous contacter →'),
+      ]},
+    ],
+  },
+  {
+    id: 'mentions', titre: 'Mentions légales', route: '/mentions-legales',
+    groupes: [
+      { id: 'entete', titre: 'En-tête', champs: [
+        champ('ml.surtitre', 'Pastille', 'INFORMATIONS LÉGALES'),
+        champ('ml.titre',    'Titre',    'Mentions légales'),
+      ]},
+      ...ML_SECTIONS.map(sec => ({
+        id: sec.id, titre: sec.titre, champs: [
+          champ(`ml.section.${sec.id}`, 'Titre de la section', sec.titre),
+          ...sec.lignes.map(l => champ(l.cle, l.libelle, l.defaut, l.multi)),
+        ],
+      })),
+      { id: 'textes', titre: 'Paragraphes', champs: ML_PARAS.flatMap(b => [
+        champ(`${b.cle}.titre`, `${b.titre} — titre`, b.titre),
+        champ(b.cle, `${b.titre} — texte`, b.defaut, true),
+      ])},
+      { id: 'pied', titre: 'Pied de page', champs: [
+        champ('ml.maj', 'Mention de mise à jour', 'Dernière mise à jour : septembre 2026.'),
       ]},
     ],
   },

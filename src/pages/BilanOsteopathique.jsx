@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import usePageTitle from '../hooks/usePageTitle'
 import { STEPS, GALERIE } from '../content/data/bilan'
 import { useTextes } from '../content/ContenuProvider'
+import { LIEN_RDV } from '../content/data/contact'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -114,7 +115,9 @@ export default function BilanOsteopathique() {
               {textes['bilan.cta.texte']}
             </p>
             <motion.a
-              href="/#contact"
+              href={LIEN_RDV}
+              target="_blank"
+              rel="noreferrer"
               className="inline-block px-10 py-4 rounded-full bg-green-accent text-white font-poppins font-bold text-base"
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}

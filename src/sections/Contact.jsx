@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { useTextes } from '../content/ContenuProvider'
-import { HOURS } from '../content/data/contact'
+import { HOURS, LIEN_RDV } from '../content/data/contact'
 
 const slideIn = (direction) => ({
   hidden: { opacity: 0, x: direction === 'left' ? -60 : 60 },
@@ -53,17 +53,22 @@ export default function Contact() {
             </div>
             <div className="border-t border-black/10" />
             <div className="flex items-start gap-3">
-              <span className="text-green-deep mt-0.5 shrink-0">📞</span>
+              <span className="text-green-deep mt-0.5 shrink-0">✉️</span>
               <div>
-                <p className="text-text-secondary/60 text-xs font-poppins uppercase tracking-widest mb-1">{textes['contact.tel.titre']}</p>
-                <p className="text-text-primary font-inter text-sm">{textes['contact.tel']}</p>
+                <p className="text-text-secondary/60 text-xs font-poppins uppercase tracking-widest mb-1">{textes['contact.mail.titre']}</p>
+                <a href={`mailto:${textes['contact.mail']}`}
+                   className="text-text-primary font-inter text-sm hover:text-green-accent transition-colors break-all">
+                  {textes['contact.mail']}
+                </a>
               </div>
             </div>
           </div>
 
           {/* CTA */}
           <motion.a
-            href="#"
+            href={LIEN_RDV}
+            target="_blank"
+            rel="noreferrer"
             className="flex w-full justify-center py-4 rounded-xl bg-green-accent text-white font-poppins font-bold text-base tracking-wide"
             whileHover={{ scale: 1.02, backgroundColor: 'var(--c-accent-light-hex)' }}
             whileTap={{ scale: 0.98 }}

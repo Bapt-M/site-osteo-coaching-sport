@@ -34,7 +34,7 @@ export default function SliderActions() {
         {/* Pas de voile sur la photo : un seul dégradé, à gauche, sous le texte. */}
         <div
           className="absolute inset-0 z-10"
-          style={{ background: 'linear-gradient(to right, rgba(13,30,43,0.88) 0%, rgba(13,30,43,0.62) 34%, rgba(13,30,43,0.12) 62%, transparent 78%)' }}
+          style={{ background : "linear-gradient(to right, rgba(13, 30, 43, 0.88), rgba(13, 30, 43, 0.62) 3.36%, rgba(13, 30, 43, 0.12) 62%, transparent 78%)" }}
         />
 
         <div className="absolute inset-0 z-20 flex flex-col justify-center px-8 md:px-24 max-w-3xl">

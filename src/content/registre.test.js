@@ -11,7 +11,7 @@ test('toutes les clés sont uniques et pourvues', () => {
 test('le bloc contact et horaires est éditable', () => {
   const accueil = PAGES.find(p => p.id === 'accueil')
   const cles = accueil.groupes.flatMap(g => g.champs.map(c => c.cle))
-  for (const c of ['contact.adresse', 'contact.tel', 'contact.horaires.titre', 'jour.0.day', 'jour.5.hours']) {
+  for (const c of ['contact.adresse', 'contact.mail', 'contact.horaires.titre', 'jour.0.day', 'jour.5.hours']) {
     expect(cles).toContain(c)
   }
   expect(DEFAUTS['contact.adresse']).toContain('Furdenheim')
@@ -21,4 +21,9 @@ test('le bloc contact et horaires est éditable', () => {
 test('découpe les blocs multi-paragraphes', () => {
   expect(enParagraphes('un\n\ndeux\n\n\ntrois')).toEqual(['un', 'deux', 'trois'])
   expect(enParagraphes('')).toEqual([])
+})
+
+test('le contact passe par l’e-mail, plus par le téléphone', () => {
+  expect(DEFAUTS['contact.mail']).toBe('krieger.manu@orange.fr')
+  expect(Object.values(DEFAUTS).join(' ')).not.toContain('61 19 64 84')
 })

@@ -7,6 +7,7 @@ import SuiviSportif from './pages/SuiviSportif'
 import InterventionEntreprise from './pages/InterventionEntreprise'
 import ProjetSportif from './pages/ProjetSportif'
 import KinesportFurd from './pages/KinesportFurd'
+import MentionsLegales from './pages/MentionsLegales'
 import Navbar from './components/Navbar'
 import ScrollManager from './components/ScrollManager'
 import Footer from './components/Footer'
@@ -29,6 +30,7 @@ function Site() {
         <Route path="/intervention-entreprise" element={<InterventionEntreprise />} />
         <Route path="/projet-sportif" element={<ProjetSportif />} />
         <Route path="/kinesport-furd" element={<KinesportFurd />} />
+        <Route path="/mentions-legales" element={<MentionsLegales />} />
         <Route path="/admin" element={
           <Suspense fallback={<div className="min-h-screen bg-green-deep" />}>
             <Admin />

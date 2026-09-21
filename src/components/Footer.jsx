@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
+import { LIEN_RDV } from '../content/data/contact'
 
 // La page /intervention-entreprise existe toujours mais n'est plus liée
 // depuis la navigation (conservée en archive).
@@ -53,17 +54,19 @@ export default function Footer() {
         <div className="flex flex-col gap-3">
           <h4 className="font-poppins font-bold text-xs tracking-widest text-white/40 uppercase mb-1">Contact</h4>
           <a
-            href="#contact"
+            href={LIEN_RDV}
+            target="_blank"
+            rel="noreferrer"
             className="inline-flex items-center gap-2 text-white/70 hover:text-green-accent transition-colors text-sm font-inter"
           >
             Prendre rendez-vous
           </a>
           <div className="mt-2 flex flex-col gap-3">
             <h4 className="font-poppins font-bold text-xs tracking-widest text-white/40 uppercase">Légal</h4>
-            {['Mentions légales'].map(label => (
-              <a key={label} href="#" className="text-white/70 hover:text-green-accent transition-colors text-sm font-inter">
+            {[{ label: 'Mentions légales', to: '/mentions-legales' }].map(({ label, to }) => (
+              <Link key={to} to={to} className="text-white/70 hover:text-green-accent transition-colors text-sm font-inter">
                 {label}
-              </a>
+              </Link>
             ))}
           </div>
         </div>

@@ -8,3 +8,6 @@ export const HOURS = [
   { day: 'Vendredi', hours: '08:00 – 18:00' },
   { day: 'Samedi',   hours: '08:00 – 12:00' },
 ]
+
+/** Prise de rendez-vous en ligne — cible de tous les boutons « rendez-vous ». */
+export const LIEN_RDV = 'https://www.doctolib.fr/osteopathe/furdenheim/emmanuel-krieger'

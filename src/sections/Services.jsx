@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import { LIEN_RDV } from '../content/data/contact'
 
 const SERVICES = [
   { num: 1, title: 'Ostéopathie du sport', body: "Traitement des douleurs musculaires, articulaires et tendineuses liées à la pratique sportive.", href: '/bilan-osteopathique' },
@@ -71,7 +72,9 @@ export default function Services() {
           <img src="/images/OSTEO-pic-9.jpg" alt="Ostéopathie et coaching" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-green-deep/80 to-transparent" />
           <motion.a
-            href="#contact"
+            href={LIEN_RDV}
+            target="_blank"
+            rel="noreferrer"
             className="absolute bottom-8 left-8 right-8 py-4 rounded-xl bg-green-accent text-white font-poppins font-bold text-center tracking-wide"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}

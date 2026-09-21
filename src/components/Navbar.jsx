@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence, useScroll, useTransform, useMotionTemplate } from 'framer-motion'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useTextes } from '../content/ContenuProvider'
+import { LIEN_RDV } from '../content/data/contact'
 
 // Libellés courts des quatre services du hero + l'histoire. « Intervention
 // en entreprise » reste accessible depuis le pied de page.
@@ -78,7 +79,9 @@ export default function Navbar() {
               </NavLink>
             ))}
             <motion.a
-              href="#contact"
+              href={LIEN_RDV}
+              target="_blank"
+              rel="noreferrer"
               className="px-5 py-2 rounded-full text-sm font-semibold font-inter bg-green-accent text-white hover:bg-teal-accent transition-colors"
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
@@ -173,7 +176,9 @@ export default function Navbar() {
               transition={{ duration: 0.4, delay: 0.45 }}
             >
               <a
-                href="#contact"
+                href={LIEN_RDV}
+                target="_blank"
+                rel="noreferrer"
                 className="block w-full text-center px-8 py-4 rounded-full bg-green-accent text-white font-poppins font-bold text-base tracking-wide"
                 onClick={() => setMenuOpen(false)}
               >
