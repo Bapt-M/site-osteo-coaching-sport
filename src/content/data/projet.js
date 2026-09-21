@@ -12,9 +12,9 @@ export const COMPOSANTES = [
 
 export const ATHLETES = [
   { nom: 'Julien Motz', detail: '28ème français en padel', img: '/images/julien-motz.jpg' },
-  { nom: 'Yanis Muesser', detail: '15ème français en padel', img: '/images/yannis-musser.png' },
-  { nom: 'Driss El Himer', detail: 'Demi-fondiste — champion de France', img: '/images/driss-el-himer.png' },
-  { nom: 'Samir Baala', detail: 'Champion du monde du 1500m', img: '/images/samir-baala.png' },
-  { nom: 'Alexis Koessler', detail: 'Figure du sport alsacien', img: '/images/alexis-koessler.png' },
-  { nom: 'Mathieu Lorentz', detail: 'Athlète de haut niveau', img: '/images/mathieu-lorentz.png' },
+  { nom: 'Yanis Muesser', detail: '15ème français en padel', img: '/images/yannis-musser.jpg' },
+  { nom: 'Driss El Himer', detail: 'Demi-fondiste — champion de France', img: '/images/driss-el-himer.jpg' },
+  { nom: 'Samir Baala', detail: 'Champion du monde du 1500m', img: '/images/samir-baala.jpg' },
+  { nom: 'Alexis Koessler', detail: 'Figure du sport alsacien', img: '/images/alexis-koessler.jpg' },
+  { nom: 'Mathieu Lorentz', detail: 'Athlète de haut niveau', img: '/images/mathieu-lorentz.jpg' },
 ]

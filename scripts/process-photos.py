@@ -51,8 +51,10 @@ PHOTO_MAP = [
     ("070226 (23).HEIC",          "action-2.jpg"),
     ("Juilien Motz.JPG",          "julien-motz.jpg"),
     ("Julien MOTZ 2.jpg",         "julien-motz-2.jpg"),
-    ("Yannis.jpg",                "yannis-musser.jpg"),
-    ("Alexis.jpg",                "alexis-koessler.jpg"),
+    # Yannis.jpg et Alexis.jpg sont des captures d'écran Instagram (interface
+    # comprise), pas des photos exploitables. Les visuels servis sous
+    # yannis-musser.jpg et alexis-koessler.jpg proviennent des versions
+    # recadrées de images/. Réactiver ces deux lignes les écraserait.
     ("Nissim Manu.jpg",           "nissim-manu.jpg"),
     ("INSEP.jpg",                 "insep.jpg"),
     ("U21 VITTEL.jpg",            "equipe-france-u21.jpg"),
