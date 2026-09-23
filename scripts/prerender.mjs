@@ -12,9 +12,14 @@
  * corps de page reste inchangé : React prend le relais côté navigateur comme
  * avant. Netlify sert le fichier correspondant au chemin demandé, la règle de
  * repli /* ne s'appliquant qu'à défaut de fichier.
+ *
+ * Les pages sont écrites en `<route>.html` à la racine, et non en
+ * `<route>/index.html` : cette seconde forme fait rediriger /histoire vers
+ * /histoire/ en 301, ce qui ajoute un aller-retour à chaque lien interne et
+ * décale l'URL servie de la balise canonical.
  */
 
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
+import { readFileSync, writeFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { PAGES, SITE } from '../src/content/seo.js'
@@ -72,9 +77,8 @@ function prerendre() {
     if (page.indexable === false) entetes.push('<meta name="robots" content="noindex, follow">')
     html = html.replace('</head>', `  ${entetes.join('\n  ')}\n</head>`)
 
-    const dossier = page.chemin === '/' ? DIST : join(DIST, page.chemin)
-    mkdirSync(dossier, { recursive: true })
-    writeFileSync(join(dossier, 'index.html'), html)
+    const fichier = page.chemin === '/' ? 'index.html' : `${page.chemin.slice(1)}.html`
+    writeFileSync(join(DIST, fichier), html)
   }
 }
 
