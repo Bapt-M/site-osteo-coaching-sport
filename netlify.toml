@@ -25,6 +25,15 @@
 # n'interdire l'indexation que sur les déploiements de démonstration, on
 # dépose un _headers dédié dans dist/ à la fin du build de ces contextes.
 
+# Le manifeste est servi en application/octet-stream si son type n'est pas
+# déclaré ; Chrome refuse alors de l'interpréter. Cet en-tête vaut pour tous
+# les contextes, il n'a donc pas à passer par un fichier _headers.
+
+[[headers]]
+  for = "/site.webmanifest"
+  [headers.values]
+    Content-Type = "application/manifest+json"
+
 [context.branch-deploy]
   command = "npm run build && cp deploy/_headers-demo dist/_headers"
 
