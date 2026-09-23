@@ -1,0 +1,5 @@
+# L'administration n'a rien à faire dans un index de recherche.
+User-agent: *
+Disallow: /admin
+
+Sitemap: https://osteo-et-coaching-du-sport.com/sitemap.xml
