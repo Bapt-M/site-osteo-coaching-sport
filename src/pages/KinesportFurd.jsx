@@ -1,10 +1,8 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import usePageTitle from '../hooks/usePageTitle'
 import { useTextes } from '../content/ContenuProvider'
 
 export default function KinesportFurd() {
-  usePageTitle('Programme et suivi de remise en forme')
   const textes = useTextes()
 
   return (

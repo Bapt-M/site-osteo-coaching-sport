@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion'
-import usePageTitle from '../hooks/usePageTitle'
 import { COMPOSANTES, ATHLETES } from '../content/data/projet'
 import { useTextes } from '../content/ContenuProvider'
 
@@ -14,7 +13,6 @@ const stagger = {
 }
 
 export default function ProjetSportif() {
-  usePageTitle('Projet sportif personnalisé')
   const textes = useTextes()
 
   return (

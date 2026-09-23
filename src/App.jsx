@@ -12,6 +12,7 @@ import Navbar from './components/Navbar'
 import ScrollManager from './components/ScrollManager'
 import Footer from './components/Footer'
 import { ContenuProvider } from './content/ContenuProvider'
+import useSeo from './hooks/useSeo'
 
 // L'administration n'est chargée que si on s'y rend.
 const Admin = lazy(() => import('./pages/Admin'))
@@ -19,6 +20,7 @@ const Admin = lazy(() => import('./pages/Admin'))
 /** L'administration a sa propre mise en page : ni barre de navigation, ni pied de page. */
 function Site() {
   const admin = useLocation().pathname.startsWith('/admin')
+  useSeo()
   return (
     <>
       {!admin && <Navbar />}

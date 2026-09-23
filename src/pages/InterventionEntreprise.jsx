@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion'
-import usePageTitle from '../hooks/usePageTitle'
 import { FORMATS } from '../content/data/entreprise'
 import { useTextes } from '../content/ContenuProvider'
 
@@ -14,7 +13,6 @@ const stagger = {
 }
 
 export default function InterventionEntreprise() {
-  usePageTitle('Intervention en entreprise')
   const textes = useTextes()
 
   return (

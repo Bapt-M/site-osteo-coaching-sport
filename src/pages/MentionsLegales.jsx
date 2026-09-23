@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion'
-import usePageTitle from '../hooks/usePageTitle'
 import { useTextes } from '../content/ContenuProvider'
 import { enParagraphes } from '../content/registre'
 import { SECTIONS, PARAGRAPHES, A_COMPLETER } from '../content/data/mentions'
@@ -10,7 +9,6 @@ const fadeUp = {
 }
 
 export default function MentionsLegales() {
-  usePageTitle('Mentions légales')
   const textes = useTextes()
 
   return (

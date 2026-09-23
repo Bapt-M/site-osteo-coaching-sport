@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import usePageTitle from '../hooks/usePageTitle'
 import { TIMELINE, DIPLOMES, PADEL, HOMMAGES, TEMOIGNAGES } from '../content/data/histoire'
 import { useTextes } from '../content/ContenuProvider'
 import { enParagraphes } from '../content/registre'
@@ -13,7 +12,6 @@ const fadeUp = {
 // Photos de padel : Club Med Opio, Padel Square Marrakech, et les joueurs
 // accompagnés aujourd'hui.
 export default function Histoire() {
-  usePageTitle('Histoire et formation')
   const textes = useTextes()
 
   const [videoOpen, setVideoOpen] = useState(false)

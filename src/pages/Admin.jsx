@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getSupabase, supabaseConfigure } from '../lib/supabase'
 import { DEFAUTS, PAGES } from '../content/registre'
-import usePageTitle from '../hooks/usePageTitle'
 
 const CHAMP = 'w-full rounded-lg border border-black/15 bg-white px-4 py-3 font-inter text-text-primary ' +
               'outline-none focus:border-green-accent focus:ring-2 focus:ring-green-accent/25 transition'
@@ -314,7 +313,6 @@ function Editeur({ client, session, onDeconnexion }) {
 /* ── Page ───────────────────────────────────────────────────────────── */
 
 export default function Admin() {
-  usePageTitle('Administration')
   const [client, setClient] = useState(null)
   const [session, setSession] = useState(undefined)   // undefined = on ne sait pas encore
 

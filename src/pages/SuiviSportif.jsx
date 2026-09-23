@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion'
-import usePageTitle from '../hooks/usePageTitle'
 import { MODALITES, REFERENCES } from '../content/data/suivi'
 import { useTextes } from '../content/ContenuProvider'
 
@@ -14,7 +13,6 @@ const stagger = {
 }
 
 export default function SuiviSportif() {
-  usePageTitle('Suivi des sportifs de haut niveau')
   const textes = useTextes()
 
   return (

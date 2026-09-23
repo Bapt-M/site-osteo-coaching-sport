@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion'
-import usePageTitle from '../hooks/usePageTitle'
 import { STEPS, GALERIE } from '../content/data/bilan'
 import { useTextes } from '../content/ContenuProvider'
 import { LIEN_RDV } from '../content/data/contact'
@@ -15,7 +14,6 @@ const stagger = {
 }
 
 export default function BilanOsteopathique() {
-  usePageTitle('Bilan, traitement et soin ostéopathique')
   const textes = useTextes()
 
   return (
