@@ -32,8 +32,9 @@ function Ajout({ client, onPubliee }) {
       const { error } = await client.from('photos').insert({ chemin, description: description.trim() })
       if (error) {
         // Pas de fichier orphelin dans le stockage.
-        await stockage.remove([chemin])
-        throw new Error(`Enregistrement refusé : ${error.message}`)
+        const { error: erreurSuppression } = await stockage.remove([chemin])
+        const suffixe = erreurSuppression ? ' (le fichier envoyé n’a pas pu être effacé)' : ''
+        throw new Error(`Enregistrement refusé : ${error.message}${suffixe}`)
       }
       setFichier(null)
       setDescription('')
@@ -83,7 +84,7 @@ function Ajout({ client, onPubliee }) {
 
 /* ── Une photo de la liste ──────────────────────────────────────────── */
 
-function Ligne({ client, photo, enLigne, onChange }) {
+function Ligne({ client, photo, enLigne, onChange, onErreurSuppression }) {
   const [description, setDescription] = useState(photo.description)
   const [occupe, setOccupe] = useState(false)
   const [erreur, setErreur] = useState(null)
@@ -108,7 +109,12 @@ function Ligne({ client, photo, enLigne, onChange }) {
       setErreur(`Suppression refusée : ${error.message}`)
       return
     }
-    await client.storage.from('photos').remove([photo.chemin])
+    const { error: erreurFichier } = await client.storage.from('photos').remove([photo.chemin])
+    // La ligne va disparaître de la liste (le rafraîchissement suit) : l'avis
+    // doit donc être porté par le parent Photos, pas par cette <Ligne>.
+    onErreurSuppression(erreurFichier
+      ? `Photo retirée du site, mais le fichier n’a pas pu être effacé : ${erreurFichier.message}`
+      : null)
     onChange()
   }
 
@@ -146,6 +152,7 @@ function Ligne({ client, photo, enLigne, onChange }) {
 export default function Photos({ client }) {
   const [photos, setPhotos] = useState(null)
   const [erreur, setErreur] = useState(null)
+  const [avisSuppression, setAvisSuppression] = useState(null)
 
   const charger = useCallback(async () => {
     const { data, error } = await client.from('photos')
@@ -170,6 +177,7 @@ export default function Photos({ client }) {
       <Ajout client={client} onPubliee={charger} />
 
       {erreur && <p role="alert" className="font-inter text-red-600 text-sm mb-6">{erreur}</p>}
+      {avisSuppression && <p role="alert" className="font-inter text-red-600 text-sm mb-6">{avisSuppression}</p>}
       {photos === null
         ? <p className="font-inter text-text-secondary">Chargement des photos…</p>
         : photos.length === 0
@@ -178,7 +186,7 @@ export default function Photos({ client }) {
             <ul className="space-y-4">
               {photos.map((p, i) => (
                 <Ligne key={`${p.id}-${p.description}`} client={client} photo={p}
-                       enLigne={i < EN_LIGNE} onChange={charger} />
+                       enLigne={i < EN_LIGNE} onChange={charger} onErreurSuppression={setAvisSuppression} />
               ))}
             </ul>
           )}

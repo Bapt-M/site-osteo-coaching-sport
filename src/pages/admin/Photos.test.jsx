@@ -108,6 +108,22 @@ test('supprime une photo après confirmation', async () => {
   await waitFor(() => expect(screen.getAllByRole('listitem')).toHaveLength(1))
 })
 
+test('signale, depuis le parent, que le fichier n’a pas pu être effacé après suppression', async () => {
+  const { client, espions } = fauxClient([ligne(1), ligne(2)])
+  espions.remove.mockResolvedValueOnce({ error: { message: 'stockage indisponible' } })
+  vi.spyOn(window, 'confirm').mockReturnValue(true)
+  render(<Photos client={client} />)
+  const items = await screen.findAllByRole('listitem')
+  await userEvent.click(within(items[0]).getByRole('button', { name: /supprimer/i }))
+  await waitFor(() => expect(espions.delete).toHaveBeenCalledWith('id1'))
+  // La ligne disparaît (elle est bien retirée de la base) : l'avis doit donc
+  // venir du parent Photos, pas de la <Ligne> qui vient de se démonter.
+  expect(await screen.findByRole('alert')).toHaveTextContent(
+    'Photo retirée du site, mais le fichier n’a pas pu être effacé : stockage indisponible',
+  )
+  await waitFor(() => expect(screen.getAllByRole('listitem')).toHaveLength(1))
+})
+
 test('ne supprime rien si l’on annule', async () => {
   const { client, espions } = fauxClient([ligne(1)])
   vi.spyOn(window, 'confirm').mockReturnValue(false)
