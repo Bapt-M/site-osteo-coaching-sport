@@ -1,6 +1,6 @@
 import { PAGES, DEFAUTS, enParagraphes } from './registre'
 
-test('toutes les cles sont uniques et pourvues', () => {
+test('toutes les clés sont uniques et pourvues', () => {
   const champs = PAGES.flatMap(p => p.groupes.flatMap(g => g.champs))
   const cles = champs.map(c => c.cle)
   expect(new Set(cles).size).toBe(cles.length)
@@ -8,7 +8,7 @@ test('toutes les cles sont uniques et pourvues', () => {
   expect(Object.keys(DEFAUTS).length).toBe(cles.length)
 })
 
-test('le bloc contact et horaires est editable', () => {
+test('le bloc contact et horaires est éditable', () => {
   const accueil = PAGES.find(p => p.id === 'accueil')
   const cles = accueil.groupes.flatMap(g => g.champs.map(c => c.cle))
   for (const c of ['contact.adresse', 'contact.mail', 'contact.horaires.titre', 'jour.0.day', 'jour.5.hours']) {
@@ -18,17 +18,17 @@ test('le bloc contact et horaires est editable', () => {
   expect(DEFAUTS['jour.5.hours']).toBe('08:00 – 12:00')
 })
 
-test('decoupe les blocs multi-paragraphes', () => {
+test('découpe les blocs multi-paragraphes', () => {
   expect(enParagraphes('un\n\ndeux\n\n\ntrois')).toEqual(['un', 'deux', 'trois'])
   expect(enParagraphes('')).toEqual([])
 })
 
-test("le contact passe par l'e-mail, plus par le telephone", () => {
+test("le contact passe par l'e-mail, plus par le téléphone", () => {
   expect(DEFAUTS['contact.mail']).toBe('krieger.manu@orange.fr')
   expect(Object.values(DEFAUTS).join(' ')).not.toContain('61 19 64 84')
 })
 
-test("la section Actualites est editable depuis l'accueil", () => {
+test("la section Actualités est éditable depuis l'accueil", () => {
   const accueil = PAGES.find(p => p.id === 'accueil')
   const groupe = accueil.groupes.find(g => g.id === 'actualites')
   expect(groupe.champs.map(c => c.cle)).toEqual(['actu.titre', 'actu.facebook.lien'])
@@ -36,7 +36,7 @@ test("la section Actualites est editable depuis l'accueil", () => {
   expect(DEFAUTS['actu.facebook.lien']).toBe('')
 })
 
-test("les mentions legales signalent le contenu Facebook charge a la demande", () => {
+test("les mentions légales signalent le contenu Facebook chargé à la demande", () => {
   expect(DEFAUTS['ml.facebook']).toMatch(/Facebook/)
   expect(DEFAUTS['ml.facebook']).toMatch(/cookies/)
 })
