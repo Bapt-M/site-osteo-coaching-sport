@@ -256,14 +256,16 @@ export default function Hero() {
 
       {/* Hommages (haut gauche) et témoignages (haut droite), dans le ciel */}
       <div className="absolute inset-x-0 top-[84px] desktop:top-[96px] z-20 px-6 desktop:px-12 flex justify-between pointer-events-none">
+        {/* `-my-2` sur le conteneur compense le `py-2` du lien : la zone cliquable
+            grandit sans déplacer visuellement le texte dans le ciel. */}
         {[
           { coin: 'gauche', to: '/histoire#hommages', cle: 'hero.hommages' },
           { coin: 'droite', to: '/histoire#temoignages', cle: 'hero.temoignages' },
         ].map(({ coin, to, cle }) => (
-          <motion.div key={coin} data-coin={coin} variants={fadeUp}>
+          <motion.div key={coin} data-coin={coin} variants={fadeUp} className="-my-2">
             <Link
               to={to}
-              className="font-poppins font-extrabold uppercase text-white pointer-events-auto
+              className="inline-block py-2 font-poppins font-extrabold uppercase text-white pointer-events-auto
                          hover:text-cyan-accent underline-offset-8 decoration-1 hover:underline transition-colors"
               style={COIN_STYLE}
             >
