@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import Actualites from './Actualites'
 import { lirePhotos } from '../lib/supabase'
 import { DEFAUTS } from '../content/registre'
@@ -61,4 +62,17 @@ test('ni photo ni lien : rien n’est rendu', async () => {
   const { container } = render(<Actualites />)
   await waitFor(() => expect(lirePhotos).toHaveBeenCalled())
   await waitFor(() => expect(container).toBeEmptyDOMElement())
+})
+
+test('code d’intégration collé : le post est affiché, sans reprendre la balise telle quelle', async () => {
+  const PERMALIEN = 'https://www.facebook.com/permalink.php?story_fbid=pfbid0abc&id=615'
+  avecLien(`<iframe src="https://www.facebook.com/plugins/post.php?href=${encodeURIComponent(PERMALIEN)}&show_text=true&width=500" width="500" height="645" onload="alert(1)"></iframe>`)
+  lirePhotos.mockResolvedValue([])
+  render(<Actualites />)
+  expect(await screen.findByRole('link', { name: /voir sur facebook/i })).toHaveAttribute('href', PERMALIEN)
+  await userEvent.click(screen.getByRole('button', { name: /afficher le post/i }))
+  const iframe = screen.getByTitle(/publication facebook/i)
+  expect(iframe).toHaveStyle({ height: '645px' })
+  expect(iframe).not.toHaveAttribute('onload')
+  expect(new URL(iframe.getAttribute('src')).searchParams.get('href')).toBe(PERMALIEN)
 })

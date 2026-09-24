@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useTextes } from '../content/ContenuProvider'
 import { lirePhotos } from '../lib/supabase'
-import { lienFacebookValide } from '../lib/facebook'
+import { lireSaisieFacebook } from '../lib/facebook'
 import { DEFAUTS } from '../content/registre'
 import NuagePhotos from './actualites/NuagePhotos'
 import PostFacebook from './actualites/PostFacebook'
@@ -27,8 +27,9 @@ export default function Actualites() {
   }, [])
 
   const titre = textes['actu.titre']?.trim() || DEFAUTS['actu.titre']
-  const lien = textes['actu.facebook.lien']?.trim()
-  const aFacebook = lienFacebookValide(lien)
+  // Lien simple ou code « Intégrer » : seul le lien validé en est retenu.
+  const facebook = lireSaisieFacebook(textes['actu.facebook.lien'])
+  const aFacebook = facebook !== null
   // Pendant la lecture, on réserve la place du nuage pour éviter un saut de mise en page.
   const aPhotos = photos === null || photos.length > 0
 
@@ -55,7 +56,7 @@ export default function Actualites() {
                 : <div className="w-full aspect-[5/4]" aria-hidden="true" />}
             </div>
           )}
-          {aFacebook && <PostFacebook lien={lien} />}
+          {aFacebook && <PostFacebook lien={facebook.lien} hauteur={facebook.hauteur ?? undefined} />}
         </motion.div>
       </div>
     </section>

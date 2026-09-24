@@ -79,7 +79,7 @@ export const PAGES = [
       ]},
       { id: 'actualites', titre: 'Actualités', champs: [
         champ('actu.titre',         'Titre de la section', 'Actualités'),
-        champ('actu.facebook.lien', 'Lien du dernier post Facebook (sur Facebook : ⋯ du post → Copier le lien)', ''),
+        champ('actu.facebook.lien', 'Dernier post Facebook — coller le code d’intégration (sur Facebook : ⋯ du post → Intégrer → Copier le code) ou le lien du post', '', true),
       ]},
       { id: 'apropos', titre: 'À propos', champs: [
         champ('apropos.surtitre', 'Pastille',            'À PROPOS'),

@@ -1,12 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
-import { urlLecteurFacebook } from '../../lib/facebook'
+import { hauteurLecteur, urlLecteurFacebook } from '../../lib/facebook'
 
 /**
  * Dernier post Facebook. Le lecteur officiel dépose des cookies dès qu'il se
  * charge : on affiche d'abord un encart aux couleurs du site, et l'iframe
  * n'est créée qu'à la demande du visiteur (recommandation CNIL).
+ *
+ * `hauteur` vient du code d'intégration collé par Manu quand il y en a un :
+ * Facebook y indique la hauteur du post, qu'une iframe ne peut pas deviner.
  */
-export default function PostFacebook({ lien }) {
+export default function PostFacebook({ lien, hauteur = 620 }) {
   const [charge, setCharge] = useState(false)
   const [largeur, setLargeur] = useState(500)
   const conteneur = useRef(null)
@@ -26,16 +29,25 @@ export default function PostFacebook({ lien }) {
 
   return (
     <div ref={conteneur} className="w-full max-w-[500px] mx-auto">
-      {charge ? (
-        <iframe
-          ref={iframe}
-          src={urlLecteurFacebook(lien, largeur)}
-          title="Dernière publication Facebook d’Emmanuel Krieger"
-          height="620"
-          className="w-full rounded-2xl bg-white border-0"
-          allow="encrypted-media; clipboard-write; picture-in-picture; web-share"
-        />
-      ) : (
+      {charge ? (() => {
+        // Facebook rend toujours le post sur 350 px au moins : plus étroit, il
+        // déborderait. On le rend donc à 350 px puis on le réduit pour tenir.
+        const rendu = Math.min(500, Math.max(350, largeur))
+        const echelle = Math.min(1, largeur / 350)
+        const h = hauteurLecteur(hauteur, rendu)
+        return (
+          <div className="overflow-hidden rounded-2xl" style={{ height: Math.round(h * echelle) }}>
+            <iframe
+              ref={iframe}
+              src={urlLecteurFacebook(lien, rendu)}
+              title="Dernière publication Facebook d’Emmanuel Krieger"
+              className="border-0 origin-top-left"
+              style={{ width: rendu, height: h, transform: echelle < 1 ? `scale(${echelle})` : undefined }}
+              allow="encrypted-media; clipboard-write; picture-in-picture; web-share"
+            />
+          </div>
+        )
+      })() : (
         <div className="rounded-2xl bg-green-deep text-white p-8 md:p-10">
           <div className="font-inter text-white/60 text-xs tracking-widest uppercase mb-3">Facebook</div>
           <h3 className="font-poppins font-bold text-2xl leading-tight mb-4">

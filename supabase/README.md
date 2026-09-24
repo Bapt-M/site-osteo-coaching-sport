@@ -55,10 +55,16 @@ les plus anciennes restent listées et peuvent être supprimées.
 
 ### Dernier post Facebook
 
-Page **Accueil** → groupe **Actualités** → coller le lien du post (sur
-Facebook : ⋯ du post → *Copier le lien*), puis *Enregistrer*. Seuls les
-posts publics d'une page Facebook s'affichent. Laisser le champ vide
-masque le bloc.
+Page **Accueil** → groupe **Actualités** → coller le code d'intégration du
+post (sur Facebook : ⋯ du post → *Intégrer* → *Copier le code*), puis
+*Enregistrer*. Un simple lien de post est aussi accepté, mais les liens
+courts de *Copier le lien* (`/share/p/…`) ne s'affichent pas toujours dans
+le lecteur : le code d'intégration contient le lien permanent, plus sûr.
+
+Le code collé n'est jamais inséré tel quel dans la page : le site n'en garde
+que le lien du post et la hauteur, et reconstruit lui-même le lecteur.
+Seuls les posts publics d'une page Facebook s'affichent. Laisser le champ
+vide masque le bloc.
 
 ## Ajouter un texte éditable
 

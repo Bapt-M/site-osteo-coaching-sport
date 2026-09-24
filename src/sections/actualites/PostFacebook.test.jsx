@@ -35,7 +35,8 @@ test('dimensionne le lecteur avec la largeur réelle du conteneur', async () => 
   await userEvent.click(screen.getByRole('button', { name: /afficher le post/i }))
   const iframe = screen.getByTitle(/publication facebook/i)
   expect(new URL(iframe.getAttribute('src')).searchParams.get('width')).toBe('420')
-  expect(iframe).not.toHaveAttribute('width')
+  expect(iframe).toHaveStyle({ width: '420px', height: '545px' })
+  expect(iframe.style.transform).toBe('')
 })
 
 test('repli à 500 px si la largeur du conteneur est nulle (jsdom)', async () => {
@@ -50,4 +51,27 @@ test('donne le focus au lecteur une fois affiché, pour que le clavier ne retomb
   await userEvent.click(screen.getByRole('button', { name: /afficher le post/i }))
   const iframe = screen.getByTitle(/publication facebook/i)
   expect(iframe).toHaveFocus()
+})
+
+test('reprend la hauteur du code d’intégration, 620 px à défaut', async () => {
+  const { unmount } = render(<PostFacebook lien={LIEN} hauteur={645} />)
+  await userEvent.click(screen.getByRole('button', { name: /afficher le post/i }))
+  expect(screen.getByTitle(/publication facebook/i)).toHaveStyle({ height: '645px' })
+  unmount()
+  render(<PostFacebook lien={LIEN} />)
+  await userEvent.click(screen.getByRole('button', { name: /afficher le post/i }))
+  expect(screen.getByTitle(/publication facebook/i)).toHaveStyle({ height: '620px' })
+})
+
+test('sous 350 px, rend le lecteur à 350 px et le réduit pour tenir dans l’écran', async () => {
+  const { container } = render(<PostFacebook lien={LIEN} hauteur={645} />)
+  // Facebook ignore toute largeur inférieure à 350 px : le post déborderait.
+  Object.defineProperty(container.firstChild, 'clientWidth', { value: 315, configurable: true })
+  await userEvent.click(screen.getByRole('button', { name: /afficher le post/i }))
+  const iframe = screen.getByTitle(/publication facebook/i)
+  expect(new URL(iframe.getAttribute('src')).searchParams.get('width')).toBe('350')
+  expect(iframe).toHaveStyle({ width: '350px', height: '497px' })
+  expect(iframe.style.transform).toBe('scale(0.9)')
+  // Le cadre prend la hauteur réduite, sinon un vide resterait sous le post.
+  expect(iframe.parentElement).toHaveStyle({ height: '447px' })
 })
