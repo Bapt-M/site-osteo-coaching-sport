@@ -53,8 +53,11 @@ def main():
     aplat(marque, 48).save(ico, sizes=[(16, 16), (32, 32), (48, 48)])
     sorties.append(ico)
 
-    for taille, nom in [(32, "favicon-32.png"), (192, "icon-192.png"),
-                        (512, "icon-512.png"), (180, "apple-touch-icon.png")]:
+    # 96 px : Google recommande au moins 48 px pour le favicon des résultats
+    # de recherche, et sert l'icône en haute densité sur les écrans récents.
+    for taille, nom in [(32, "favicon-32.png"), (96, "favicon-96.png"),
+                        (192, "icon-192.png"), (512, "icon-512.png"),
+                        (180, "apple-touch-icon.png")]:
         chemin = os.path.join(PUBLIC, nom)
         aplat(marque, taille).save(chemin, optimize=True)
         sorties.append(chemin)
