@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { useTextes } from '../content/ContenuProvider'
 import { lirePhotos } from '../lib/supabase'
 import { lienFacebookValide } from '../lib/facebook'
+import { DEFAUTS } from '../content/registre'
 import NuagePhotos from './actualites/NuagePhotos'
 import PostFacebook from './actualites/PostFacebook'
 
@@ -25,6 +26,7 @@ export default function Actualites() {
     return () => { vivant = false }
   }, [])
 
+  const titre = textes['actu.titre']?.trim() || DEFAUTS['actu.titre']
   const lien = textes['actu.facebook.lien']?.trim()
   const aFacebook = lienFacebookValide(lien)
   // Pendant la lecture, on réserve la place du nuage pour éviter un saut de mise en page.
@@ -39,7 +41,7 @@ export default function Actualites() {
     <section id="actualites" className="py-24 md:py-32 px-6 bg-site-bg overflow-x-clip">
       <div className="max-w-[1360px] mx-auto">
         <h2 className="font-poppins font-bold text-4xl md:text-5xl text-text-primary leading-tight mb-14">
-          {textes['actu.titre']}
+          {titre}
         </h2>
         <motion.div
           data-testid="actualites-grille"
