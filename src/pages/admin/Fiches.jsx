@@ -14,12 +14,21 @@ export default function Fiches({ client, type }) {
   const [edition, setEdition] = useState(undefined)   // undefined : aucune ; null : nouvelle ; ligne : existante
   const [message, setMessage] = useState(null)
   const [enCours, setEnCours] = useState(false)   // un déplacement est en cours : flèches désactivées
+  // Distinct de `message` : un échec de déplacement ou de suppression, une fois la
+  // liste chargée, ne doit pas cacher « Ajouter une fiche » comme un échec de lecture.
+  const [erreurLecture, setErreurLecture] = useState(false)
 
   const charger = useCallback(async () => {
     const { data, error } = await client.from('fiches')
       .select('id, type, nom, fonction, titre, texte, images, ordre, cree_le')
       .eq('type', type).order('ordre').order('cree_le')
-    if (error) { setMessage({ type: 'erreur', texte: `Lecture impossible : ${error.message}` }); setFiches([]); return }
+    if (error) {
+      setMessage({ type: 'erreur', texte: `Lecture impossible : ${error.message}` })
+      setErreurLecture(true)
+      setFiches([])
+      return
+    }
+    setErreurLecture(false)
     setFiches(data ?? [])
   }, [client, type])
 
@@ -87,12 +96,14 @@ export default function Fiches({ client, type }) {
             charger()
           }}
         />
-      ) : (
+      ) : fiches !== null && !erreurLecture ? (
+        // Avant que la liste soit chargée, ou après un échec de lecture, `fiches`
+        // ne donne pas un ordre fiable : la nouvelle fiche recevrait l'ordre 0.
         <button type="button" onClick={() => { setMessage(null); setEdition(null) }}
                 className="mb-8 px-6 py-2.5 rounded-full bg-green-accent text-white font-poppins font-bold text-sm hover:bg-teal-accent transition-colors cursor-pointer">
           Ajouter une fiche
         </button>
-      )}
+      ) : null}
 
       {fiches === null
         ? <p className="font-inter text-text-secondary">Chargement…</p>
@@ -112,13 +123,20 @@ export default function Fiches({ client, type }) {
                       <div className="font-inter text-sm text-text-secondary">{f.fonction}</div>
                       {f.titre && <p className="font-inter text-sm text-text-secondary/80 mt-2 line-clamp-2">« {f.titre} »</p>}
                       <div className="flex flex-wrap items-center gap-4 mt-3">
-                        <button type="button" onClick={() => deplacer(i, -1)} disabled={i === 0 || enCours}
+                        {/* Le formulaire ouvert (édition ou nouvelle fiche) verrouille la liste :
+                            sans cela, une fiche pourrait être déplacée ou supprimée pendant que
+                            Manu la modifie, ou pendant qu'elle vient d'être retirée de la liste. */}
+                        <button type="button" onClick={() => deplacer(i, -1)} disabled={i === 0 || enCours || edition !== undefined}
                                 aria-label={`Monter « ${f.nom} »`} className={PETIT + ' text-text-secondary'}>↑ Monter</button>
-                        <button type="button" onClick={() => deplacer(i, 1)} disabled={i === fiches.length - 1 || enCours}
+                        <button type="button" onClick={() => deplacer(i, 1)} disabled={i === fiches.length - 1 || enCours || edition !== undefined}
                                 aria-label={`Descendre « ${f.nom} »`} className={PETIT + ' text-text-secondary'}>↓ Descendre</button>
                         <button type="button" onClick={() => { setMessage(null); setEdition(f) }}
+                                disabled={edition !== undefined}
+                                aria-label={`Modifier « ${f.nom} »`}
                                 className={PETIT + ' text-green-accent'}>Modifier</button>
                         <button type="button" onClick={() => supprimer(f)}
+                                disabled={edition !== undefined}
+                                aria-label={`Supprimer « ${f.nom} »`}
                                 className={PETIT + ' text-red-600'}>Supprimer</button>
                       </div>
                     </div>

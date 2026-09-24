@@ -78,10 +78,13 @@ export default function FicheFormulaire({ client, type, fiche, ordre, onFini, on
         envoyees.push(chemin)
         finales.push({ chemin, legende: (img.legende ?? '').trim() })
       }
-      const ligne = { type, nom: nom.trim(), fonction: fonction.trim(), titre: titre.trim(), texte: texte.trim(), images: finales }
+      // `type` n'est jamais renvoyé à la mise à jour : un changement d'onglet
+      // pendant l'édition (le composant est remonté avec la nouvelle valeur
+      // de `type`) ne doit pas faire basculer le type d'une fiche existante.
+      const champs = { nom: nom.trim(), fonction: fonction.trim(), titre: titre.trim(), texte: texte.trim(), images: finales }
       const { error } = fiche
-        ? await client.from('fiches').update(ligne).eq('id', fiche.id)
-        : await client.from('fiches').insert({ ...ligne, ordre })
+        ? await client.from('fiches').update(champs).eq('id', fiche.id)
+        : await client.from('fiches').insert({ ...champs, type, ordre })
       if (error) throw new Error(`Enregistrement refusé : ${error.message}`)
 
       const gardes = new Set(finales.map(i => i.chemin))

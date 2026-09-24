@@ -263,7 +263,10 @@ function Editeur({ client, session, onDeconnexion }) {
           {filtre
             ? <Resultats filtre={filtre} valeurs={valeurs} initial={initial} onChange={majChamp} onReset={reinitialiser} />
             : ONGLETS_FICHES.some(o => o.id === pageActive)
-              ? <Fiches client={client} type={ONGLETS_FICHES.find(o => o.id === pageActive).type} />
+              // `key` sur le type : un changement d'onglet remonte le composant plutôt que
+              // de réutiliser son état (édition en cours, liste) pour l'autre type de fiche.
+              ? <Fiches key={ONGLETS_FICHES.find(o => o.id === pageActive).type}
+                        client={client} type={ONGLETS_FICHES.find(o => o.id === pageActive).type} />
               : pageActive === ONGLET_ACTUALITES
               ? <OngletActualites client={client} valeurs={valeurs} initial={initial}
                                   onChange={majChamp} onReset={reinitialiser} />

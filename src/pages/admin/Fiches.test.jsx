@@ -61,6 +61,23 @@ test('liste les fiches du type, dans l’ordre', async () => {
   expect(items.map(li => within(li).getByTestId('fiche-nom').textContent)).toEqual(['Nom 0', 'Nom 1'])
 })
 
+test('cache « Ajouter une fiche » avant que la liste soit chargée', () => {
+  const { client } = fauxClient()
+  client.from = () => ({ select: () => ({ eq: () => ({ order: () => ({ order: () => new Promise(() => {}) }) }) }) })
+  render(<Fiches client={client} type="hommage" />)
+  expect(screen.queryByRole('button', { name: /ajouter une fiche/i })).not.toBeInTheDocument()
+})
+
+test('cache « Ajouter une fiche » après une erreur de lecture, l’erreur reste affichée', async () => {
+  const { client } = fauxClient()
+  client.from = () => ({ select: () => ({ eq: () => ({ order: () => ({
+    order: async () => ({ data: null, error: { message: 'hors ligne' } }),
+  }) }) }) })
+  render(<Fiches client={client} type="hommage" />)
+  expect(await screen.findByRole('alert')).toHaveTextContent(/lecture impossible/i)
+  expect(screen.queryByRole('button', { name: /ajouter une fiche/i })).not.toBeInTheDocument()
+})
+
 test('ajoute une fiche avec une image réduite et envoyée au bucket', async () => {
   const { client, espions } = fauxClient([h(0)])
   render(<Fiches client={client} type="hommage" />)
@@ -112,6 +129,15 @@ test('modifie une fiche et efface du bucket l’image retirée, jamais une image
   expect(espions.remove.mock.calls.flat(2)).not.toContain('/images/site.jpg')
 })
 
+test('n’envoie pas le type à la mise à jour d’une fiche existante', async () => {
+  const { client, espions } = fauxClient([h(0)])
+  render(<Fiches client={client} type="hommage" />)
+  await userEvent.click(await screen.findByRole('button', { name: /modifier/i }))
+  await userEvent.click(screen.getByRole('button', { name: /enregistrer la fiche/i }))
+  await waitFor(() => expect(espions.update).toHaveBeenCalled())
+  expect(espions.update.mock.calls[0][1]).not.toHaveProperty('type')
+})
+
 test('limite à 4 images', async () => {
   const { client } = fauxClient()
   render(<Fiches client={client} type="temoignage" />)
@@ -120,6 +146,27 @@ test('limite à 4 images', async () => {
     await userEvent.upload(screen.getByLabelText(/ajouter une image/i), new File(['i'], `${i}.jpg`, { type: 'image/jpeg' }))
   }
   expect(screen.queryByLabelText(/ajouter une image/i)).not.toBeInTheDocument()
+})
+
+test('désactive les actions de la liste pendant que le formulaire est ouvert', async () => {
+  const { client } = fauxClient([h(0), h(1)])
+  render(<Fiches client={client} type="hommage" />)
+  await userEvent.click(await screen.findByRole('button', { name: /ajouter une fiche/i }))
+  const items = screen.getAllByRole('listitem')
+  items.forEach(li => {
+    expect(within(li).getByRole('button', { name: /modifier/i })).toBeDisabled()
+    expect(within(li).getByRole('button', { name: /supprimer/i })).toBeDisabled()
+    expect(within(li).getByRole('button', { name: /monter/i })).toBeDisabled()
+    expect(within(li).getByRole('button', { name: /descendre/i })).toBeDisabled()
+  })
+})
+
+test('les boutons Modifier et Supprimer sont nommés par fiche', async () => {
+  const { client } = fauxClient([h(0), h(1)])
+  render(<Fiches client={client} type="hommage" />)
+  await screen.findAllByRole('listitem')
+  expect(screen.getByRole('button', { name: 'Modifier « Nom 0 »' })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Supprimer « Nom 1 »' })).toBeInTheDocument()
 })
 
 test('monte une fiche d’un cran', async () => {
