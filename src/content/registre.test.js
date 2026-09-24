@@ -23,12 +23,12 @@ test('découpe les blocs multi-paragraphes', () => {
   expect(enParagraphes('')).toEqual([])
 })
 
-test("le contact passe par l'e-mail, plus par le téléphone", () => {
+test('le contact passe par l’e-mail, plus par le téléphone', () => {
   expect(DEFAUTS['contact.mail']).toBe('krieger.manu@orange.fr')
   expect(Object.values(DEFAUTS).join(' ')).not.toContain('61 19 64 84')
 })
 
-test("la section Actualités est éditable depuis l'accueil", () => {
+test('la section Actualités est éditable depuis l’accueil', () => {
   const accueil = PAGES.find(p => p.id === 'accueil')
   const groupe = accueil.groupes.find(g => g.id === 'actualites')
   expect(groupe.champs.map(c => c.cle)).toEqual(['actu.titre', 'actu.facebook.lien'])
@@ -36,7 +36,7 @@ test("la section Actualités est éditable depuis l'accueil", () => {
   expect(DEFAUTS['actu.facebook.lien']).toBe('')
 })
 
-test("les mentions légales signalent le contenu Facebook chargé à la demande", () => {
+test('les mentions légales signalent le contenu Facebook chargé à la demande', () => {
   expect(DEFAUTS['ml.facebook']).toMatch(/Facebook/)
   expect(DEFAUTS['ml.facebook']).toMatch(/cookies/)
 })
