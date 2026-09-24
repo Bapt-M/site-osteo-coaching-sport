@@ -2,10 +2,17 @@ import { useEffect, useState } from 'react'
 import { getSupabase, supabaseConfigure } from '../lib/supabase'
 import { ACTUALITES, DEFAUTS, PAGES } from '../content/registre'
 import OngletActualites from './admin/Actualites'
+import Fiches from './admin/Fiches'
 import Champ, { CHAMP } from './admin/Champ'
 
 /** Entrée du sommaire qui n'est pas une page de textes : photos + textes Actualités. */
 const ONGLET_ACTUALITES = ACTUALITES.id
+
+/** Onglets des fiches (hommages, témoignages), sous « Actualités ». */
+const ONGLETS_FICHES = [
+  { id: 'fiches-hommage', type: 'hommage', titre: 'Hommages' },
+  { id: 'fiches-temoignage', type: 'temoignage', titre: 'Témoignages' },
+]
 
 /* ── Écran de connexion ─────────────────────────────────────────────── */
 
@@ -227,6 +234,18 @@ function Editeur({ client, session, onDeconnexion }) {
                 </span>
               )}
             </button>
+            {ONGLETS_FICHES.map(o => (
+              <button
+                key={o.id}
+                onClick={() => { setPageActive(o.id); setFiltre('') }}
+                className={`w-full text-left px-3 py-2 rounded-lg font-inter text-sm transition-colors cursor-pointer mt-1
+                  ${o.id === pageActive && !filtre
+                    ? 'bg-green-accent text-white'
+                    : 'text-text-secondary hover:bg-black/5'}`}
+              >
+                {o.titre}
+              </button>
+            ))}
           </div>
         </nav>
 
@@ -238,11 +257,14 @@ function Editeur({ client, session, onDeconnexion }) {
           >
             {PAGES.map(p => <option key={p.id} value={p.id}>{p.titre}</option>)}
             <option value={ONGLET_ACTUALITES}>{ACTUALITES.titre}</option>
+            {ONGLETS_FICHES.map(o => <option key={o.id} value={o.id}>{o.titre}</option>)}
           </select>
 
           {filtre
             ? <Resultats filtre={filtre} valeurs={valeurs} initial={initial} onChange={majChamp} onReset={reinitialiser} />
-            : pageActive === ONGLET_ACTUALITES
+            : ONGLETS_FICHES.some(o => o.id === pageActive)
+              ? <Fiches client={client} type={ONGLETS_FICHES.find(o => o.id === pageActive).type} />
+              : pageActive === ONGLET_ACTUALITES
               ? <OngletActualites client={client} valeurs={valeurs} initial={initial}
                                   onChange={majChamp} onReset={reinitialiser} />
               : (() => {
@@ -277,7 +299,7 @@ function Editeur({ client, session, onDeconnexion }) {
       </div>
 
       {/* Barre d'enregistrement */}
-      {!(pageActive === ONGLET_ACTUALITES && !modifiees.length) && (
+      {!((pageActive === ONGLET_ACTUALITES || ONGLETS_FICHES.some(o => o.id === pageActive)) && !modifiees.length) && (
         <div className="fixed bottom-0 inset-x-0 z-20 bg-white border-t border-black/10 px-6 py-4">
           <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
             <div className="font-inter text-sm">
