@@ -88,6 +88,7 @@ export default function FicheFormulaire({ client, type, fiche, ordre, onFini, on
         if (errRetrait) avertissement = `Fiche enregistrée, mais une image retirée n’a pas pu être effacée : ${errRetrait.message}`
       }
       images.forEach(img => img.apercu && URL.revokeObjectURL(img.apercu))
+      imagesRef.current = []   // déjà révoquées : le nettoyage au démontage ne doit pas les révoquer deux fois
       onFini(avertissement)
     } catch (err) {
       if (envoyees.length) await stockage.remove(envoyees)
@@ -108,12 +109,14 @@ export default function FicheFormulaire({ client, type, fiche, ordre, onFini, on
   )
 
   return (
-    <form onSubmit={enregistrer} noValidate className="bg-white rounded-2xl border border-black/10 p-6 mb-10 space-y-5">
+    <form onSubmit={enregistrer} noValidate className="bg-white rounded-2xl border border-black/10 p-6 mb-10">
       {/* `disabled` sur ce fieldset se propage à tous les champs et boutons descendants
           (y compris ceux du fieldset « Images » imbriqué) : pendant l'enregistrement,
-          plus aucune saisie ne peut être perdue ou envoyée en double. `contents` l'efface
-          de la mise en page, seul son effet de verrouillage nous intéresse. */}
-      <fieldset disabled={envoi} className="contents">
+          plus aucune saisie ne peut être perdue ou envoyée en double. Le fieldset porte
+          l'espacement vertical (`space-y-5`) : c'est lui, et non plus le <form>, qui a les
+          champs comme enfants directs ; ses styles de bordure/marge par défaut sont
+          neutralisés pour rester invisible dans la mise en page. */}
+      <fieldset disabled={envoi} className="space-y-5 min-w-0 border-0 p-0 m-0">
         <h3 className="font-poppins font-bold text-text-primary text-base">
           {fiche ? `Modifier « ${fiche.nom} »` : 'Nouvelle fiche'}
         </h3>
