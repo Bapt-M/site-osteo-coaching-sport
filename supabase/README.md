@@ -69,6 +69,18 @@ que le lien du post et la hauteur, et reconstruit lui-même le lecteur.
 Seuls les posts publics d'une page Facebook s'affichent. Laisser le champ
 vide masque le bloc.
 
+### Hommages et témoignages
+
+Onglets **Hommages** et **Témoignages** de l'administration (en bas du
+sommaire). Chaque fiche : nom, fonction ou métier, phrase mise en avant,
+texte (une ligne vide entre les paragraphes) et jusqu'à 4 images légendées.
+Les flèches ↑ ↓ règlent l'ordre d'affichage sur la page Histoire ; les 3
+premiers témoignages apparaissent aussi sur l'accueil.
+
+Les en-têtes de ces sections (pastille, titre) restent dans la page
+**Histoire et formation** de l'administration ; les liens de la hero dans
+**Accueil → Bandeau**.
+
 ## Ajouter un texte éditable
 
 Ajouter une entrée dans `src/content/defaults.js`, puis remplacer le texte en

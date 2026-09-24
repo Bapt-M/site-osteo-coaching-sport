@@ -159,3 +159,71 @@ create policy "photos lecture admin"
   on storage.objects for select
   to authenticated
   using (bucket_id = 'photos' and prive.est_admin());
+
+-- ── 6. Hommages et témoignages ──────────────────────────────────────────────
+-- Fiches affichées sur la page Histoire (et les 3 premiers témoignages sur
+-- l'accueil). `images` : [{ "chemin": "...", "legende": "..." }] — un chemin
+-- commençant par « / » désigne une image livrée avec le site, sinon un objet
+-- du bucket `fiches`.
+
+create table if not exists public.fiches (
+  id        uuid primary key default gen_random_uuid(),
+  type      text not null check (type in ('hommage', 'temoignage')),
+  nom       text not null,
+  fonction  text not null default '',
+  titre     text not null default '',
+  texte     text not null default '',
+  images    jsonb not null default '[]'::jsonb
+            check (jsonb_typeof(images) = 'array' and jsonb_array_length(images) <= 4),
+  ordre     integer not null default 0,
+  cree_le   timestamptz not null default now()
+);
+
+create index if not exists fiches_type_ordre_idx on public.fiches (type, ordre);
+
+alter table public.fiches enable row level security;
+
+drop policy if exists "lecture publique" on public.fiches;
+create policy "lecture publique"
+  on public.fiches for select
+  to anon, authenticated
+  using (true);
+
+drop policy if exists "ecriture admin" on public.fiches;
+create policy "ecriture admin"
+  on public.fiches for all
+  to authenticated
+  using (prive.est_admin())
+  with check (prive.est_admin());
+
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('fiches', 'fiches', true, 5242880, '{image/webp,image/jpeg}')
+on conflict (id) do update
+  set public = true, file_size_limit = 5242880, allowed_mime_types = '{image/webp,image/jpeg}';
+
+drop policy if exists "fiches ajout admin" on storage.objects;
+create policy "fiches ajout admin"
+  on storage.objects for insert
+  to authenticated
+  with check (bucket_id = 'fiches' and prive.est_admin());
+
+drop policy if exists "fiches modification admin" on storage.objects;
+create policy "fiches modification admin"
+  on storage.objects for update
+  to authenticated
+  using (bucket_id = 'fiches' and prive.est_admin());
+
+drop policy if exists "fiches suppression admin" on storage.objects;
+create policy "fiches suppression admin"
+  on storage.objects for delete
+  to authenticated
+  using (bucket_id = 'fiches' and prive.est_admin());
+
+drop policy if exists "fiches lecture admin" on storage.objects;
+create policy "fiches lecture admin"
+  on storage.objects for select
+  to authenticated
+  using (bucket_id = 'fiches' and prive.est_admin());
+
+-- La reprise des fiches d'origine (données) n'est pas dans ce script : elle
+-- a été faite une fois, à la mise en service, depuis FICHES_ORIGINE.
