@@ -46,11 +46,6 @@ valeurs d'origine inscrites dans `src/content/defaults.js`. Le bouton
 Si Supabase est injoignable, le site public affiche les textes d'origine — il
 ne dépend jamais de la base pour fonctionner.
 
-## Ajouter un texte éditable
-
-Ajouter une entrée dans `src/content/defaults.js`, puis remplacer le texte en
-dur du composant par `textes['ma.cle']` (via `useTextes()`).
-
 ### Photos d'actualité
 
 Onglet **Photos** de l'administration : choisir une image, écrire sa
@@ -64,3 +59,8 @@ Page **Accueil** → groupe **Actualités** → coller le lien du post (sur
 Facebook : ⋯ du post → *Copier le lien*), puis *Enregistrer*. Seuls les
 posts publics d'une page Facebook s'affichent. Laisser le champ vide
 masque le bloc.
+
+## Ajouter un texte éditable
+
+Ajouter une entrée dans `src/content/defaults.js`, puis remplacer le texte en
+dur du composant par `textes['ma.cle']` (via `useTextes()`).
