@@ -63,3 +63,20 @@ test('garde le focus dans la visionneuse', async () => {
     expect(dialogue.contains(document.activeElement)).toBe(true)
   }
 })
+
+test('un clic sur la photo ou la légende garde Échap opérant', async () => {
+  render(<NuagePhotos photos={PHOTOS} />)
+  await userEvent.click(screen.getAllByRole('button', { name: /agrandir/i })[0])
+  // Un clic dans le dialogue (image, légende) ne doit pas envoyer le focus sur
+  // <body> : sinon la touche Échap, qui écoute sur le dialogue, ne reçoit plus rien.
+  await userEvent.click(screen.getByText('Stage padel avec l’équipe de France'))
+  await userEvent.keyboard('{Escape}')
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+})
+
+test('se ferme au clic sur le fond (en dehors du tirage)', async () => {
+  render(<NuagePhotos photos={PHOTOS} />)
+  await userEvent.click(screen.getAllByRole('button', { name: /agrandir/i })[0])
+  await userEvent.click(screen.getByRole('dialog'))
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+})

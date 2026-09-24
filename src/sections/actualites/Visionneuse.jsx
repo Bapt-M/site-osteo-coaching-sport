@@ -40,10 +40,11 @@ export default function Visionneuse({ photos, index, onChange, onClose }) {
   return createPortal(
     <motion.div
       ref={dialogue}
+      tabIndex={-1}
       role="dialog" aria-modal="true" aria-label={`Photo ${index + 1} sur ${n}`}
       onKeyDown={touche}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}
-      className="fixed inset-0 z-[100] bg-green-deep/90 backdrop-blur-sm flex items-center justify-center p-4 md:p-10"
+      className="fixed inset-0 z-[100] bg-green-deep/90 backdrop-blur-sm flex items-center justify-center p-4 md:p-10 outline-none"
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
     >
       <button ref={fermer} type="button" onClick={onClose} aria-label="Fermer"
