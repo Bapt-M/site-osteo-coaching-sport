@@ -77,6 +77,10 @@ export const PAGES = [
         champ('slide4.texte', '4. Description', "Analyse régulière de vos progrès, ajustement continu des programmes et accompagnement sur le long terme pour atteindre votre meilleur niveau.", true),
         champ('slide4.cta',   '4. Bouton',      'En savoir plus'),
       ]},
+      { id: 'actualites', titre: 'Actualités', champs: [
+        champ('actu.titre',         'Titre de la section', 'Actualités'),
+        champ('actu.facebook.lien', 'Lien du dernier post Facebook (sur Facebook : ⋯ du post → Copier le lien)', ''),
+      ]},
       { id: 'apropos', titre: 'À propos', champs: [
         champ('apropos.surtitre', 'Pastille',            'À PROPOS'),
         champ('apropos.titre1',   'Titre, 1re ligne',    'Une approche globale'),
