@@ -123,9 +123,13 @@ create policy "ecriture admin"
   with check (prive.est_admin());
 
 -- Bucket public : les images se lisent par URL directe, sans jeton.
-insert into storage.buckets (id, name, public)
-values ('photos', 'photos', true)
-on conflict (id) do update set public = true;
+-- Limite de taille et types acceptés alignés sur `reduireImage()` (WebP,
+-- repli JPEG) : un fichier plus lourd ou d'un autre type ne peut venir que
+-- d'un appel API direct, jamais du formulaire d'ajout.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('photos', 'photos', true, 5242880, '{image/webp,image/jpeg}')
+on conflict (id) do update
+  set public = true, file_size_limit = 5242880, allowed_mime_types = '{image/webp,image/jpeg}';
 
 -- Écriture et suppression des fichiers réservées aux administrateurs. La
 -- lecture n'a pas besoin de politique : un bucket public est servi par
