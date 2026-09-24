@@ -68,3 +68,43 @@ export async function lirePhotos(limite = 5) {
     return []
   }
 }
+
+/**
+ * URL d'une image de fiche. Un chemin qui commence par « / » désigne une
+ * image livrée avec le site (les fiches d'origine) ; sinon, un objet du
+ * bucket `fiches`.
+ */
+export const urlFiche = (chemin) =>
+  chemin.startsWith('/') ? chemin : `${url}/storage/v1/object/public/fiches/${chemin}`
+
+/** Ligne de la table `fiches` → fiche prête à afficher. */
+export function versFiche(ligne) {
+  return {
+    id: ligne.id,
+    type: ligne.type,
+    nom: ligne.nom ?? '',
+    fonction: ligne.fonction ?? '',
+    titre: ligne.titre ?? '',
+    texte: ligne.texte ?? '',
+    images: (ligne.images ?? []).map(i => ({ url: urlFiche(i.chemin), legende: i.legende ?? '' })),
+  }
+}
+
+/**
+ * Hommages et témoignages, dans l'ordre choisi par Manu. Renvoie `null` sur
+ * toute panne — l'appelant retombe alors sur les fiches d'origine — mais une
+ * liste vide telle quelle : Manu a pu tout retirer.
+ */
+export async function lireFiches() {
+  if (!supabaseConfigure) return null
+  try {
+    const reponse = await fetch(
+      `${url}/rest/v1/fiches?select=id,type,nom,fonction,titre,texte,images&order=ordre.asc,cree_le.asc`,
+      { headers: { apikey: cle, Authorization: `Bearer ${cle}` } },
+    )
+    if (!reponse.ok) return null
+    return (await reponse.json()).map(versFiche)
+  } catch {
+    return null
+  }
+}
