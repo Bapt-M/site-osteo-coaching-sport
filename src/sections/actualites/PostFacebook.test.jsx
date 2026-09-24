@@ -27,3 +27,27 @@ test('charge le lecteur officiel au clic', async () => {
   expect(iframe.getAttribute('src')).toContain(encodeURIComponent(LIEN))
   expect(screen.queryByRole('button', { name: /afficher le post/i })).not.toBeInTheDocument()
 })
+
+test('dimensionne le lecteur avec la largeur réelle du conteneur', async () => {
+  const { container } = render(<PostFacebook lien={LIEN} />)
+  // jsdom ne calcule aucune mise en page : on simule un conteneur à 420 px.
+  Object.defineProperty(container.firstChild, 'clientWidth', { value: 420, configurable: true })
+  await userEvent.click(screen.getByRole('button', { name: /afficher le post/i }))
+  const iframe = screen.getByTitle(/publication facebook/i)
+  expect(new URL(iframe.getAttribute('src')).searchParams.get('width')).toBe('420')
+  expect(iframe).not.toHaveAttribute('width')
+})
+
+test('repli à 500 px si la largeur du conteneur est nulle (jsdom)', async () => {
+  render(<PostFacebook lien={LIEN} />)
+  await userEvent.click(screen.getByRole('button', { name: /afficher le post/i }))
+  const iframe = screen.getByTitle(/publication facebook/i)
+  expect(new URL(iframe.getAttribute('src')).searchParams.get('width')).toBe('500')
+})
+
+test('donne le focus au lecteur une fois affiché, pour que le clavier ne retombe pas sur <body>', async () => {
+  render(<PostFacebook lien={LIEN} />)
+  await userEvent.click(screen.getByRole('button', { name: /afficher le post/i }))
+  const iframe = screen.getByTitle(/publication facebook/i)
+  expect(iframe).toHaveFocus()
+})

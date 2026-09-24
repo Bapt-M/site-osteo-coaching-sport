@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { urlLecteurFacebook } from '../../lib/facebook'
 
 /**
@@ -8,14 +8,30 @@ import { urlLecteurFacebook } from '../../lib/facebook'
  */
 export default function PostFacebook({ lien }) {
   const [charge, setCharge] = useState(false)
+  const [largeur, setLargeur] = useState(500)
+  const conteneur = useRef(null)
+  const iframe = useRef(null)
+
+  // Le bouton disparaît une fois le lecteur affiché : sans ce transfert de
+  // focus, le clavier retombe sur <body> et Tab perd le fil de la page.
+  useEffect(() => {
+    if (charge) iframe.current?.focus()
+  }, [charge])
+
+  function afficher() {
+    // clientWidth vaut 0 en jsdom (pas de mise en page) : on garde alors 500.
+    setLargeur(conteneur.current?.clientWidth || 500)
+    setCharge(true)
+  }
 
   return (
-    <div className="w-full max-w-[500px] mx-auto">
+    <div ref={conteneur} className="w-full max-w-[500px] mx-auto">
       {charge ? (
         <iframe
-          src={urlLecteurFacebook(lien)}
+          ref={iframe}
+          src={urlLecteurFacebook(lien, largeur)}
           title="Dernière publication Facebook d’Emmanuel Krieger"
-          width="100%" height="620"
+          height="620"
           className="w-full rounded-2xl bg-white border-0"
           allow="encrypted-media; clipboard-write; picture-in-picture; web-share"
         />
@@ -30,7 +46,7 @@ export default function PostFacebook({ lien }) {
             dépose des cookies sur votre appareil.
           </p>
           <button
-            type="button" onClick={() => setCharge(true)}
+            type="button" onClick={afficher}
             className="px-7 py-3 rounded-full bg-green-accent text-white font-poppins font-bold text-sm
                        hover:bg-teal-accent transition-colors cursor-pointer"
           >

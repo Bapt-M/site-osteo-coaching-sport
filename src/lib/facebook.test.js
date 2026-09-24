@@ -40,3 +40,13 @@ test('retire les espaces autour du lien', () => {
   const src = urlLecteurFacebook('  https://facebook.com/osteo/posts/1 ')
   expect(new URL(src).searchParams.get('href')).toBe('https://facebook.com/osteo/posts/1')
 })
+
+test.each([
+  [200, '350'],  // bridée au minimum accepté par Facebook
+  [800, '500'],  // bridée au maximum
+  [undefined, '500'],  // largeur par défaut
+])('bride la largeur à ce que Facebook accepte : %s → %s', (largeur, attendu) => {
+  const lien = 'https://www.facebook.com/osteo/posts/123'
+  const src = largeur === undefined ? urlLecteurFacebook(lien) : urlLecteurFacebook(lien, largeur)
+  expect(new URL(src).searchParams.get('width')).toBe(attendu)
+})
