@@ -18,7 +18,14 @@ export async function reduireImage(fichier) {
   try {
     bitmap = await createImageBitmap(fichier, { imageOrientation: 'from-image' })
   } catch {
-    throw new Error('Image illisible')
+    // Certains navigateurs ignorent l'option `imageOrientation` et lèvent un
+    // TypeError plutôt que de simplement l'ignorer : on retente sans elle
+    // avant d'abandonner.
+    try {
+      bitmap = await createImageBitmap(fichier)
+    } catch {
+      throw new Error('Image illisible')
+    }
   }
   const { largeur, hauteur } = dimensionsReduites(bitmap.width, bitmap.height)
   const canvas = document.createElement('canvas')
