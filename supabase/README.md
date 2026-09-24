@@ -4,6 +4,9 @@
 
 1. **Créer les tables** — Supabase → *SQL Editor* → coller `schema.sql` → *Run*.
 
+   Le script est rejouable : sur un projet déjà en service, le relancer
+   ajoute simplement ce qui manque (section 5 : photos d'actualité).
+
 2. **Créer le compte administrateur** — Supabase → *Authentication* → *Users* →
    *Add user* → renseigner une adresse et un mot de passe, et cocher
    *Auto Confirm User*.
@@ -47,3 +50,17 @@ ne dépend jamais de la base pour fonctionner.
 
 Ajouter une entrée dans `src/content/defaults.js`, puis remplacer le texte en
 dur du composant par `textes['ma.cle']` (via `useTextes()`).
+
+### Photos d'actualité
+
+Onglet **Photos** de l'administration : choisir une image, écrire sa
+description, *Publier*. L'image est réduite dans le navigateur (1600 px,
+WebP) avant l'envoi. Les 5 plus récentes s'affichent en nuage sur l'accueil ;
+les plus anciennes restent listées et peuvent être supprimées.
+
+### Dernier post Facebook
+
+Page **Accueil** → groupe **Actualités** → coller le lien du post (sur
+Facebook : ⋯ du post → *Copier le lien*), puis *Enregistrer*. Seuls les
+posts publics d'une page Facebook s'affichent. Laisser le champ vide
+masque le bloc.
