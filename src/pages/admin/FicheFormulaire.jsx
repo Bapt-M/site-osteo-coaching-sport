@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { reduireImage } from '../../lib/image'
 import { CHAMP } from './Champ'
 
@@ -27,17 +27,35 @@ export default function FicheFormulaire({ client, type, fiche, ordre, onFini, on
   const [erreur, setErreur] = useState(null)
   const stockage = client.storage.from('fiches')
 
+  // Les aperçus créés par URL.createObjectURL doivent être libérés une fois inutiles :
+  // à leur retrait, à l'annulation du formulaire, ou au démontage — pas seulement à
+  // l'enregistrement. `imagesRef` donne au nettoyage de démontage la valeur la plus
+  // récente sans dépendre de `images` dans les dépendances de l'effet.
+  const imagesRef = useRef(images)
+  imagesRef.current = images
+  useEffect(() => () => {
+    imagesRef.current.forEach(img => img.apercu && URL.revokeObjectURL(img.apercu))
+  }, [])
+
   const apercu = (img) => img.apercu
     ?? (dansLeBucket(img.chemin) ? stockage.getPublicUrl(img.chemin).data.publicUrl : img.chemin)
 
   function ajouter(fichier) {
     if (!fichier || images.length >= MAX_IMAGES) return
-    setImages(liste => [...liste, { fichier, apercu: URL.createObjectURL(fichier), legende: '' }])
+    setImages(liste => [...liste, { id: crypto.randomUUID(), fichier, apercu: URL.createObjectURL(fichier), legende: '' }])
     setCleChamp(k => k + 1)
   }
 
   const majLegende = (i, legende) => setImages(liste => liste.map((img, j) => j === i ? { ...img, legende } : img))
-  const retirer = (i) => setImages(liste => liste.filter((_, j) => j !== i))
+  const retirer = (i) => setImages(liste => {
+    if (liste[i].apercu) URL.revokeObjectURL(liste[i].apercu)
+    return liste.filter((_, j) => j !== i)
+  })
+
+  function annuler() {
+    images.forEach(img => img.apercu && URL.revokeObjectURL(img.apercu))
+    onAnnuler()
+  }
 
   async function enregistrer(e) {
     e.preventDefault()
@@ -91,49 +109,55 @@ export default function FicheFormulaire({ client, type, fiche, ordre, onFini, on
 
   return (
     <form onSubmit={enregistrer} noValidate className="bg-white rounded-2xl border border-black/10 p-6 mb-10 space-y-5">
-      <h3 className="font-poppins font-bold text-text-primary text-base">
-        {fiche ? `Modifier « ${fiche.nom} »` : 'Nouvelle fiche'}
-      </h3>
-      {champ('fiche-nom', 'Nom', nom, setNom, { required: true })}
-      {champ('fiche-fonction', 'Fonction ou métier', fonction, setFonction)}
-      {champ('fiche-titre', 'Phrase mise en avant', titre, setTitre, { multi: true, rows: 2 })}
-      {champ('fiche-texte', 'Texte', texte, setTexte, { multi: true, rows: 8 })}
-      <p className="font-inter text-xs text-text-secondary/70 -mt-3">Une ligne vide entre deux paragraphes.</p>
+      {/* `disabled` sur ce fieldset se propage à tous les champs et boutons descendants
+          (y compris ceux du fieldset « Images » imbriqué) : pendant l'enregistrement,
+          plus aucune saisie ne peut être perdue ou envoyée en double. `contents` l'efface
+          de la mise en page, seul son effet de verrouillage nous intéresse. */}
+      <fieldset disabled={envoi} className="contents">
+        <h3 className="font-poppins font-bold text-text-primary text-base">
+          {fiche ? `Modifier « ${fiche.nom} »` : 'Nouvelle fiche'}
+        </h3>
+        {champ('fiche-nom', 'Nom', nom, setNom, { required: true })}
+        {champ('fiche-fonction', 'Fonction ou métier', fonction, setFonction)}
+        {champ('fiche-titre', 'Phrase mise en avant', titre, setTitre, { multi: true, rows: 2 })}
+        {champ('fiche-texte', 'Texte', texte, setTexte, { multi: true, rows: 8 })}
+        <p className="font-inter text-xs text-text-secondary/70 -mt-3">Une ligne vide entre deux paragraphes.</p>
 
-      <fieldset className="space-y-3">
-        <legend className="font-inter text-text-primary text-sm font-medium mb-2">Images ({images.length}/{MAX_IMAGES})</legend>
-        {images.map((img, i) => (
-          <div key={img.chemin ?? img.apercu} className="flex gap-4 items-center">
-            <img src={apercu(img)} alt="" className="w-20 h-20 object-cover rounded-lg bg-black/5 shrink-0" />
-            <input type="text" value={img.legende} onChange={e => majLegende(i, e.target.value)}
-                   aria-label={`Légende de l’image ${i + 1}`} placeholder="Légende (facultative)"
-                   className={CHAMP + ' text-sm'} />
-            <button type="button" onClick={() => retirer(i)} aria-label={`Retirer l’image ${i + 1}`}
-                    className="font-inter text-sm text-red-600 hover:underline cursor-pointer shrink-0">
-              Retirer
-            </button>
-          </div>
-        ))}
-        {images.length < MAX_IMAGES && (
-          <div>
-            <label htmlFor="fiche-image" className="block font-inter text-sm text-green-accent mb-1">Ajouter une image</label>
-            <input key={cleChamp} id="fiche-image" type="file" accept="image/*"
-                   onChange={e => ajouter(e.target.files?.[0])}
-                   className="block font-inter text-sm text-text-secondary" />
-          </div>
-        )}
+        <fieldset className="space-y-3">
+          <legend className="font-inter text-text-primary text-sm font-medium mb-2">Images ({images.length}/{MAX_IMAGES})</legend>
+          {images.map((img, i) => (
+            <div key={img.chemin ?? img.id} className="flex gap-4 items-center">
+              <img src={apercu(img)} alt="" className="w-20 h-20 object-cover rounded-lg bg-black/5 shrink-0" />
+              <input type="text" value={img.legende} onChange={e => majLegende(i, e.target.value)}
+                     aria-label={`Légende de l’image ${i + 1}`} placeholder="Légende (facultative)"
+                     className={CHAMP + ' text-sm'} />
+              <button type="button" onClick={() => retirer(i)} aria-label={`Retirer l’image ${i + 1}`}
+                      className="font-inter text-sm text-red-600 hover:underline cursor-pointer shrink-0">
+                Retirer
+              </button>
+            </div>
+          ))}
+          {images.length < MAX_IMAGES && (
+            <div>
+              <label htmlFor="fiche-image" className="block font-inter text-sm text-green-accent mb-1">Ajouter une image</label>
+              <input key={cleChamp} id="fiche-image" type="file" accept="image/*"
+                     onChange={e => ajouter(e.target.files?.[0])}
+                     className="block font-inter text-sm text-text-secondary" />
+            </div>
+          )}
+        </fieldset>
+
+        <div className="flex items-center gap-4">
+          <button type="submit" disabled={!nom.trim() || envoi} className={BOUTON}>
+            {envoi ? 'Enregistrement…' : 'Enregistrer la fiche'}
+          </button>
+          <button type="button" onClick={annuler} disabled={envoi}
+                  className="font-inter text-sm text-text-secondary hover:underline cursor-pointer">
+            Annuler
+          </button>
+          {erreur && <span role="alert" className="font-inter text-sm text-red-600">{erreur}</span>}
+        </div>
       </fieldset>
-
-      <div className="flex items-center gap-4">
-        <button type="submit" disabled={!nom.trim() || envoi} className={BOUTON}>
-          {envoi ? 'Enregistrement…' : 'Enregistrer la fiche'}
-        </button>
-        <button type="button" onClick={onAnnuler} disabled={envoi}
-                className="font-inter text-sm text-text-secondary hover:underline cursor-pointer">
-          Annuler
-        </button>
-        {erreur && <span role="alert" className="font-inter text-sm text-red-600">{erreur}</span>}
-      </div>
     </form>
   )
 }

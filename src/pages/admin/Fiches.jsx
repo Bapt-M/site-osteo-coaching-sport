@@ -13,6 +13,7 @@ export default function Fiches({ client, type }) {
   const [fiches, setFiches] = useState(null)
   const [edition, setEdition] = useState(undefined)   // undefined : aucune ; null : nouvelle ; ligne : existante
   const [message, setMessage] = useState(null)
+  const [enCours, setEnCours] = useState(false)   // un déplacement est en cours : flèches désactivées
 
   const charger = useCallback(async () => {
     const { data, error } = await client.from('fiches')
@@ -25,15 +26,20 @@ export default function Fiches({ client, type }) {
   useEffect(() => { setEdition(undefined); setMessage(null); charger() }, [charger])
 
   async function deplacer(i, pas) {
-    const liste = [...fiches]
-    ;[liste[i], liste[i + pas]] = [liste[i + pas], liste[i]]
-    setFiches(liste)
-    // Renumérote toute la liste : robuste même si deux fiches partagent un ordre.
-    const reponses = await Promise.all(liste.map((f, k) =>
-      f.ordre === k ? null : client.from('fiches').update({ ordre: k }).eq('id', f.id)))
-    const echec = reponses.find(r => r?.error)
-    if (echec) setMessage({ type: 'erreur', texte: `Ordre non enregistré : ${echec.error.message}` })
-    charger()
+    setEnCours(true)
+    try {
+      const liste = [...fiches]
+      ;[liste[i], liste[i + pas]] = [liste[i + pas], liste[i]]
+      setFiches(liste)
+      // Renumérote toute la liste : robuste même si deux fiches partagent un ordre.
+      const reponses = await Promise.all(liste.map((f, k) =>
+        f.ordre === k ? null : client.from('fiches').update({ ordre: k }).eq('id', f.id)))
+      const echec = reponses.find(r => r?.error)
+      if (echec) setMessage({ type: 'erreur', texte: `Ordre non enregistré : ${echec.error.message}` })
+      await charger()
+    } finally {
+      setEnCours(false)
+    }
   }
 
   async function supprimer(fiche) {
@@ -94,28 +100,31 @@ export default function Fiches({ client, type }) {
           ? <p className="font-inter text-text-secondary">Aucune fiche pour l’instant.</p>
           : (
             <ul className="space-y-4">
-              {fiches.map((f, i) => (
-                <li key={f.id} className="flex gap-5 items-start bg-white rounded-2xl border border-black/10 p-4">
-                  {vignette(f)
-                    ? <img src={vignette(f)} alt="" className="w-20 h-20 object-cover rounded-lg bg-black/5 shrink-0" />
-                    : <div className="w-20 h-20 rounded-lg bg-black/5 shrink-0" />}
-                  <div className="flex-1 min-w-0">
-                    <div data-testid="fiche-nom" className="font-poppins font-bold text-text-primary">{f.nom}</div>
-                    <div className="font-inter text-sm text-text-secondary">{f.fonction}</div>
-                    {f.titre && <p className="font-inter text-sm text-text-secondary/80 mt-2 line-clamp-2">« {f.titre} »</p>}
-                    <div className="flex flex-wrap items-center gap-4 mt-3">
-                      <button type="button" onClick={() => deplacer(i, -1)} disabled={i === 0}
-                              aria-label={`Monter « ${f.nom} »`} className={PETIT + ' text-text-secondary'}>↑ Monter</button>
-                      <button type="button" onClick={() => deplacer(i, 1)} disabled={i === fiches.length - 1}
-                              aria-label={`Descendre « ${f.nom} »`} className={PETIT + ' text-text-secondary'}>↓ Descendre</button>
-                      <button type="button" onClick={() => { setMessage(null); setEdition(f) }}
-                              className={PETIT + ' text-green-accent'}>Modifier</button>
-                      <button type="button" onClick={() => supprimer(f)}
-                              className={PETIT + ' text-red-600'}>Supprimer</button>
+              {fiches.map((f, i) => {
+                const src = vignette(f)
+                return (
+                  <li key={f.id} className="flex gap-5 items-start bg-white rounded-2xl border border-black/10 p-4">
+                    {src
+                      ? <img src={src} alt="" className="w-20 h-20 object-cover rounded-lg bg-black/5 shrink-0" />
+                      : <div className="w-20 h-20 rounded-lg bg-black/5 shrink-0" />}
+                    <div className="flex-1 min-w-0">
+                      <div data-testid="fiche-nom" className="font-poppins font-bold text-text-primary">{f.nom}</div>
+                      <div className="font-inter text-sm text-text-secondary">{f.fonction}</div>
+                      {f.titre && <p className="font-inter text-sm text-text-secondary/80 mt-2 line-clamp-2">« {f.titre} »</p>}
+                      <div className="flex flex-wrap items-center gap-4 mt-3">
+                        <button type="button" onClick={() => deplacer(i, -1)} disabled={i === 0 || enCours}
+                                aria-label={`Monter « ${f.nom} »`} className={PETIT + ' text-text-secondary'}>↑ Monter</button>
+                        <button type="button" onClick={() => deplacer(i, 1)} disabled={i === fiches.length - 1 || enCours}
+                                aria-label={`Descendre « ${f.nom} »`} className={PETIT + ' text-text-secondary'}>↓ Descendre</button>
+                        <button type="button" onClick={() => { setMessage(null); setEdition(f) }}
+                                className={PETIT + ' text-green-accent'}>Modifier</button>
+                        <button type="button" onClick={() => supprimer(f)}
+                                className={PETIT + ' text-red-600'}>Supprimer</button>
+                      </div>
                     </div>
-                  </div>
-                </li>
-              ))}
+                  </li>
+                )
+              })}
             </ul>
           )}
     </>

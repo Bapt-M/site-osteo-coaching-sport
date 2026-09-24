@@ -1,6 +1,7 @@
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Fiches from './Fiches'
+import { reduireImage } from '../../lib/image'
 
 vi.mock('../../lib/image', () => ({
   reduireImage: vi.fn(async () => ({ blob: new Blob(['x'], { type: 'image/webp' }), extension: 'webp', type: 'image/webp' })),
@@ -143,4 +144,70 @@ test('supprime une fiche après confirmation, avec ses images du bucket', async 
   await waitFor(() => expect(espions.delete).toHaveBeenCalledWith('h0'))
   expect(espions.remove).toHaveBeenCalledWith(['b.webp'])
   await waitFor(() => expect(screen.queryAllByRole('listitem')).toHaveLength(0))
+})
+
+test('libère l’URL de l’aperçu quand une image est retirée du formulaire', async () => {
+  const { client } = fauxClient()
+  render(<Fiches client={client} type="hommage" />)
+  await userEvent.click(await screen.findByRole('button', { name: /ajouter une fiche/i }))
+  await userEvent.upload(screen.getByLabelText(/ajouter une image/i), new File(['i'], 'a.jpg', { type: 'image/jpeg' }))
+  URL.revokeObjectURL.mockClear()
+  await userEvent.click(screen.getByRole('button', { name: /retirer l’image 1/i }))
+  expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:apercu')
+})
+
+test('libère les URL des aperçus quand le formulaire est annulé', async () => {
+  const { client } = fauxClient()
+  render(<Fiches client={client} type="hommage" />)
+  await userEvent.click(await screen.findByRole('button', { name: /ajouter une fiche/i }))
+  await userEvent.upload(screen.getByLabelText(/ajouter une image/i), new File(['i'], 'a.jpg', { type: 'image/jpeg' }))
+  URL.revokeObjectURL.mockClear()
+  await userEvent.click(screen.getByRole('button', { name: /annuler/i }))
+  expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:apercu')
+})
+
+test('verrouille le formulaire pendant l’enregistrement, sans perdre les modifications en cours', async () => {
+  const { client } = fauxClient()
+  reduireImage.mockImplementationOnce(() => new Promise(() => {}))
+  render(<Fiches client={client} type="hommage" />)
+  await userEvent.click(await screen.findByRole('button', { name: /ajouter une fiche/i }))
+  await userEvent.type(screen.getByLabelText(/^nom$/i), 'X')
+  await userEvent.upload(screen.getByLabelText(/ajouter une image/i), new File(['i'], 'a.jpg', { type: 'image/jpeg' }))
+  await userEvent.click(screen.getByRole('button', { name: /enregistrer la fiche/i }))
+  await waitFor(() => expect(screen.getByLabelText(/^nom$/i)).toBeDisabled())
+  expect(screen.getByRole('button', { name: /retirer l’image 1/i })).toBeDisabled()
+})
+
+test('désactive toutes les flèches pendant un déplacement en cours', async () => {
+  const { client } = fauxClient([h(0), h(1)])
+  let libere
+  const attente = new Promise(resolve => { libere = resolve })
+  const from = client.from
+  client.from = (table) => {
+    const base = from(table)
+    return { ...base, update: (valeurs) => ({ eq: async (colonne, id) => { await attente; return base.update(valeurs).eq(colonne, id) } }) }
+  }
+  render(<Fiches client={client} type="hommage" />)
+  const items = await screen.findAllByRole('listitem')
+  await userEvent.click(within(items[1]).getByRole('button', { name: /monter/i }))
+  screen.getAllByRole('button', { name: /monter|descendre/i }).forEach(bouton => expect(bouton).toBeDisabled())
+  libere()
+  // h0 finit dernier (index 1) : son bouton « Descendre » reste désactivé par
+  // construction (rien à descendre plus bas) — c’est son « Monter » qui ne l’est
+  // plus une fois `enCours` retombé à faux.
+  await waitFor(() => expect(within(items[0]).getByRole('button', { name: /monter/i })).not.toBeDisabled())
+})
+
+test('n’émet pas d’avertissement de clé dupliquée pour deux nouvelles images (aperçus identiques)', async () => {
+  const consoleErreur = vi.spyOn(console, 'error').mockImplementation(() => {})
+  const { client } = fauxClient()
+  render(<Fiches client={client} type="hommage" />)
+  await userEvent.click(await screen.findByRole('button', { name: /ajouter une fiche/i }))
+  await userEvent.upload(screen.getByLabelText(/ajouter une image/i), new File(['i'], 'a.jpg', { type: 'image/jpeg' }))
+  await userEvent.upload(screen.getByLabelText(/ajouter une image/i), new File(['i'], 'b.jpg', { type: 'image/jpeg' }))
+  expect(screen.getByLabelText(/légende de l’image 1/i)).toBeInTheDocument()
+  expect(screen.getByLabelText(/légende de l’image 2/i)).toBeInTheDocument()
+  const avertissementsCle = consoleErreur.mock.calls.filter(([message]) => String(message).includes('same key'))
+  expect(avertissementsCle).toHaveLength(0)
+  consoleErreur.mockRestore()
 })
