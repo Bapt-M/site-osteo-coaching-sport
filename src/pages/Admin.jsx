@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react'
 import { getSupabase, supabaseConfigure } from '../lib/supabase'
 import { DEFAUTS, PAGES } from '../content/registre'
+import Photos from './admin/Photos'
 
 const CHAMP = 'w-full rounded-lg border border-black/15 bg-white px-4 py-3 font-inter text-text-primary ' +
               'outline-none focus:border-green-accent focus:ring-2 focus:ring-green-accent/25 transition'
+
+/** Entrée du sommaire qui n'est pas une page de textes. */
+const ONGLET_PHOTOS = 'photos'
 
 /* ── Écran de connexion ─────────────────────────────────────────────── */
 
@@ -242,6 +246,17 @@ function Editeur({ client, session, onDeconnexion }) {
               )
             })}
           </ul>
+          <div className="mt-5 pt-5 border-t border-black/10">
+            <button
+              onClick={() => { setPageActive(ONGLET_PHOTOS); setFiltre('') }}
+              className={`w-full text-left px-3 py-2 rounded-lg font-inter text-sm transition-colors cursor-pointer
+                ${pageActive === ONGLET_PHOTOS && !filtre
+                  ? 'bg-green-accent text-white'
+                  : 'text-text-secondary hover:bg-black/5'}`}
+            >
+              Photos d’actualité
+            </button>
+          </div>
         </nav>
 
         <main className="flex-1 min-w-0">
@@ -251,11 +266,14 @@ function Editeur({ client, session, onDeconnexion }) {
             className="md:hidden w-full rounded-lg border border-black/15 bg-white px-3 py-3 mb-6 font-inter"
           >
             {PAGES.map(p => <option key={p.id} value={p.id}>{p.titre}</option>)}
+            <option value={ONGLET_PHOTOS}>Photos d’actualité</option>
           </select>
 
           {filtre
             ? <Resultats filtre={filtre} valeurs={valeurs} initial={initial} onChange={majChamp} onReset={reinitialiser} />
-            : (() => {
+            : pageActive === ONGLET_PHOTOS
+              ? <Photos client={client} />
+              : (() => {
                 const page = PAGES.find(p => p.id === pageActive)
                 return (
                   <>
@@ -287,25 +305,27 @@ function Editeur({ client, session, onDeconnexion }) {
       </div>
 
       {/* Barre d'enregistrement */}
-      <div className="fixed bottom-0 inset-x-0 z-20 bg-white border-t border-black/10 px-6 py-4">
-        <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
-          <div className="font-inter text-sm">
-            {message
-              ? <span className={message.type === 'erreur' ? 'text-red-600' : 'text-green-accent'}>{message.texte}</span>
-              : <span className="text-text-secondary">
-                  {modifiees.length ? `${modifiees.length} modification${modifiees.length > 1 ? 's' : ''} en attente` : 'Aucune modification'}
-                </span>}
+      {!(pageActive === ONGLET_PHOTOS && !modifiees.length) && (
+        <div className="fixed bottom-0 inset-x-0 z-20 bg-white border-t border-black/10 px-6 py-4">
+          <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
+            <div className="font-inter text-sm">
+              {message
+                ? <span className={message.type === 'erreur' ? 'text-red-600' : 'text-green-accent'}>{message.texte}</span>
+                : <span className="text-text-secondary">
+                    {modifiees.length ? `${modifiees.length} modification${modifiees.length > 1 ? 's' : ''} en attente` : 'Aucune modification'}
+                  </span>}
+            </div>
+            <button
+              onClick={enregistrer}
+              disabled={!modifiees.length || etat === 'envoi'}
+              className="px-7 py-3 rounded-full bg-green-accent text-white font-poppins font-bold text-sm
+                         hover:bg-teal-accent transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            >
+              {etat === 'envoi' ? 'Enregistrement…' : 'Enregistrer'}
+            </button>
           </div>
-          <button
-            onClick={enregistrer}
-            disabled={!modifiees.length || etat === 'envoi'}
-            className="px-7 py-3 rounded-full bg-green-accent text-white font-poppins font-bold text-sm
-                       hover:bg-teal-accent transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-          >
-            {etat === 'envoi' ? 'Enregistrement…' : 'Enregistrer'}
-          </button>
         </div>
-      </div>
+      )}
     </div>
   )
 }
