@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { TIMELINE, DIPLOMES, PADEL, HOMMAGES, TEMOIGNAGES } from '../content/data/histoire'
+import { TIMELINE, DIPLOMES, PADEL } from '../content/data/histoire'
 import { useTextes } from '../content/ContenuProvider'
 import { enParagraphes } from '../content/registre'
+import { useFiches } from '../content/useFiches'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -13,6 +14,9 @@ const fadeUp = {
 // accompagnés aujourd'hui.
 export default function Histoire() {
   const textes = useTextes()
+  const fiches = useFiches()
+  const hommages = fiches?.filter(f => f.type === 'hommage') ?? []
+  const temoignages = fiches?.filter(f => f.type === 'temoignage') ?? []
 
   const [videoOpen, setVideoOpen] = useState(false)
 
@@ -216,7 +220,7 @@ export default function Histoire() {
       </section>
 
       {/* Hommages */}
-      <section id="hommages" className="py-24 px-6 bg-green-deep scroll-mt-24">
+      <section id="hommages" aria-labelledby="titre-hommages" className="py-24 px-6 bg-green-deep scroll-mt-24">
         <div className="max-w-[1360px] mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -228,48 +232,48 @@ export default function Histoire() {
             <div className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-accent font-poppins font-bold text-xs tracking-widest mb-4">
               {textes['hommages.surtitre']}
             </div>
-            <h2 className="font-poppins font-bold text-white text-4xl md:text-5xl leading-tight">
+            <h2 id="titre-hommages" className="font-poppins font-bold text-white text-4xl md:text-5xl leading-tight">
               {textes['hommages.titre1']}<br /><span className="text-green-accent">{textes['hommages.titre2']}</span>
             </h2>
           </motion.div>
 
           <div className="space-y-16">
-            {HOMMAGES.map((h, i) => (
+            {hommages.map(h => (
               <motion.article
-                key={h.nom}
+                key={h.id}
                 initial={{ opacity: 0, y: 28 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-60px' }}
                 transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
                 className="flex flex-col md:flex-row gap-10"
               >
-                {h.images?.length > 0 && (
+                {h.images.length > 0 && (
                   <div className="md:w-[300px] shrink-0 space-y-4">
-                    {h.images.map(({ src, legende }) => (
-                      <figure key={src} className="m-0">
+                    {h.images.map(({ url, legende }, j) => (
+                      <figure key={j} className="m-0">
                         <div className="rounded-2xl overflow-hidden">
                           <img
-                            src={src}
-                            alt={textes[`padel.${i}.legende`]}
+                            src={url}
+                            alt={legende || h.nom}
                             className="w-full h-auto block"
                             onError={e => { e.target.closest('figure').style.display = 'none' }}
                           />
                         </div>
-                        <figcaption className="font-inter text-white/45 text-xs mt-2">{legende}</figcaption>
+                        {legende && <figcaption className="font-inter text-white/45 text-xs mt-2">{legende}</figcaption>}
                       </figure>
                     ))}
                   </div>
                 )}
                 <div className="flex-1 border-l-2 border-green-accent/40 pl-6 md:pl-8">
-                  <h3 className="font-poppins font-bold text-white text-2xl">{textes[`hommage.${i}.nom`]}</h3>
-                  <p className="font-inter text-green-accent text-sm mb-6">{textes[`hommage.${i}.role`]}</p>
-                  {h.citation && (
+                  <h3 className="font-poppins font-bold text-white text-2xl">{h.nom}</h3>
+                  <p className="font-inter text-green-accent text-sm mb-6">{h.fonction}</p>
+                  {h.titre && (
                     <p className="font-poppins italic text-white text-xl md:text-2xl leading-snug mb-6">
-                      «&nbsp;{textes[`hommage.${i}.citation`]}&nbsp;»
+                      «&nbsp;{h.titre}&nbsp;»
                     </p>
                   )}
                   <div className="space-y-4">
-                    {enParagraphes(textes[`hommage.${i}.paragraphes`]).map((t, j) => (
+                    {enParagraphes(h.texte).map((t, j) => (
                       <p key={j} className="font-inter text-white/70 leading-relaxed">{t}</p>
                     ))}
                   </div>
@@ -299,8 +303,8 @@ export default function Histoire() {
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-            {TEMOIGNAGES.map((t, i) => (
-              <Temoignage key={t.nom} temoignage={t} index={i} />
+            {temoignages.map(t => (
+              <Temoignage key={t.id} fiche={t} />
             ))}
           </div>
         </div>
@@ -388,10 +392,10 @@ export default function Histoire() {
   )
 }
 
-/** Carte de témoignage : extrait par défaut, texte intégral au clic. */
-function Temoignage({ temoignage: t, index }) {
+/** Carte de témoignage : phrase mise en avant, texte intégral au clic. */
+function Temoignage({ fiche: t }) {
   const [ouvert, setOuvert] = useState(false)
-  const textes = useTextes()
+  const image = t.images[0]
   return (
     <motion.article
       initial={{ opacity: 0, y: 24 }}
@@ -400,10 +404,10 @@ function Temoignage({ temoignage: t, index }) {
       transition={{ duration: 0.6 }}
       className="rounded-2xl bg-white border border-green-deep/10 overflow-hidden shadow-sm"
     >
-      {t.img && (
+      {image && (
         <img
-          src={t.img}
-          alt={t.imgAlt || t.nom}
+          src={image.url}
+          alt={image.legende || t.nom}
           className="w-full h-auto block border-b border-green-deep/10"
           onError={e => { e.target.style.display = 'none' }}
         />
@@ -411,22 +415,21 @@ function Temoignage({ temoignage: t, index }) {
       <div className="p-7">
         <div className="font-poppins text-green-accent text-4xl leading-none mb-3">“</div>
         <div className="space-y-4">
-          {(ouvert ? enParagraphes(textes[`temoignage.${index}.paragraphes`]) : [textes[`temoignage.${index}.extrait`]]).map((p, i) => (
+          {(ouvert ? enParagraphes(t.texte) : [t.titre]).map((p, i) => (
             <p key={i} className="font-inter text-text-secondary leading-relaxed">{p}</p>
           ))}
         </div>
-        <button
-          onClick={() => setOuvert(o => !o)}
-          className="mt-5 font-poppins font-bold text-sm text-green-accent hover:text-teal-accent transition-colors"
-        >
-          {ouvert ? 'Réduire ↑' : 'Lire le témoignage →'}
-        </button>
+        {t.texte && (
+          <button
+            onClick={() => setOuvert(o => !o)}
+            className="mt-5 font-poppins font-bold text-sm text-green-accent hover:text-teal-accent transition-colors"
+          >
+            {ouvert ? 'Réduire ↑' : 'Lire le témoignage →'}
+          </button>
+        )}
         <div className="mt-6 pt-5 border-t border-green-deep/10">
-          <div className="font-poppins font-bold text-text-primary">{textes[`temoignage.${index}.nom`]}</div>
-          <div className="font-inter text-text-secondary/70 text-sm">{textes[`temoignage.${index}.role`]}</div>
-          {t.langue && (
-            <div className="font-inter text-text-secondary/50 text-xs mt-1">{t.langue}</div>
-          )}
+          <div data-testid="temoignage-nom" className="font-poppins font-bold text-text-primary">{t.nom}</div>
+          <div className="font-inter text-text-secondary/70 text-sm">{t.fonction}</div>
         </div>
       </div>
     </motion.article>
