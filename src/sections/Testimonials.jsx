@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { useTextes } from '../content/ContenuProvider'
 import { useFiches } from '../content/useFiches'
+import { enParagraphes } from '../content/registre'
 
 // Extraits des témoignages reçus. Le texte intégral est sur /histoire#temoignages.
 const containerVariants = {
@@ -26,6 +27,9 @@ export function tronquer(texte, max = 220) {
   const coupe = texte.slice(0, max)
   return coupe.slice(0, coupe.lastIndexOf(' ') > 0 ? coupe.lastIndexOf(' ') : max).trimEnd() + '…'
 }
+
+/** Phrase mise en avant, ou faute de titre, le premier paragraphe du texte. */
+const citation = (t) => t.titre || (enParagraphes(t.texte)[0] ?? '')
 
 export default function Testimonials() {
   const textes = useTextes()
@@ -61,7 +65,7 @@ export default function Testimonials() {
                 className="rounded-2xl p-8 cursor-default border border-white/15 bg-white/[0.05]"
               >
                 <div className="text-5xl font-poppins font-bold text-cyan-accent/40 leading-none mb-4">"</div>
-                <p className="font-inter text-white/75 text-base leading-relaxed mb-6">{tronquer(t.titre)}</p>
+                <p className="font-inter text-white/75 text-base leading-relaxed mb-6">{tronquer(citation(t))}</p>
                 <div className="flex items-center gap-3">
                   <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${DEGRADES[i % 3]} flex items-center justify-center text-white font-poppins font-bold text-xs shrink-0`}>
                     {initiales(t.nom)}

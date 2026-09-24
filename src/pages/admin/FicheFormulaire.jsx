@@ -7,8 +7,12 @@ export const MAX_IMAGES = 4
 const BOUTON = 'px-6 py-2.5 rounded-full bg-green-accent text-white font-poppins font-bold text-sm ' +
                'hover:bg-teal-accent transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer'
 
-/** Une image du site (« /images/… ») n'est jamais effacée : seul le bucket l'est. */
-export const dansLeBucket = (chemin) => !chemin.startsWith('/')
+/**
+ * Une image du site (« /images/… », un seul « / ») n'est jamais effacée :
+ * seul le bucket l'est. « // » n'est pas un chemin du site — même règle
+ * que `urlFiche()` dans src/lib/supabase.js.
+ */
+export const dansLeBucket = (chemin) => !/^\/(?!\/)/.test(chemin)
 
 /**
  * Formulaire d'une fiche. Les nouvelles images ne sont envoyées qu'à
@@ -66,13 +70,13 @@ export default function FicheFormulaire({ client, type, fiche, ordre, onFini, on
     try {
       const finales = []
       for (const img of images) {
-        if (!img.fichier) { finales.push({ chemin: img.chemin, legende: img.legende.trim() }); continue }
+        if (!img.fichier) { finales.push({ chemin: img.chemin, legende: (img.legende ?? '').trim() }); continue }
         const { blob, extension, type: mime } = await reduireImage(img.fichier)
         const chemin = `${crypto.randomUUID()}.${extension}`
         const { error } = await stockage.upload(chemin, blob, { contentType: mime, upsert: false })
         if (error) throw new Error(`Envoi d’une image refusé : ${error.message}`)
         envoyees.push(chemin)
-        finales.push({ chemin, legende: img.legende.trim() })
+        finales.push({ chemin, legende: (img.legende ?? '').trim() })
       }
       const ligne = { type, nom: nom.trim(), fonction: fonction.trim(), titre: titre.trim(), texte: texte.trim(), images: finales }
       const { error } = fiche

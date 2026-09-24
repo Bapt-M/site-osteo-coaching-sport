@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { TIMELINE, DIPLOMES, PADEL } from '../content/data/histoire'
 import { useTextes } from '../content/ContenuProvider'
@@ -19,6 +20,21 @@ export default function Histoire() {
   const temoignages = fiches?.filter(f => f.type === 'temoignage') ?? []
 
   const [videoOpen, setVideoOpen] = useState(false)
+
+  // ScrollManager défile ~60 ms après la navigation, alors que les fiches
+  // sont peut-être encore `null` : les hommages/témoignages, une fois
+  // arrivés, changent la hauteur de la page et l'ancre se retrouve décalée.
+  // On corrige une fois, au premier passage de `null` à la liste — jamais
+  // au montage initial, et jamais deux fois.
+  const { hash } = useLocation()
+  const aDejaDefile = useRef(false)
+  useEffect(() => {
+    if (aDejaDefile.current || fiches === null) return
+    aDejaDefile.current = true
+    if (hash === '#hommages' || hash === '#temoignages') {
+      document.getElementById(hash.slice(1))?.scrollIntoView({ block: 'start' })
+    }
+  }, [fiches, hash])
 
   return (
     <main className="bg-site-bg">
@@ -396,6 +412,8 @@ export default function Histoire() {
 function Temoignage({ fiche: t }) {
   const [ouvert, setOuvert] = useState(false)
   const image = t.images[0]
+  // Faute de phrase mise en avant, on retombe sur le premier paragraphe du texte.
+  const citation = t.titre || (enParagraphes(t.texte)[0] ?? '')
   return (
     <motion.article
       initial={{ opacity: 0, y: 24 }}
@@ -415,7 +433,7 @@ function Temoignage({ fiche: t }) {
       <div className="p-7">
         <div className="font-poppins text-green-accent text-4xl leading-none mb-3">“</div>
         <div className="space-y-4">
-          {(ouvert ? enParagraphes(t.texte) : [t.titre]).map((p, i) => (
+          {(ouvert ? enParagraphes(t.texte) : [citation]).map((p, i) => (
             <p key={i} className="font-inter text-text-secondary leading-relaxed">{p}</p>
           ))}
         </div>

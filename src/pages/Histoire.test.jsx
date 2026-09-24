@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import Histoire from './Histoire'
@@ -67,6 +67,12 @@ test('affiche les fiches de la base, dans l’ordre reçu', async () => {
   expect(noms).toEqual(['Bruno', 'Chloé'])
 })
 
+test('retombe sur le premier paragraphe du texte si le titre est vide', async () => {
+  lireFiches.mockResolvedValue([fiche('temoignage', 'Chloé', { titre: '', texte: 'Premier paragraphe de Chloé.\n\nSuite.' })])
+  render(<Histoire />, { wrapper: Wrapper })
+  expect(await screen.findByText('Premier paragraphe de Chloé.')).toBeInTheDocument()
+})
+
 test('un témoignage montre son titre, puis tout le texte au clic', async () => {
   lireFiches.mockResolvedValue([fiche('temoignage', 'Bruno')])
   render(<Histoire />, { wrapper: Wrapper })
@@ -80,6 +86,16 @@ test('n’affiche pas les fiches d’origine pendant la lecture', () => {
   lireFiches.mockReturnValue(new Promise(() => {}))
   render(<Histoire />, { wrapper: Wrapper })
   expect(screen.queryByText(/Fred FORTE/)).not.toBeInTheDocument()
+})
+
+test('défile jusqu’à #temoignages une fois les fiches chargées', async () => {
+  Element.prototype.scrollIntoView = vi.fn()
+  lireFiches.mockResolvedValue([])
+  render(<Histoire />, {
+    wrapper: ({ children }) => <MemoryRouter initialEntries={['/histoire#temoignages']}>{children}</MemoryRouter>,
+  })
+  await waitFor(() => expect(Element.prototype.scrollIntoView).toHaveBeenCalled())
+  expect(document.getElementById('temoignages').scrollIntoView).toHaveBeenCalledWith({ block: 'start' })
 })
 
 test('affiche la galerie padel', () => {

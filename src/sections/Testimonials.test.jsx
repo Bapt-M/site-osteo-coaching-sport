@@ -39,6 +39,14 @@ test('n’affiche que les 3 premiers témoignages de la base, jamais un hommage'
   expect(screen.getByText('Fonction de Alice')).toBeInTheDocument()
 })
 
+test('retombe sur le premier paragraphe du texte si le titre est vide', async () => {
+  lireFiches.mockResolvedValue([
+    { ...temoignage('Alice', ''), texte: 'Premier paragraphe.\n\nSecond paragraphe.' },
+  ])
+  renderWithRouter(<Testimonials />)
+  expect(await screen.findByText('Premier paragraphe.')).toBeInTheDocument()
+})
+
 test('initiales et titre tronqué', () => {
   expect(initiales('Matthieu LORENTZ')).toBe('ML')
   expect(initiales('Paris McCURDY')).toBe('PM')

@@ -24,6 +24,17 @@ test('met une ligne au format d’affichage', () => {
   })
 })
 
+test('ignore les entrées d’image dont le chemin n’est pas exploitable', () => {
+  expect(versFiche({
+    id: '1', type: 'hommage', nom: 'X',
+    images: [{ chemin: 42 }, { legende: 'sans chemin' }, { chemin: '/images/x.jpg', legende: 'ok' }],
+  }).images).toEqual([{ url: '/images/x.jpg', legende: 'ok' }])
+})
+
+test('un chemin commençant par « // » est traité comme un objet du bucket, jamais comme une URL externe', () => {
+  expect(urlFiche('//images/x.jpg')).toBe('https://test.supabase.co/storage/v1/object/public/fiches///images/x.jpg')
+})
+
 test('lit les fiches dans l’ordre choisi', async () => {
   const fetchMock = vi.fn().mockResolvedValue({
     ok: true, json: async () => [{ id: '1', type: 'temoignage', nom: 'A', images: [] }],

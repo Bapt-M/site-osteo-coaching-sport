@@ -70,12 +70,13 @@ export async function lirePhotos(limite = 5) {
 }
 
 /**
- * URL d'une image de fiche. Un chemin qui commence par « / » désigne une
- * image livrée avec le site (les fiches d'origine) ; sinon, un objet du
- * bucket `fiches`.
+ * URL d'une image de fiche. Un chemin qui commence par un seul « / » désigne
+ * une image livrée avec le site (les fiches d'origine) ; « // » n'est pas un
+ * chemin du site (ce serait une URL relative au protocole) et est traité
+ * comme un objet du bucket `fiches`, comme tout le reste.
  */
 export const urlFiche = (chemin) =>
-  chemin.startsWith('/') ? chemin : `${url}/storage/v1/object/public/fiches/${chemin}`
+  /^\/(?!\/)/.test(chemin) ? chemin : `${url}/storage/v1/object/public/fiches/${chemin}`
 
 /** Ligne de la table `fiches` → fiche prête à afficher. */
 export function versFiche(ligne) {
@@ -86,7 +87,11 @@ export function versFiche(ligne) {
     fonction: ligne.fonction ?? '',
     titre: ligne.titre ?? '',
     texte: ligne.texte ?? '',
-    images: (ligne.images ?? []).map(i => ({ url: urlFiche(i.chemin), legende: i.legende ?? '' })),
+    // Un contenu jsonb corrompu ou partiel ne doit pas casser l'affichage :
+    // on ignore les entrées sans chemin de type chaîne.
+    images: (ligne.images ?? [])
+      .filter(i => typeof i?.chemin === 'string')
+      .map(i => ({ url: urlFiche(i.chemin), legende: i.legende ?? '' })),
   }
 }
 
