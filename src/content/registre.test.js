@@ -40,3 +40,18 @@ test('les mentions légales signalent le contenu Facebook chargé à la demande'
   expect(DEFAUTS['ml.facebook']).toMatch(/Facebook/)
   expect(DEFAUTS['ml.facebook']).toMatch(/cookies/)
 })
+
+test('les fiches ne sont plus des textes du registre', () => {
+  const cles = Object.keys(DEFAUTS)
+  expect(cles.filter(c => /^(hommage|temoignage|temoin)\.\d+\./.test(c))).toEqual([])
+  for (const c of ['hommages.surtitre', 'hommages.titre1', 'temoignages.titre', 'temoins.surtitre', 'temoins.lien1']) {
+    expect(cles).toContain(c)
+  }
+})
+
+test('les liens Hommages et Témoignages de la hero sont éditables', () => {
+  const bandeau = PAGES.find(p => p.id === 'accueil').groupes.find(g => g.id === 'hero')
+  expect(bandeau.champs.map(c => c.cle)).toEqual(expect.arrayContaining(['hero.hommages', 'hero.temoignages']))
+  expect(DEFAUTS['hero.hommages']).toBe('HOMMAGES')
+  expect(DEFAUTS['hero.temoignages']).toBe('TÉMOIGNAGES')
+})
