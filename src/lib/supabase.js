@@ -44,3 +44,27 @@ export async function lireContenus() {
     return {}
   }
 }
+
+/** URL publique d'une photo du bucket `photos`. */
+export const urlPhoto = (chemin) => `${url}/storage/v1/object/public/photos/${chemin}`
+
+/**
+ * Les dernières photos d'actualité, plus récentes d'abord. Même principe que
+ * `lireContenus()` : `fetch` direct, et toute panne renvoie une liste vide.
+ */
+export async function lirePhotos(limite = 5) {
+  if (!supabaseConfigure) return []
+  try {
+    const reponse = await fetch(
+      `${url}/rest/v1/photos?select=id,chemin,description&order=cree_le.desc&limit=${limite}`,
+      { headers: { apikey: cle, Authorization: `Bearer ${cle}` } },
+    )
+    if (!reponse.ok) return []
+    const lignes = await reponse.json()
+    return lignes.map(({ id, chemin, description }) => ({
+      id, url: urlPhoto(chemin), description: description ?? '',
+    }))
+  } catch {
+    return []
+  }
+}
