@@ -5,7 +5,7 @@ test('réduit le plus grand côté à 1600 px en gardant les proportions', () =>
   expect(dimensionsReduites(3024, 4032)).toEqual({ largeur: 1200, hauteur: 1600 })
 })
 
-test('n\'agrandit jamais une petite image', () => {
+test('n’agrandit jamais une petite image', () => {
   expect(dimensionsReduites(800, 600)).toEqual({ largeur: 800, hauteur: 600 })
 })
 

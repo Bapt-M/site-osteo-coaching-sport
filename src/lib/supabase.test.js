@@ -6,11 +6,11 @@ const { lirePhotos, urlPhoto } = await import('./supabase')
 
 afterEach(() => { vi.unstubAllGlobals() })
 
-test('construit l\'URL publique d\'une photo', () => {
+test('construit l’URL publique d’une photo', () => {
   expect(urlPhoto('abc.webp')).toBe('https://test.supabase.co/storage/v1/object/public/photos/abc.webp')
 })
 
-test('lit les 5 dernières photos, plus récentes d\'abord', async () => {
+test('lit les 5 dernières photos, plus récentes d’abord', async () => {
   const fetchMock = vi.fn().mockResolvedValue({
     ok: true,
     json: async () => [
@@ -32,12 +32,12 @@ test('lit les 5 dernières photos, plus récentes d\'abord', async () => {
   ])
 })
 
-test('renvoie une liste vide si la reponse est en erreur', async () => {
+test('renvoie une liste vide si la réponse est en erreur', async () => {
   vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, json: async () => ({}) }))
   expect(await lirePhotos()).toEqual([])
 })
 
-test('renvoie une liste vide si le reseau tombe', async () => {
+test('renvoie une liste vide si le réseau tombe', async () => {
   vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('hors ligne')))
   expect(await lirePhotos()).toEqual([])
 })
