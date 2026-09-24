@@ -46,18 +46,21 @@ valeurs d'origine inscrites dans `src/content/defaults.js`. Le bouton
 Si Supabase est injoignable, le site public affiche les textes d'origine — il
 ne dépend jamais de la base pour fonctionner.
 
-### Photos d'actualité
+### Section Actualités
 
-Onglet **Photos** de l'administration : choisir une image, écrire sa
-description, *Publier*. L'image est réduite dans le navigateur (1600 px,
-WebP) avant l'envoi. Les 5 plus récentes s'affichent en nuage sur l'accueil ;
+Tout se règle dans l'onglet **Actualités** de l'administration (en bas du
+sommaire) : titre de la section, photos et dernier post Facebook.
+
+#### Photos
+
+Choisir une image, écrire sa description, *Publier*. L'image est réduite
+dans le navigateur (1600 px, WebP) avant l'envoi. Les 5 plus récentes s'affichent en nuage sur l'accueil ;
 les plus anciennes restent listées et peuvent être supprimées.
 
-### Dernier post Facebook
+#### Dernier post Facebook
 
-Page **Accueil** → groupe **Actualités** → coller le code d'intégration du
-post (sur Facebook : ⋯ du post → *Intégrer* → *Copier le code*), puis
-*Enregistrer*. Un simple lien de post est aussi accepté, mais les liens
+Coller le code d'intégration du post (sur Facebook : ⋯ du post →
+*Intégrer* → *Copier le code*), puis *Enregistrer* en bas de page. Un simple lien de post est aussi accepté, mais les liens
 courts de *Copier le lien* (`/share/p/…`) ne s'affichent pas toujours dans
 le lecteur : le code d'intégration contient le lien permanent, plus sûr.
 

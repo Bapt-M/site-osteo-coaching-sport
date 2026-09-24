@@ -1,7 +1,7 @@
-import { PAGES, DEFAUTS, enParagraphes } from './registre'
+import { PAGES, DEFAUTS, ACTUALITES, enParagraphes } from './registre'
 
 test('toutes les clés sont uniques et pourvues', () => {
-  const champs = PAGES.flatMap(p => p.groupes.flatMap(g => g.champs))
+  const champs = [...PAGES.flatMap(p => p.groupes.flatMap(g => g.champs)), ...ACTUALITES.champs]
   const cles = champs.map(c => c.cle)
   expect(new Set(cles).size).toBe(cles.length)
   expect(champs.filter(c => c.defaut === undefined || c.defaut === null)).toEqual([])
@@ -28,10 +28,10 @@ test('le contact passe par l’e-mail, plus par le téléphone', () => {
   expect(Object.values(DEFAUTS).join(' ')).not.toContain('61 19 64 84')
 })
 
-test('la section Actualités est éditable depuis l’accueil', () => {
+test('les textes Actualités ont leur propre onglet, hors de la page Accueil', () => {
+  expect(ACTUALITES.champs.map(c => c.cle)).toEqual(['actu.titre', 'actu.facebook.lien'])
   const accueil = PAGES.find(p => p.id === 'accueil')
-  const groupe = accueil.groupes.find(g => g.id === 'actualites')
-  expect(groupe.champs.map(c => c.cle)).toEqual(['actu.titre', 'actu.facebook.lien'])
+  expect(accueil.groupes.find(g => g.id === 'actualites')).toBeUndefined()
   expect(DEFAUTS['actu.titre']).toBe('Actualités')
   expect(DEFAUTS['actu.facebook.lien']).toBe('')
 })

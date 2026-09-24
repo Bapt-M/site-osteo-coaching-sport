@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import { reduireImage } from '../../lib/image'
+import { CHAMP } from './Champ'
 
 /** Nombre de photos affichées sur l'accueil (cf. `lirePhotos()`). */
 export const EN_LIGNE = 5
 
-const CHAMP = 'w-full rounded-lg border border-black/15 bg-white px-4 py-3 font-inter text-text-primary ' +
-              'outline-none focus:border-green-accent focus:ring-2 focus:ring-green-accent/25 transition'
 const BOUTON = 'px-6 py-2.5 rounded-full bg-green-accent text-white font-poppins font-bold text-sm ' +
                'hover:bg-teal-accent transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer'
 
@@ -167,12 +166,9 @@ export default function Photos({ client }) {
 
   return (
     <>
-      <div className="mb-8">
-        <h2 className="font-poppins font-bold text-text-primary text-2xl">Photos d’actualité</h2>
-        <p className="font-inter text-sm text-text-secondary mt-1">
-          Les {EN_LIGNE} plus récentes s’affichent en nuage sur l’accueil, juste après le carrousel.
-        </p>
-      </div>
+      <p className="font-inter text-sm text-text-secondary mb-6">
+        Les {EN_LIGNE} plus récentes s’affichent en nuage sur l’accueil, juste après le carrousel.
+      </p>
 
       <Ajout client={client} onPubliee={charger} />
 

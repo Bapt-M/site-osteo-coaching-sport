@@ -32,6 +32,18 @@ function depuisListe(liste, prefixe, colonnes) {
   )
 }
 
+/* ── Actualités ─────────────────────────────────────────────────────── */
+
+/** Textes de la section Actualités. Hors de `PAGES` : ils s'éditent dans
+ *  l'onglet Actualités de l'administration, à côté des photos. */
+export const ACTUALITES = {
+  id: 'actualites', titre: 'Actualités', route: '/#actualites',
+  champs: [
+    champ('actu.titre',         'Titre de la section', 'Actualités'),
+    champ('actu.facebook.lien', 'Code d’intégration du post (sur Facebook : ⋯ du post → Intégrer → Copier le code) ou lien du post', '', true),
+  ],
+}
+
 /* ── Pages ──────────────────────────────────────────────────────────── */
 
 export const PAGES = [
@@ -76,10 +88,6 @@ export const PAGES = [
         champ('slide4.titre', '4. Titre',       'Suivi de\nperformance', true),
         champ('slide4.texte', '4. Description', "Analyse régulière de vos progrès, ajustement continu des programmes et accompagnement sur le long terme pour atteindre votre meilleur niveau.", true),
         champ('slide4.cta',   '4. Bouton',      'En savoir plus'),
-      ]},
-      { id: 'actualites', titre: 'Actualités', champs: [
-        champ('actu.titre',         'Titre de la section', 'Actualités'),
-        champ('actu.facebook.lien', 'Dernier post Facebook — coller le code d’intégration (sur Facebook : ⋯ du post → Intégrer → Copier le code) ou le lien du post', '', true),
       ]},
       { id: 'apropos', titre: 'À propos', champs: [
         champ('apropos.surtitre', 'Pastille',            'À PROPOS'),
@@ -288,7 +296,8 @@ export const PAGES = [
 
 /** { cle: valeur d'origine } */
 export const DEFAUTS = Object.fromEntries(
-  PAGES.flatMap(p => p.groupes.flatMap(g => g.champs.map(c => [c.cle, c.defaut])))
+  [...PAGES.flatMap(p => p.groupes.flatMap(g => g.champs)), ...ACTUALITES.champs]
+    .map(c => [c.cle, c.defaut])
 )
 
 /** Découpe un champ multi-paragraphes en tableau. */
