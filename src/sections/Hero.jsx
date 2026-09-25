@@ -79,7 +79,7 @@ const OVER_PHOTO_STYLE = {
 // Liens Hommages / Témoignages : même famille que « Histoire et formation »,
 // en plus discret. Posés dans le ciel, sous la barre de navigation.
 const COIN_STYLE = {
-  fontSize: 'clamp(0.7rem, 1.1vw, 1rem)',
+  fontSize: 'clamp(0.7rem, 1.5vw, 1.5rem)',
   letterSpacing: '0.15em',
   textShadow: OVER_PHOTO_STYLE.textShadow,
 }
