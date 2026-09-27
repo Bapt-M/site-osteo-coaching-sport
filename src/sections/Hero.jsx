@@ -76,6 +76,14 @@ const OVER_PHOTO_STYLE = {
   textShadow: '0 2px 10px rgba(0,0,0,0.85), 0 0 24px rgba(0,0,0,0.5)',
 }
 
+// Liens Hommages / Témoignages : même famille que « Histoire et formation »,
+// en plus discret. Posés dans le ciel, sous la barre de navigation.
+const COIN_STYLE = {
+  fontSize: 'clamp(0.7rem, 1.5vw, 1.5rem)',
+  letterSpacing: '0.15em',
+  textShadow: OVER_PHOTO_STYLE.textShadow,
+}
+
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
@@ -244,6 +252,27 @@ export default function Hero() {
           </motion.div>
         </div>
 
+      </div>
+
+      {/* Hommages (haut gauche) et témoignages (haut droite), dans le ciel */}
+      <div className="absolute inset-x-0 top-[84px] desktop:top-[96px] z-20 px-6 desktop:px-12 flex justify-between pointer-events-none">
+        {/* `-my-2` sur le conteneur compense le `py-2` du lien : la zone cliquable
+            grandit sans déplacer visuellement le texte dans le ciel. */}
+        {[
+          { coin: 'gauche', to: '/histoire#hommages', cle: 'hero.hommages' },
+          { coin: 'droite', to: '/histoire#temoignages', cle: 'hero.temoignages' },
+        ].map(({ coin, to, cle }) => (
+          <motion.div key={coin} data-coin={coin} variants={fadeUp} className="-my-2">
+            <Link
+              to={to}
+              className="inline-block py-2 font-poppins font-extrabold uppercase text-white pointer-events-auto
+                         hover:text-cyan-accent underline-offset-8 decoration-1 hover:underline transition-colors"
+              style={COIN_STYLE}
+            >
+              {textes[cle]}
+            </Link>
+          </motion.div>
+        ))}
       </div>
 
       {/* Pied de hero — EMMANUEL KRIEGER (tous formats) */}

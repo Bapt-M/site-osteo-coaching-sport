@@ -4,6 +4,9 @@
 
 1. **Créer les tables** — Supabase → *SQL Editor* → coller `schema.sql` → *Run*.
 
+   Le script est rejouable : sur un projet déjà en service, le relancer
+   ajoute simplement ce qui manque (section 5 : photos d'actualité).
+
 2. **Créer le compte administrateur** — Supabase → *Authentication* → *Users* →
    *Add user* → renseigner une adresse et un mot de passe, et cocher
    *Auto Confirm User*.
@@ -42,6 +45,41 @@ valeurs d'origine inscrites dans `src/content/defaults.js`. Le bouton
 
 Si Supabase est injoignable, le site public affiche les textes d'origine — il
 ne dépend jamais de la base pour fonctionner.
+
+### Section Actualités
+
+Tout se règle dans l'onglet **Actualités** de l'administration (en bas du
+sommaire) : titre de la section, photos et dernier post Facebook.
+
+#### Photos
+
+Choisir une image, écrire sa description, *Publier*. L'image est réduite
+dans le navigateur (1600 px, WebP) avant l'envoi. Les 5 plus récentes s'affichent en nuage sur l'accueil ;
+les plus anciennes restent listées et peuvent être supprimées.
+
+#### Dernier post Facebook
+
+Coller le code d'intégration du post (sur Facebook : ⋯ du post →
+*Intégrer* → *Copier le code*), puis *Enregistrer* en bas de page. Un simple lien de post est aussi accepté, mais les liens
+courts de *Copier le lien* (`/share/p/…`) ne s'affichent pas toujours dans
+le lecteur : le code d'intégration contient le lien permanent, plus sûr.
+
+Le code collé n'est jamais inséré tel quel dans la page : le site n'en garde
+que le lien du post et la hauteur, et reconstruit lui-même le lecteur.
+Seuls les posts publics d'une page Facebook s'affichent. Laisser le champ
+vide masque le bloc.
+
+### Hommages et témoignages
+
+Onglets **Hommages** et **Témoignages** de l'administration (en bas du
+sommaire). Chaque fiche : nom, fonction ou métier, phrase mise en avant,
+texte (une ligne vide entre les paragraphes) et jusqu'à 4 images légendées.
+Les flèches ↑ ↓ règlent l'ordre d'affichage sur la page Histoire ; les 3
+premiers témoignages apparaissent aussi sur l'accueil.
+
+Les en-têtes de ces sections (pastille, titre) restent dans la page
+**Histoire et formation** de l'administration ; les liens de la hero dans
+**Accueil → Bandeau**.
 
 ## Ajouter un texte éditable
 

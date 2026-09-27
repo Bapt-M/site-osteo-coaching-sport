@@ -77,6 +77,15 @@ export const PARAGRAPHES = [
       "ci-dessus. Vous pouvez également introduire une réclamation auprès de la CNIL (www.cnil.fr).",
   },
   {
+    cle: 'ml.facebook',
+    titre: 'Contenus Facebook',
+    defaut:
+      "La page d'accueil peut présenter la dernière publication de la page Facebook du cabinet. " +
+      "Ce contenu n'est chargé que si vous cliquez sur « Afficher le post » : Facebook (Meta " +
+      "Platforms Ireland Ltd.) peut alors déposer des cookies sur votre appareil, régis par sa " +
+      "propre politique de confidentialité. Sans ce clic, aucune donnée n'est transmise à Facebook.",
+  },
+  {
     cle: 'ml.rdv',
     titre: 'Prise de rendez-vous',
     defaut:

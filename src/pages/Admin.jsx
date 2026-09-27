@@ -1,9 +1,18 @@
 import { useEffect, useState } from 'react'
 import { getSupabase, supabaseConfigure } from '../lib/supabase'
-import { DEFAUTS, PAGES } from '../content/registre'
+import { ACTUALITES, DEFAUTS, PAGES } from '../content/registre'
+import OngletActualites from './admin/Actualites'
+import Fiches from './admin/Fiches'
+import Champ, { CHAMP } from './admin/Champ'
 
-const CHAMP = 'w-full rounded-lg border border-black/15 bg-white px-4 py-3 font-inter text-text-primary ' +
-              'outline-none focus:border-green-accent focus:ring-2 focus:ring-green-accent/25 transition'
+/** Entrée du sommaire qui n'est pas une page de textes : photos + textes Actualités. */
+const ONGLET_ACTUALITES = ACTUALITES.id
+
+/** Onglets des fiches (hommages, témoignages), sous « Actualités ». */
+const ONGLETS_FICHES = [
+  { id: 'fiches-hommage', type: 'hommage', titre: 'Hommages' },
+  { id: 'fiches-temoignage', type: 'temoignage', titre: 'Témoignages' },
+]
 
 /* ── Écran de connexion ─────────────────────────────────────────────── */
 
@@ -68,51 +77,18 @@ function Connexion({ client, onConnecte }) {
 }
 
 
-/* ── Un champ ───────────────────────────────────────────────────────── */
-
-function Champ({ champ, valeur, modifie, onChange, onReset, contexte }) {
-  const { cle, libelle, multi } = champ
-  const surcharge = valeur !== DEFAUTS[cle]
-  return (
-    <div>
-      <div className="flex items-baseline justify-between gap-3 mb-2">
-        <label htmlFor={cle} className="font-inter text-text-primary text-sm font-medium">
-          {contexte && <span className="text-text-secondary/60">{contexte} · </span>}
-          {libelle}
-          {modifie && <span className="ml-2 text-green-accent text-xs">modifié</span>}
-        </label>
-        {surcharge && (
-          <button type="button" onClick={() => onReset(cle)}
-                  className="font-inter text-text-secondary/70 hover:text-green-accent text-xs transition-colors cursor-pointer shrink-0">
-            rétablir l’original
-          </button>
-        )}
-      </div>
-      {multi ? (
-        <textarea
-          id={cle} rows={Math.min(14, String(valeur).split('\n').length + 1)}
-          value={valeur} onChange={e => onChange(cle, e.target.value)}
-          className={CHAMP + ' resize-y leading-relaxed'}
-        />
-      ) : (
-        <input id={cle} type="text" value={valeur}
-               onChange={e => onChange(cle, e.target.value)} className={CHAMP} />
-      )}
-    </div>
-  )
-}
-
 /* ── Recherche transverse ───────────────────────────────────────────── */
 
 function Resultats({ filtre, valeurs, initial, onChange, onReset }) {
   const q = filtre.toLowerCase()
-  const trouves = PAGES.flatMap(p =>
-    p.groupes.flatMap(g =>
-      g.champs
-        .filter(c =>
-          c.libelle.toLowerCase().includes(q) ||
-          String(valeurs[c.cle]).toLowerCase().includes(q))
-        .map(c => ({ champ: c, contexte: `${p.titre} · ${g.titre}` }))))
+  const correspond = c =>
+    c.libelle.toLowerCase().includes(q) || String(valeurs[c.cle]).toLowerCase().includes(q)
+  const trouves = [
+    ...PAGES.flatMap(p =>
+      p.groupes.flatMap(g =>
+        g.champs.filter(correspond).map(c => ({ champ: c, contexte: `${p.titre} · ${g.titre}` })))),
+    ...ACTUALITES.champs.filter(correspond).map(c => ({ champ: c, contexte: ACTUALITES.titre })),
+  ]
 
   if (!trouves.length) {
     return <p className="font-inter text-text-secondary">Aucun texte ne correspond à « {filtre} ».</p>
@@ -164,6 +140,7 @@ function Editeur({ client, session, onDeconnexion }) {
   const modifiees = Object.keys(valeurs).filter(c => valeurs[c] !== initial[c])
 
   const majChamp = (cle, v) => setValeurs(prev => ({ ...prev, [cle]: v }))
+  const modifsActualites = ACTUALITES.champs.filter(c => valeurs[c.cle] !== initial[c.cle]).length
   const compteModifs = (page) =>
     page.groupes.flatMap(g => g.champs).filter(c => valeurs[c.cle] !== initial[c.cle]).length
 
@@ -242,6 +219,34 @@ function Editeur({ client, session, onDeconnexion }) {
               )
             })}
           </ul>
+          <div className="mt-5 pt-5 border-t border-black/10">
+            <button
+              onClick={() => { setPageActive(ONGLET_ACTUALITES); setFiltre('') }}
+              className={`w-full text-left px-3 py-2 rounded-lg font-inter text-sm transition-colors cursor-pointer
+                ${pageActive === ONGLET_ACTUALITES && !filtre
+                  ? 'bg-green-accent text-white'
+                  : 'text-text-secondary hover:bg-black/5'}`}
+            >
+              {ACTUALITES.titre}
+              {modifsActualites > 0 && (
+                <span className={`ml-2 text-xs ${pageActive === ONGLET_ACTUALITES && !filtre ? 'text-white/80' : 'text-green-accent'}`}>
+                  ({modifsActualites})
+                </span>
+              )}
+            </button>
+            {ONGLETS_FICHES.map(o => (
+              <button
+                key={o.id}
+                onClick={() => { setPageActive(o.id); setFiltre('') }}
+                className={`w-full text-left px-3 py-2 rounded-lg font-inter text-sm transition-colors cursor-pointer mt-1
+                  ${o.id === pageActive && !filtre
+                    ? 'bg-green-accent text-white'
+                    : 'text-text-secondary hover:bg-black/5'}`}
+              >
+                {o.titre}
+              </button>
+            ))}
+          </div>
         </nav>
 
         <main className="flex-1 min-w-0">
@@ -251,11 +256,21 @@ function Editeur({ client, session, onDeconnexion }) {
             className="md:hidden w-full rounded-lg border border-black/15 bg-white px-3 py-3 mb-6 font-inter"
           >
             {PAGES.map(p => <option key={p.id} value={p.id}>{p.titre}</option>)}
+            <option value={ONGLET_ACTUALITES}>{ACTUALITES.titre}</option>
+            {ONGLETS_FICHES.map(o => <option key={o.id} value={o.id}>{o.titre}</option>)}
           </select>
 
           {filtre
             ? <Resultats filtre={filtre} valeurs={valeurs} initial={initial} onChange={majChamp} onReset={reinitialiser} />
-            : (() => {
+            : ONGLETS_FICHES.some(o => o.id === pageActive)
+              // `key` sur le type : un changement d'onglet remonte le composant plutôt que
+              // de réutiliser son état (édition en cours, liste) pour l'autre type de fiche.
+              ? <Fiches key={ONGLETS_FICHES.find(o => o.id === pageActive).type}
+                        client={client} type={ONGLETS_FICHES.find(o => o.id === pageActive).type} />
+              : pageActive === ONGLET_ACTUALITES
+              ? <OngletActualites client={client} valeurs={valeurs} initial={initial}
+                                  onChange={majChamp} onReset={reinitialiser} />
+              : (() => {
                 const page = PAGES.find(p => p.id === pageActive)
                 return (
                   <>
@@ -287,25 +302,27 @@ function Editeur({ client, session, onDeconnexion }) {
       </div>
 
       {/* Barre d'enregistrement */}
-      <div className="fixed bottom-0 inset-x-0 z-20 bg-white border-t border-black/10 px-6 py-4">
-        <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
-          <div className="font-inter text-sm">
-            {message
-              ? <span className={message.type === 'erreur' ? 'text-red-600' : 'text-green-accent'}>{message.texte}</span>
-              : <span className="text-text-secondary">
-                  {modifiees.length ? `${modifiees.length} modification${modifiees.length > 1 ? 's' : ''} en attente` : 'Aucune modification'}
-                </span>}
+      {!((pageActive === ONGLET_ACTUALITES || ONGLETS_FICHES.some(o => o.id === pageActive)) && !modifiees.length) && (
+        <div className="fixed bottom-0 inset-x-0 z-20 bg-white border-t border-black/10 px-6 py-4">
+          <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
+            <div className="font-inter text-sm">
+              {message
+                ? <span className={message.type === 'erreur' ? 'text-red-600' : 'text-green-accent'}>{message.texte}</span>
+                : <span className="text-text-secondary">
+                    {modifiees.length ? `${modifiees.length} modification${modifiees.length > 1 ? 's' : ''} en attente` : 'Aucune modification'}
+                  </span>}
+            </div>
+            <button
+              onClick={enregistrer}
+              disabled={!modifiees.length || etat === 'envoi'}
+              className="px-7 py-3 rounded-full bg-green-accent text-white font-poppins font-bold text-sm
+                         hover:bg-teal-accent transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            >
+              {etat === 'envoi' ? 'Enregistrement…' : 'Enregistrer'}
+            </button>
           </div>
-          <button
-            onClick={enregistrer}
-            disabled={!modifiees.length || etat === 'envoi'}
-            className="px-7 py-3 rounded-full bg-green-accent text-white font-poppins font-bold text-sm
-                       hover:bg-teal-accent transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-          >
-            {etat === 'envoi' ? 'Enregistrement…' : 'Enregistrer'}
-          </button>
         </div>
-      </div>
+      )}
     </div>
   )
 }

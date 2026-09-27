@@ -1,9 +1,8 @@
-import { TIMELINE, DIPLOMES, PADEL, HOMMAGES, TEMOIGNAGES } from './data/histoire'
+import { TIMELINE, DIPLOMES, PADEL } from './data/histoire'
 import { STEPS, GALERIE } from './data/bilan'
 import { MODALITES, REFERENCES } from './data/suivi'
 import { COMPOSANTES, ATHLETES } from './data/projet'
 import { FORMATS } from './data/entreprise'
-import { TESTIMONIALS } from './data/temoignages'
 import { HOURS } from './data/contact'
 import { SECTIONS as ML_SECTIONS, PARAGRAPHES as ML_PARAS } from './data/mentions'
 
@@ -32,6 +31,18 @@ function depuisListe(liste, prefixe, colonnes) {
   )
 }
 
+/* ── Actualités ─────────────────────────────────────────────────────── */
+
+/** Textes de la section Actualités. Hors de `PAGES` : ils s'éditent dans
+ *  l'onglet Actualités de l'administration, à côté des photos. */
+export const ACTUALITES = {
+  id: 'actualites', titre: 'Actualités', route: '/#actualites',
+  champs: [
+    champ('actu.titre',         'Titre de la section', 'Actualités'),
+    champ('actu.facebook.lien', 'Code d’intégration du post (sur Facebook : ⋯ du post → Intégrer → Copier le code) ou lien du post', '', true),
+  ],
+}
+
 /* ── Pages ──────────────────────────────────────────────────────────── */
 
 export const PAGES = [
@@ -56,6 +67,8 @@ export const PAGES = [
         champ('hero.histoire', 'Lien sous l’arbre', 'HISTOIRE ET FORMATION'),
         champ('hero.nom',      'Nom',               'EMMANUEL KRIEGER'),
         champ('hero.fonction', 'Fonction et lieu',  'OSTÉOPATHE ET COACHING DU SPORT À FURDENHEIM'),
+        champ('hero.hommages',    'Lien en haut à gauche', 'HOMMAGES'),
+        champ('hero.temoignages', 'Lien en haut à droite', 'TÉMOIGNAGES'),
       ]},
       { id: 'balles', titre: 'Les quatre balles', champs: [
         champ('balle.suivi',  'Haut gauche', 'SUIVI DES\nSPORTIFS DE\nHAUT NIVEAU', true),
@@ -87,9 +100,6 @@ export const PAGES = [
       ]},
       { id: 'temoins', titre: 'Témoignages', champs: [
         champ('temoins.surtitre', 'Pastille', 'TÉMOIGNAGES'),
-        ...depuisListe(TESTIMONIALS, 'temoin', [
-          ['text', 'Extrait', true], ['author', 'Nom'], ['role', 'Fonction'],
-        ]),
         champ('temoins.amorce', 'Phrase avant les liens', "Des athlètes, des entraîneurs et des hommes qui ont compté m'ont adressé leurs mots.", true),
         champ('temoins.lien1',  'Bouton 1', 'Remerciements & témoignages →'),
         champ('temoins.lien2',  'Bouton 2', 'Hommages →'),
@@ -137,18 +147,10 @@ export const PAGES = [
         champ('hommages.surtitre', 'Pastille',         'HOMMAGES'),
         champ('hommages.titre1',   'Titre, 1re ligne', "Ceux qui m'ont"),
         champ('hommages.titre2',   'Titre, 2e ligne',  'marqué'),
-        ...depuisListe(HOMMAGES, 'hommage', [
-          ['nom', 'Nom'], ['role', 'Fonction'], ['citation', 'Citation mise en avant', true],
-          ['paragraphes', 'Texte (une ligne vide entre les paragraphes)', true, paras],
-        ]),
       ]},
       { id: 'temoignages', titre: 'Remerciements & témoignages', champs: [
         champ('temoignages.surtitre', 'Pastille', 'TÉMOIGNAGES'),
         champ('temoignages.titre',    'Titre',    'Remerciements & témoignages'),
-        ...depuisListe(TEMOIGNAGES, 'temoignage', [
-          ['nom', 'Nom'], ['role', 'Fonction'], ['extrait', 'Extrait affiché', true],
-          ['paragraphes', 'Texte complet (une ligne vide entre les paragraphes)', true, paras],
-        ]),
       ]},
       { id: 'galerie', titre: 'Moments marquants', champs: [
         champ('galerie.surtitre', 'Pastille', 'GALERIE'),
@@ -284,7 +286,8 @@ export const PAGES = [
 
 /** { cle: valeur d'origine } */
 export const DEFAUTS = Object.fromEntries(
-  PAGES.flatMap(p => p.groupes.flatMap(g => g.champs.map(c => [c.cle, c.defaut])))
+  [...PAGES.flatMap(p => p.groupes.flatMap(g => g.champs)), ...ACTUALITES.champs]
+    .map(c => [c.cle, c.defaut])
 )
 
 /** Découpe un champ multi-paragraphes en tableau. */

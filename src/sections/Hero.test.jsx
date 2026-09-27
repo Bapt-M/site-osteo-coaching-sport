@@ -35,3 +35,13 @@ test('rend le lien histoire et formation', () => {
   renderWithRouter(<Hero />)
   expect(screen.getByText(/HISTOIRE ET FORMATION/i)).toBeInTheDocument()
 })
+
+test('annonce les hommages en haut à gauche et les témoignages en haut à droite', () => {
+  renderWithRouter(<Hero />)
+  const hommages = screen.getByRole('link', { name: 'HOMMAGES' })
+  const temoignages = screen.getByRole('link', { name: 'TÉMOIGNAGES' })
+  expect(hommages).toHaveAttribute('href', '/histoire#hommages')
+  expect(temoignages).toHaveAttribute('href', '/histoire#temoignages')
+  expect(hommages.closest('[data-coin]')).toHaveAttribute('data-coin', 'gauche')
+  expect(temoignages.closest('[data-coin]')).toHaveAttribute('data-coin', 'droite')
+})

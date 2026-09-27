@@ -1,7 +1,7 @@
-import { PAGES, DEFAUTS, enParagraphes } from './registre'
+import { PAGES, DEFAUTS, ACTUALITES, enParagraphes } from './registre'
 
 test('toutes les clés sont uniques et pourvues', () => {
-  const champs = PAGES.flatMap(p => p.groupes.flatMap(g => g.champs))
+  const champs = [...PAGES.flatMap(p => p.groupes.flatMap(g => g.champs)), ...ACTUALITES.champs]
   const cles = champs.map(c => c.cle)
   expect(new Set(cles).size).toBe(cles.length)
   expect(champs.filter(c => c.defaut === undefined || c.defaut === null)).toEqual([])
@@ -26,4 +26,32 @@ test('découpe les blocs multi-paragraphes', () => {
 test('le contact passe par l’e-mail, plus par le téléphone', () => {
   expect(DEFAUTS['contact.mail']).toBe('krieger.manu@orange.fr')
   expect(Object.values(DEFAUTS).join(' ')).not.toContain('61 19 64 84')
+})
+
+test('les textes Actualités ont leur propre onglet, hors de la page Accueil', () => {
+  expect(ACTUALITES.champs.map(c => c.cle)).toEqual(['actu.titre', 'actu.facebook.lien'])
+  const accueil = PAGES.find(p => p.id === 'accueil')
+  expect(accueil.groupes.find(g => g.id === 'actualites')).toBeUndefined()
+  expect(DEFAUTS['actu.titre']).toBe('Actualités')
+  expect(DEFAUTS['actu.facebook.lien']).toBe('')
+})
+
+test('les mentions légales signalent le contenu Facebook chargé à la demande', () => {
+  expect(DEFAUTS['ml.facebook']).toMatch(/Facebook/)
+  expect(DEFAUTS['ml.facebook']).toMatch(/cookies/)
+})
+
+test('les fiches ne sont plus des textes du registre', () => {
+  const cles = Object.keys(DEFAUTS)
+  expect(cles.filter(c => /^(hommage|temoignage|temoin)\.\d+\./.test(c))).toEqual([])
+  for (const c of ['hommages.surtitre', 'hommages.titre1', 'temoignages.titre', 'temoins.surtitre', 'temoins.lien1']) {
+    expect(cles).toContain(c)
+  }
+})
+
+test('les liens Hommages et Témoignages de la hero sont éditables', () => {
+  const bandeau = PAGES.find(p => p.id === 'accueil').groupes.find(g => g.id === 'hero')
+  expect(bandeau.champs.map(c => c.cle)).toEqual(expect.arrayContaining(['hero.hommages', 'hero.temoignages']))
+  expect(DEFAUTS['hero.hommages']).toBe('HOMMAGES')
+  expect(DEFAUTS['hero.temoignages']).toBe('TÉMOIGNAGES')
 })
