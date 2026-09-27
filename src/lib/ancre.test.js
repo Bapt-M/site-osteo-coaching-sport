@@ -62,7 +62,7 @@ test('abandonne après le délai de garde', () => {
   const dessus = image()
   document.body.append(dessus, cible)
   garderAncre('temoignages')
-  vi.advanceTimersByTime(8000)
+  vi.advanceTimersByTime(30000)
   dessus.dispatchEvent(new Event('load'))
   expect(cible.scrollIntoView).toHaveBeenCalledTimes(1)
   vi.useRealTimers()
@@ -70,4 +70,17 @@ test('abandonne après le délai de garde', () => {
 
 test('cible absente : ne fait rien', () => {
   expect(() => garderAncre('absente')()).not.toThrow()
+})
+
+test('revise la cible quand la page change de hauteur (polices, images paresseuses…)', () => {
+  let rappel
+  const deconnecter = vi.fn()
+  vi.stubGlobal('ResizeObserver', class { constructor(f) { rappel = f } observe() {} disconnect() { deconnecter() } })
+  document.body.append(cible)
+  const arreter = garderAncre('temoignages')
+  rappel()
+  expect(cible.scrollIntoView).toHaveBeenCalledTimes(2)
+  arreter()
+  expect(deconnecter).toHaveBeenCalled()
+  vi.unstubAllGlobals()
 })

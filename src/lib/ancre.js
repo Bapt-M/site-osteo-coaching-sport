@@ -1,5 +1,5 @@
 const GESTES = ['wheel', 'touchstart', 'keydown']
-const DELAI_DE_GARDE = 8000
+const DELAI_DE_GARDE = 30000
 
 /**
  * Amène la section `id` en haut de l'écran et l'y maintient pendant que les
@@ -7,8 +7,11 @@ const DELAI_DE_GARDE = 8000
  * réseau, chaque photo qui arrive après le défilement repousse la section
  * vers le bas et le visiteur atterrit au milieu de la section précédente.
  *
- * On lâche prise dès que le visiteur fait défiler lui-même, ou au bout de
- * quelques secondes. Renvoie la fonction qui arrête la surveillance.
+ * On revise aussi à chaque changement de hauteur de la page (polices,
+ * images chargées au fil du défilement…), que les seuls événements `load`
+ * ne voient pas. On lâche prise dès que le visiteur fait défiler lui-même,
+ * sinon au bout de 30 s — sur une connexion lente, les photos arrivent tard.
+ * Renvoie la fonction qui arrête la surveillance.
  */
 export function garderAncre(id) {
   const cible = document.getElementById(id)
@@ -31,6 +34,7 @@ export function garderAncre(id) {
       img.removeEventListener('error', surChargement)
     }
     for (const geste of GESTES) window.removeEventListener(geste, arreter)
+    observateur?.disconnect()
   }
 
   for (const img of enAttente) {
@@ -38,6 +42,8 @@ export function garderAncre(id) {
     img.addEventListener('error', surChargement)
   }
   for (const geste of GESTES) window.addEventListener(geste, arreter, { passive: true })
+  const observateur = typeof ResizeObserver === 'function' ? new ResizeObserver(surChargement) : null
+  observateur?.observe(document.body)
   const delai = window.setTimeout(arreter, DELAI_DE_GARDE)
 
   return arreter
