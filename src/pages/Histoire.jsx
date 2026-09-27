@@ -1,10 +1,13 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { TIMELINE, DIPLOMES, PADEL } from '../content/data/histoire'
 import { useTextes } from '../content/ContenuProvider'
 import { enParagraphes } from '../content/registre'
 import { useFiches } from '../content/useFiches'
+import { garderAncre } from '../lib/ancre'
+
+const ANCRES_FICHES = new Set(['#hommages', '#temoignages'])
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -22,19 +25,16 @@ export default function Histoire() {
   const [videoOpen, setVideoOpen] = useState(false)
 
   // ScrollManager défile ~60 ms après la navigation, alors que les fiches
-  // sont peut-être encore `null` : les hommages/témoignages, une fois
-  // arrivés, changent la hauteur de la page et l'ancre se retrouve décalée.
-  // On corrige une fois, au premier passage de `null` à la liste — jamais
-  // au montage initial, et jamais deux fois.
+  // sont peut-être encore `null` : une fois arrivées — puis leurs photos —
+  // elles changent la hauteur de la page et l'ancre se retrouve décalée.
+  // Dès que les fiches sont là, on vise la section et on l'y maintient le
+  // temps que les images au-dessus finissent de charger.
   const { hash } = useLocation()
-  const aDejaDefile = useRef(false)
+  const fichesPretes = fiches !== null
   useEffect(() => {
-    if (aDejaDefile.current || fiches === null) return
-    aDejaDefile.current = true
-    if (hash === '#hommages' || hash === '#temoignages') {
-      document.getElementById(hash.slice(1))?.scrollIntoView({ block: 'start' })
-    }
-  }, [fiches, hash])
+    if (!fichesPretes || !ANCRES_FICHES.has(hash)) return
+    return garderAncre(hash.slice(1))
+  }, [fichesPretes, hash])
 
   return (
     <main className="bg-site-bg">
