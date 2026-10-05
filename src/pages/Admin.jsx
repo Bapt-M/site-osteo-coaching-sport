@@ -16,62 +16,225 @@ const ONGLETS_FICHES = [
 
 /* ── Écran de connexion ─────────────────────────────────────────────── */
 
-function Connexion({ client, onConnecte }) {
+/** Longueur minimale d'un nouveau mot de passe. */
+export const LONGUEUR_MIN_MDP = 8
+
+const BOUTON_PRINCIPAL = `mt-8 w-full py-3 rounded-full bg-green-accent text-white font-poppins font-bold
+                          hover:bg-teal-accent transition-colors disabled:opacity-60 cursor-pointer`
+const LIEN_DISCRET = 'font-inter text-white/60 hover:text-white text-sm underline underline-offset-4 cursor-pointer'
+
+/** Messages d'erreur de Supabase Auth, en français quand on les connaît. */
+function traduireErreurAuth(error) {
+  if (error.message === 'Invalid login credentials') return 'Identifiants incorrects.'
+  if (error.code === 'same_password') return 'Le nouveau mot de passe doit être différent de l’ancien.'
+  if (error.code === 'weak_password') return 'Mot de passe trop faible : allongez-le ou variez les caractères.'
+  if (error.status === 429 || error.code === 'over_email_send_rate_limit') {
+    return 'Trop de demandes rapprochées. Réessayez dans quelques minutes.'
+  }
+  return error.message
+}
+
+function Marque() {
+  return (
+    <div className="font-poppins font-bold text-white text-xs leading-tight tracking-wide mb-10">
+      OSTÉO<br /><span className="font-normal">ET COACHING</span><br />DU SPORT
+    </div>
+  )
+}
+
+function Connexion({ client, onConnecte, erreurLien }) {
+  const [mode, setMode] = useState('connexion')   // connexion | oubli
   const [email, setEmail] = useState('')
   const [motDePasse, setMotDePasse] = useState('')
-  const [erreur, setErreur] = useState(null)
+  const [erreur, setErreur] = useState(erreurLien)
+  const [lienEnvoye, setLienEnvoye] = useState(false)
   const [envoi, setEnvoi] = useState(false)
 
-  async function soumettre(e) {
+  function changerMode(m) {
+    setMode(m)
+    setErreur(null)
+    setLienEnvoye(false)
+  }
+
+  async function seConnecter(e) {
     e.preventDefault()
     setErreur(null)
     setEnvoi(true)
     const { data, error } = await client.auth.signInWithPassword({ email, password: motDePasse })
     setEnvoi(false)
     if (error) {
-      setErreur(error.message === 'Invalid login credentials'
-        ? 'Identifiants incorrects.'
-        : error.message)
+      setErreur(traduireErreurAuth(error))
       return
     }
     onConnecte(data.session)
   }
 
+  async function demanderLien(e) {
+    e.preventDefault()
+    setErreur(null)
+    setEnvoi(true)
+    // Le lien ramène sur la page d'administration de l'environnement courant
+    // (production ou démo) : l'adresse doit figurer dans les Redirect URLs
+    // de Supabase, sinon il renvoie sur l'URL du site.
+    const { error } = await client.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/admin`,
+    })
+    setEnvoi(false)
+    if (error) {
+      setErreur(traduireErreurAuth(error))
+      return
+    }
+    setLienEnvoye(true)
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center px-6 bg-green-deep">
-      <form onSubmit={soumettre} className="w-full max-w-sm">
-        <div className="font-poppins font-bold text-white text-xs leading-tight tracking-wide mb-10">
-          OSTÉO<br /><span className="font-normal">ET COACHING</span><br />DU SPORT
-        </div>
-        <h1 className="font-poppins font-bold text-white text-2xl mb-1">Administration</h1>
-        <p className="font-inter text-white/50 text-sm mb-8">Connectez-vous pour modifier les textes du site.</p>
+      <form onSubmit={mode === 'connexion' ? seConnecter : demanderLien} className="w-full max-w-sm">
+        <Marque />
+        <h1 className="font-poppins font-bold text-white text-2xl mb-1">
+          {mode === 'connexion' ? 'Administration' : 'Mot de passe oublié'}
+        </h1>
+        <p className="font-inter text-white/50 text-sm mb-8">
+          {mode === 'connexion'
+            ? 'Connectez-vous pour modifier les textes du site.'
+            : 'Indiquez votre adresse : vous recevrez un lien pour choisir un nouveau mot de passe.'}
+        </p>
 
         <label className="block font-inter text-white/70 text-sm mb-2" htmlFor="email">Adresse e-mail</label>
         <input
           id="email" type="email" required autoComplete="username"
           value={email} onChange={e => setEmail(e.target.value)}
-          className={CHAMP + ' mb-5'}
+          className={CHAMP + (mode === 'connexion' ? ' mb-5' : '')}
         />
 
-        <label className="block font-inter text-white/70 text-sm mb-2" htmlFor="mdp">Mot de passe</label>
-        <input
-          id="mdp" type="password" required autoComplete="current-password"
-          value={motDePasse} onChange={e => setMotDePasse(e.target.value)}
-          className={CHAMP}
-        />
+        {mode === 'connexion' && (
+          <>
+            <label className="block font-inter text-white/70 text-sm mb-2" htmlFor="mdp">Mot de passe</label>
+            <input
+              id="mdp" type="password" required autoComplete="current-password"
+              value={motDePasse} onChange={e => setMotDePasse(e.target.value)}
+              className={CHAMP}
+            />
+          </>
+        )}
 
         {erreur && (
           <p role="alert" className="font-inter text-red-300 text-sm mt-4">{erreur}</p>
         )}
+        {lienEnvoye && (
+          // Formulation volontairement neutre : on ne révèle pas si l'adresse a un compte.
+          <p role="status" className="font-inter text-white/80 text-sm mt-4">
+            Si cette adresse correspond à un compte, un e-mail vient de lui être envoyé.
+            Pensez à vérifier les courriers indésirables.
+          </p>
+        )}
 
-        <button
-          type="submit" disabled={envoi}
-          className="mt-8 w-full py-3 rounded-full bg-green-accent text-white font-poppins font-bold
-                     hover:bg-teal-accent transition-colors disabled:opacity-60 cursor-pointer"
-        >
-          {envoi ? 'Connexion…' : 'Se connecter'}
+        <button type="submit" disabled={envoi} className={BOUTON_PRINCIPAL}>
+          {mode === 'connexion'
+            ? (envoi ? 'Connexion…' : 'Se connecter')
+            : (envoi ? 'Envoi…' : 'Recevoir le lien')}
         </button>
+
+        <div className="mt-6 text-center">
+          <button type="button" onClick={() => changerMode(mode === 'connexion' ? 'oubli' : 'connexion')}
+                  className={LIEN_DISCRET}>
+            {mode === 'connexion' ? 'Mot de passe oublié ?' : 'Retour à la connexion'}
+          </button>
+        </div>
       </form>
+    </div>
+  )
+}
+
+/* ── Choix d'un nouveau mot de passe ────────────────────────────────── */
+
+/**
+ * Plein écran, par-dessus l'éditeur s'il est ouvert : l'éditeur reste monté
+ * et garde les modifications en attente. `onAnnuler` absent = l'utilisateur
+ * arrive d'un lien de réinitialisation et doit aller au bout.
+ */
+function NouveauMotDePasse({ client, email, onTermine, onAnnuler }) {
+  const [motDePasse, setMotDePasse] = useState('')
+  const [confirmation, setConfirmation] = useState('')
+  const [erreur, setErreur] = useState(null)
+  const [envoi, setEnvoi] = useState(false)
+  const [termine, setTermine] = useState(false)
+
+  async function soumettre(e) {
+    e.preventDefault()
+    setErreur(null)
+    if (motDePasse.length < LONGUEUR_MIN_MDP) {
+      setErreur(`Le mot de passe doit faire au moins ${LONGUEUR_MIN_MDP} caractères.`)
+      return
+    }
+    if (motDePasse !== confirmation) {
+      setErreur('Les deux mots de passe ne correspondent pas.')
+      return
+    }
+    setEnvoi(true)
+    const { error } = await client.auth.updateUser({ password: motDePasse })
+    setEnvoi(false)
+    if (error) {
+      setErreur(traduireErreurAuth(error))
+      return
+    }
+    setTermine(true)
+  }
+
+  return (
+    <div role="dialog" aria-modal="true" aria-labelledby="titre-mdp"
+         className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center px-6 py-10 bg-green-deep">
+      {termine ? (
+        <div className="w-full max-w-sm">
+          <Marque />
+          <h1 id="titre-mdp" className="font-poppins font-bold text-white text-2xl mb-1">Mot de passe modifié</h1>
+          <p role="status" className="font-inter text-white/60 text-sm">
+            Utilisez-le désormais pour vous connecter.
+          </p>
+          <button type="button" onClick={onTermine} className={BOUTON_PRINCIPAL}>
+            Continuer vers l’administration
+          </button>
+        </div>
+      ) : (
+        <form onSubmit={soumettre} className="w-full max-w-sm">
+          <Marque />
+          <h1 id="titre-mdp" className="font-poppins font-bold text-white text-2xl mb-1">Nouveau mot de passe</h1>
+          <p className="font-inter text-white/50 text-sm mb-8">
+            Pour le compte {email}. Au moins {LONGUEUR_MIN_MDP} caractères.
+          </p>
+
+          {/* Champ caché : aide les gestionnaires de mots de passe à rattacher le nouveau au bon compte. */}
+          <input type="email" autoComplete="username" value={email ?? ''} readOnly hidden />
+
+          <label className="block font-inter text-white/70 text-sm mb-2" htmlFor="nouveau-mdp">Nouveau mot de passe</label>
+          <input
+            id="nouveau-mdp" type="password" required autoComplete="new-password" autoFocus
+            value={motDePasse} onChange={e => setMotDePasse(e.target.value)}
+            className={CHAMP + ' mb-5'}
+          />
+
+          <label className="block font-inter text-white/70 text-sm mb-2" htmlFor="confirmation-mdp">Confirmer le mot de passe</label>
+          <input
+            id="confirmation-mdp" type="password" required autoComplete="new-password"
+            value={confirmation} onChange={e => setConfirmation(e.target.value)}
+            className={CHAMP}
+          />
+
+          {erreur && (
+            <p role="alert" className="font-inter text-red-300 text-sm mt-4">{erreur}</p>
+          )}
+
+          <button type="submit" disabled={envoi} className={BOUTON_PRINCIPAL}>
+            {envoi ? 'Enregistrement…' : 'Enregistrer le mot de passe'}
+          </button>
+
+          {onAnnuler && (
+            <div className="mt-6 text-center">
+              <button type="button" onClick={onAnnuler} className={LIEN_DISCRET}>Annuler</button>
+            </div>
+          )}
+        </form>
+      )}
     </div>
   )
 }
@@ -111,7 +274,7 @@ function Resultats({ filtre, valeurs, initial, onChange, onReset }) {
 
 /* ── Éditeur ────────────────────────────────────────────────────────── */
 
-function Editeur({ client, session, onDeconnexion }) {
+function Editeur({ client, session, onChangerMotDePasse, onDeconnexion }) {
   const [pageActive, setPageActive] = useState(PAGES[0].id)
   const [filtre, setFiltre] = useState('')
   const [valeurs, setValeurs] = useState(DEFAUTS)
@@ -179,6 +342,10 @@ function Editeur({ client, session, onDeconnexion }) {
              className="font-inter text-white/70 hover:text-white text-sm transition-colors">
             Voir le site ↗
           </a>
+          <button onClick={onChangerMotDePasse}
+                  className="font-inter text-white/70 hover:text-white text-sm transition-colors cursor-pointer">
+            Mot de passe
+          </button>
           <button onClick={onDeconnexion}
                   className="font-inter text-white/70 hover:text-white text-sm transition-colors cursor-pointer">
             Se déconnecter
@@ -329,9 +496,34 @@ function Editeur({ client, session, onDeconnexion }) {
 
 /* ── Page ───────────────────────────────────────────────────────────── */
 
+/**
+ * Lit le fragment laissé par un lien d'e-mail Supabase (flux implicite) :
+ * `#access_token=…&type=recovery` pour une réinitialisation réussie,
+ * `#error=…&error_code=otp_expired` pour un lien périmé ou déjà utilisé.
+ *
+ * Lu avant la création du client : supabase-js efface le fragment en le
+ * consommant, et l'événement PASSWORD_RECOVERY peut partir avant qu'on s'y
+ * abonne.
+ */
+export function lireLienAuth(hash) {
+  const p = new URLSearchParams(hash.replace(/^#/, ''))
+  if (p.get('error') || p.get('error_code')) {
+    return {
+      recuperation: false,
+      erreur: p.get('error_code') === 'otp_expired'
+        ? 'Ce lien a expiré ou a déjà servi. Demandez-en un nouveau avec « Mot de passe oublié ? ».'
+        : 'Ce lien n’est pas valide. Demandez-en un nouveau avec « Mot de passe oublié ? ».',
+    }
+  }
+  return { recuperation: p.get('type') === 'recovery', erreur: null }
+}
+
 export default function Admin() {
   const [client, setClient] = useState(null)
   const [session, setSession] = useState(undefined)   // undefined = on ne sait pas encore
+  const [lien] = useState(() => lireLienAuth(window.location.hash))
+  const [recuperation, setRecuperation] = useState(lien.recuperation)
+  const [changement, setChangement] = useState(false)
 
   useEffect(() => {
     let desabonner = () => {}
@@ -339,11 +531,20 @@ export default function Admin() {
       if (!c) { setSession(null); return }
       setClient(c)
       c.auth.getSession().then(({ data }) => setSession(data.session))
-      const { data: sub } = c.auth.onAuthStateChange((_e, s) => setSession(s))
+      const { data: sub } = c.auth.onAuthStateChange((evenement, s) => {
+        if (evenement === 'PASSWORD_RECOVERY') setRecuperation(true)
+        if (evenement === 'SIGNED_OUT') { setRecuperation(false); setChangement(false) }
+        setSession(s)
+      })
       desabonner = () => sub.subscription.unsubscribe()
     })
     return () => desabonner()
   }, [])
+
+  // Le fragment d'erreur ne doit pas réapparaître à l'actualisation.
+  useEffect(() => {
+    if (lien.erreur) window.history.replaceState(null, '', window.location.pathname + window.location.search)
+  }, [lien])
 
   if (!supabaseConfigure) {
     return (
@@ -364,7 +565,27 @@ export default function Admin() {
     return <div className="min-h-screen bg-green-deep" />
   }
 
-  return session
-    ? <Editeur client={client} session={session} onDeconnexion={() => client.auth.signOut()} />
-    : <Connexion client={client} onConnecte={setSession} />
+  if (!session) {
+    return <Connexion client={client} onConnecte={setSession} erreurLien={lien.erreur} />
+  }
+
+  // Arrivé par un lien de réinitialisation : l'éditeur ne s'ouvre qu'une fois
+  // le nouveau mot de passe choisi.
+  if (recuperation) {
+    return <NouveauMotDePasse client={client} email={session.user.email}
+                              onTermine={() => setRecuperation(false)} />
+  }
+
+  return (
+    <>
+      <Editeur client={client} session={session}
+               onChangerMotDePasse={() => setChangement(true)}
+               onDeconnexion={() => client.auth.signOut()} />
+      {changement && (
+        <NouveauMotDePasse client={client} email={session.user.email}
+                           onTermine={() => setChangement(false)}
+                           onAnnuler={() => setChangement(false)} />
+      )}
+    </>
+  )
 }

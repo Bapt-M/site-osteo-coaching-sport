@@ -35,7 +35,39 @@
    code envoyé au navigateur. La sécurité repose entièrement sur les règles
    RLS définies dans `schema.sql`.
 
+6. **Liens de réinitialisation du mot de passe** — Supabase → *Authentication* :
+
+   - *URL Configuration* : *Site URL* = `https://osteo-et-coaching-du-sport.com` ;
+     *Redirect URLs* : ajouter `https://osteo-et-coaching-du-sport.com/admin` et
+     `https://demonstration.osteo-et-coaching-du-sport.com/admin`. Une adresse
+     absente de cette liste fait retomber le lien sur la *Site URL*.
+   - *SMTP Settings* : le service d'envoi intégré à Supabase n'écrit qu'aux
+     membres de l'organisation Supabase. Pour joindre l'administrateur, on passe
+     par sa boîte Orange :
+
+     | Champ | Valeur |
+     |---|---|
+     | Sender email | `krieger.manu@orange.fr` |
+     | Sender name | `Ostéo et Coaching du Sport` |
+     | Host | `smtp.orange.fr` |
+     | Port | `465` |
+     | Username | `krieger.manu@orange.fr` |
+     | Password | le mot de passe de la messagerie Orange |
+
+     Puis *Rate Limits* → *Rate limit for sending emails* : quelques envois
+     par heure suffisent.
+   - *Emails* → *Reset Password* : modèle du message, à traduire en français.
+
 ## Usage
+
+### Mot de passe
+
+- **Oublié** : écran de connexion → *Mot de passe oublié ?* → un e-mail
+  arrive avec un lien qui ramène sur `/admin`, où l'on choisit le nouveau
+  mot de passe. Le lien ne sert qu'une fois et expire au bout d'une heure.
+- **Connecté** : bouton *Mot de passe* dans l'en-tête de l'administration.
+- **Depuis Supabase** : *Authentication* → *Users* → le compte →
+  *Send password recovery* envoie le même lien.
 
 `https://<le-site>/admin` → connexion → modification des textes → *Enregistrer*.
 
