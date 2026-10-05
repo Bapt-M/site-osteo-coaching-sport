@@ -51,11 +51,7 @@ export const PAGES = [
   {
     chemin: '/kinesport-furd',
     titre: 'Programme de remise en forme — Kinesport Furd',
-    description: "Programme et suivi de remise en forme — Kinesport Furd.",
-    // Page encore à l'état d'ébauche : « cette section est en cours de
-    // construction ». L'indexer exposerait une page vide, ce que Google
-    // sanctionne. À repasser en indexable une fois le contenu rédigé.
-    indexable: false,
+    description: "Programme de remise en forme sur mesure à Furdenheim : bilan approfondi, séances encadrées en salle et suivi par un ostéopathe coach sportif.",
   },
   {
     chemin: '/mentions-legales',

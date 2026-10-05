@@ -39,8 +39,8 @@ test('les descriptions sont exploitables', () => {
   }
 })
 
-test('la page en construction reste hors de l’index', () => {
-  expect(pagePour('/kinesport-furd').indexable).toBe(false)
+test('la page remise en forme, désormais rédigée, est indexable', () => {
+  expect(pagePour('/kinesport-furd').indexable).not.toBe(false)
 })
 
 test('le domaine de référence est en https et sans barre finale', () => {
