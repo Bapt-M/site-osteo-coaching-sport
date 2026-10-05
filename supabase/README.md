@@ -35,48 +35,31 @@
    code envoyé au navigateur. La sécurité repose entièrement sur les règles
    RLS définies dans `schema.sql`.
 
-6. **Liens de réinitialisation du mot de passe** — Supabase → *Authentication* :
+6. **Liens de réinitialisation du mot de passe** — le site n'envoie aucun
+   e-mail : le webmaster génère le lien et le transmet lui-même.
 
-   - *URL Configuration* : *Site URL* = `https://osteo-et-coaching-du-sport.com` ;
-     *Redirect URLs* : ajouter `https://osteo-et-coaching-du-sport.com/admin` et
-     `https://demonstration.osteo-et-coaching-du-sport.com/admin`. Une adresse
-     absente de cette liste fait retomber le lien sur la *Site URL*.
-   - *SMTP Settings* : le service d'envoi intégré à Supabase n'écrit qu'aux
-     membres de l'organisation Supabase. Pour joindre l'administrateur, on passe
-     par sa boîte Orange :
-
-     | Champ | Valeur |
-     |---|---|
-     | Sender email | `krieger.manu@orange.fr` |
-     | Sender name | `Ostéo et Coaching du Sport` |
-     | Host | `smtp.orange.fr` |
-     | Port | `465` |
-     | Username | `krieger.manu@orange.fr` |
-     | Password | le mot de passe de la messagerie Orange |
-
-     Puis *Rate Limits* → *Rate limit for sending emails* : quelques envois
-     par heure suffisent.
-   - *Emails* → *Reset Password* : modèle du message, à traduire en français.
+   - Clé secrète du projet (Supabase → *Project Settings* → *API Keys* →
+     *Secret keys*, `sb_secret_…`) dans `.env.local`, ignoré par git :
+     `SUPABASE_SECRET_KEY=sb_secret_…`. Elle donne tous les droits sur le
+     projet : jamais dans Netlify, jamais avec le préfixe `VITE_`.
+   - *Authentication* → *Providers* → *Email* → *Email OTP Expiration* :
+     durée de validité du lien (3600 s par défaut, 86400 s au plus).
 
 ## Usage
 
 ### Mot de passe
 
-- **Oublié** : écran de connexion → *Mot de passe oublié ?* → un e-mail
-  arrive avec un lien qui ramène sur `/admin`, où l'on choisit le nouveau
-  mot de passe. Le lien ne sert qu'une fois et expire au bout d'une heure.
+- **Oublié** : générer un lien et le transmettre à l'administrateur.
+
+  ```sh
+  node scripts/lien-mot-de-passe.mjs krieger.manu@orange.fr          # production
+  node scripts/lien-mot-de-passe.mjs krieger.manu@orange.fr --demo   # démo
+  ```
+
+  Le lien ouvre `/admin` sur un formulaire « Nouveau mot de passe » ; le
+  jeton n'est échangé qu'à la validation, si bien qu'un aperçu de lien dans
+  une messagerie ne le consomme pas. Il ne sert qu'une fois.
 - **Connecté** : bouton *Mot de passe* dans l'en-tête de l'administration.
-- **Depuis Supabase** : *Authentication* → *Users* → le compte →
-  *Send password recovery* envoie le même lien.
-
-`https://<le-site>/admin` → connexion → modification des textes → *Enregistrer*.
-
-Les textes non modifiés ne sont pas stockés en base : le site retombe sur les
-valeurs d'origine inscrites dans `src/content/defaults.js`. Le bouton
-« rétablir l'original » sur chaque champ remet la valeur d'origine.
-
-Si Supabase est injoignable, le site public affiche les textes d'origine — il
-ne dépend jamais de la base pour fonctionner.
 
 ### Section Actualités
 
