@@ -2,6 +2,7 @@ node_modules/
 dist/
 .DS_Store
 .env
+.env.local
 # Vidéos. Le dossier était exclu en bloc, ce qui privait le site déployé de
 # la seule vidéo qu'il diffuse : le reportage France 3 de la page Histoire.
 # Faute de fichier, la règle de repli /* renvoyait index.html — un HTTP 200

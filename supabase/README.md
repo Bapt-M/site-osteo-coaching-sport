@@ -35,16 +35,31 @@
    code envoyé au navigateur. La sécurité repose entièrement sur les règles
    RLS définies dans `schema.sql`.
 
+6. **Liens de réinitialisation du mot de passe** — le site n'envoie aucun
+   e-mail : le webmaster génère le lien et le transmet lui-même.
+
+   - Clé secrète du projet (Supabase → *Project Settings* → *API Keys* →
+     *Secret keys*, `sb_secret_…`) dans `.env.local`, ignoré par git :
+     `SUPABASE_SECRET_KEY=sb_secret_…`. Elle donne tous les droits sur le
+     projet : jamais dans Netlify, jamais avec le préfixe `VITE_`.
+   - *Authentication* → *Providers* → *Email* → *Email OTP Expiration* :
+     durée de validité du lien (3600 s par défaut, 86400 s au plus).
+
 ## Usage
 
-`https://<le-site>/admin` → connexion → modification des textes → *Enregistrer*.
+### Mot de passe
 
-Les textes non modifiés ne sont pas stockés en base : le site retombe sur les
-valeurs d'origine inscrites dans `src/content/defaults.js`. Le bouton
-« rétablir l'original » sur chaque champ remet la valeur d'origine.
+- **Oublié** : générer un lien et le transmettre à l'administrateur.
 
-Si Supabase est injoignable, le site public affiche les textes d'origine — il
-ne dépend jamais de la base pour fonctionner.
+  ```sh
+  node scripts/lien-mot-de-passe.mjs krieger.manu@orange.fr          # production
+  node scripts/lien-mot-de-passe.mjs krieger.manu@orange.fr --demo   # démo
+  ```
+
+  Le lien ouvre `/admin` sur un formulaire « Nouveau mot de passe » ; le
+  jeton n'est échangé qu'à la validation, si bien qu'un aperçu de lien dans
+  une messagerie ne le consomme pas. Il ne sert qu'une fois.
+- **Connecté** : bouton *Mot de passe* dans l'en-tête de l'administration.
 
 ### Section Actualités
 

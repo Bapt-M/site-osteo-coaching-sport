@@ -16,6 +16,33 @@ const ONGLETS_FICHES = [
 
 /* ── Écran de connexion ─────────────────────────────────────────────── */
 
+/** Longueur minimale d'un nouveau mot de passe. */
+export const LONGUEUR_MIN_MDP = 8
+
+const BOUTON_PRINCIPAL = `mt-8 w-full py-3 rounded-full bg-green-accent text-white font-poppins font-bold
+                          hover:bg-teal-accent transition-colors disabled:opacity-60 cursor-pointer`
+const LIEN_DISCRET = 'font-inter text-white/60 hover:text-white text-sm underline underline-offset-4 cursor-pointer'
+
+const LIEN_PERIME = 'Ce lien a expiré ou a déjà servi. Demandez-en un nouveau à la personne qui vous l’a envoyé.'
+
+/** Messages d'erreur de Supabase Auth, en français quand on les connaît. */
+function traduireErreurAuth(error) {
+  if (error.message === 'Invalid login credentials') return 'Identifiants incorrects.'
+  if (error.code === 'same_password') return 'Le nouveau mot de passe doit être différent de l’ancien.'
+  if (error.code === 'weak_password') return 'Mot de passe trop faible : allongez-le ou variez les caractères.'
+  if (error.code === 'otp_expired') return LIEN_PERIME
+  if (error.status === 429) return 'Trop de tentatives rapprochées. Réessayez dans quelques minutes.'
+  return error.message
+}
+
+function Marque() {
+  return (
+    <div className="font-poppins font-bold text-white text-xs leading-tight tracking-wide mb-10">
+      OSTÉO<br /><span className="font-normal">ET COACHING</span><br />DU SPORT
+    </div>
+  )
+}
+
 function Connexion({ client, onConnecte }) {
   const [email, setEmail] = useState('')
   const [motDePasse, setMotDePasse] = useState('')
@@ -29,9 +56,7 @@ function Connexion({ client, onConnecte }) {
     const { data, error } = await client.auth.signInWithPassword({ email, password: motDePasse })
     setEnvoi(false)
     if (error) {
-      setErreur(error.message === 'Invalid login credentials'
-        ? 'Identifiants incorrects.'
-        : error.message)
+      setErreur(traduireErreurAuth(error))
       return
     }
     onConnecte(data.session)
@@ -40,9 +65,7 @@ function Connexion({ client, onConnecte }) {
   return (
     <div className="min-h-screen flex items-center justify-center px-6 bg-green-deep">
       <form onSubmit={soumettre} className="w-full max-w-sm">
-        <div className="font-poppins font-bold text-white text-xs leading-tight tracking-wide mb-10">
-          OSTÉO<br /><span className="font-normal">ET COACHING</span><br />DU SPORT
-        </div>
+        <Marque />
         <h1 className="font-poppins font-bold text-white text-2xl mb-1">Administration</h1>
         <p className="font-inter text-white/50 text-sm mb-8">Connectez-vous pour modifier les textes du site.</p>
 
@@ -64,14 +87,127 @@ function Connexion({ client, onConnecte }) {
           <p role="alert" className="font-inter text-red-300 text-sm mt-4">{erreur}</p>
         )}
 
-        <button
-          type="submit" disabled={envoi}
-          className="mt-8 w-full py-3 rounded-full bg-green-accent text-white font-poppins font-bold
-                     hover:bg-teal-accent transition-colors disabled:opacity-60 cursor-pointer"
-        >
+        <button type="submit" disabled={envoi} className={BOUTON_PRINCIPAL}>
           {envoi ? 'Connexion…' : 'Se connecter'}
         </button>
+
+        {/* Pas d'envoi d'e-mail depuis le site : le lien de réinitialisation
+            est généré par le webmaster (scripts/lien-mot-de-passe.mjs). */}
+        <p className="font-inter text-white/40 text-xs mt-6 text-center">
+          Mot de passe oublié ? Demandez un lien de réinitialisation à votre webmaster.
+        </p>
       </form>
+    </div>
+  )
+}
+
+/* ── Choix d'un nouveau mot de passe ────────────────────────────────── */
+
+/**
+ * Plein écran, par-dessus l'éditeur s'il est ouvert : l'éditeur reste monté
+ * et garde les modifications en attente.
+ *
+ * Avec `jeton` (lien de réinitialisation), on n'est pas encore connecté : le
+ * jeton n'est échangé contre une session qu'à l'envoi du formulaire. Un
+ * aperçu de lien (messagerie, antivirus) qui ouvre la page ne le consomme
+ * donc pas. `onAnnuler` absent = il faut aller au bout.
+ */
+function NouveauMotDePasse({ client, email, jeton, onTermine, onAnnuler }) {
+  const [motDePasse, setMotDePasse] = useState('')
+  const [confirmation, setConfirmation] = useState('')
+  const [erreur, setErreur] = useState(null)
+  const [envoi, setEnvoi] = useState(false)
+  const [compte, setCompte] = useState(email)
+  // Le jeton ne sert qu'une fois : après l'échange, un nouvel essai (mot de
+  // passe refusé) passe directement à la mise à jour.
+  const [jetonUtilise, setJetonUtilise] = useState(!jeton)
+  const [termine, setTermine] = useState(false)
+
+  async function soumettre(e) {
+    e.preventDefault()
+    setErreur(null)
+    if (motDePasse.length < LONGUEUR_MIN_MDP) {
+      setErreur(`Le mot de passe doit faire au moins ${LONGUEUR_MIN_MDP} caractères.`)
+      return
+    }
+    if (motDePasse !== confirmation) {
+      setErreur('Les deux mots de passe ne correspondent pas.')
+      return
+    }
+    setEnvoi(true)
+    if (!jetonUtilise) {
+      const { data, error } = await client.auth.verifyOtp({ token_hash: jeton, type: 'recovery' })
+      if (error) {
+        setEnvoi(false)
+        setErreur(error.code === 'otp_expired' || error.status === 403 ? LIEN_PERIME : traduireErreurAuth(error))
+        return
+      }
+      setJetonUtilise(true)
+      setCompte(data.user?.email)
+    }
+    const { error } = await client.auth.updateUser({ password: motDePasse })
+    setEnvoi(false)
+    if (error) {
+      setErreur(traduireErreurAuth(error))
+      return
+    }
+    setTermine(true)
+  }
+
+  return (
+    <div role="dialog" aria-modal="true" aria-labelledby="titre-mdp"
+         className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center px-6 py-10 bg-green-deep">
+      {termine ? (
+        <div className="w-full max-w-sm">
+          <Marque />
+          <h1 id="titre-mdp" className="font-poppins font-bold text-white text-2xl mb-1">Mot de passe modifié</h1>
+          <p role="status" className="font-inter text-white/60 text-sm">
+            {compte ? `Utilisez-le désormais pour vous connecter avec ${compte}.` : 'Utilisez-le désormais pour vous connecter.'}
+          </p>
+          <button type="button" onClick={onTermine} className={BOUTON_PRINCIPAL}>
+            Continuer vers l’administration
+          </button>
+        </div>
+      ) : (
+        <form onSubmit={soumettre} className="w-full max-w-sm">
+          <Marque />
+          <h1 id="titre-mdp" className="font-poppins font-bold text-white text-2xl mb-1">Nouveau mot de passe</h1>
+          <p className="font-inter text-white/50 text-sm mb-8">
+            {compte ? `Pour le compte ${compte}. ` : ''}Au moins {LONGUEUR_MIN_MDP} caractères.
+          </p>
+
+          {/* Champ caché : aide les gestionnaires de mots de passe à rattacher le nouveau au bon compte. */}
+          {compte && <input type="email" autoComplete="username" value={compte} readOnly hidden />}
+
+          <label className="block font-inter text-white/70 text-sm mb-2" htmlFor="nouveau-mdp">Nouveau mot de passe</label>
+          <input
+            id="nouveau-mdp" type="password" required autoComplete="new-password" autoFocus
+            value={motDePasse} onChange={e => setMotDePasse(e.target.value)}
+            className={CHAMP + ' mb-5'}
+          />
+
+          <label className="block font-inter text-white/70 text-sm mb-2" htmlFor="confirmation-mdp">Confirmer le mot de passe</label>
+          <input
+            id="confirmation-mdp" type="password" required autoComplete="new-password"
+            value={confirmation} onChange={e => setConfirmation(e.target.value)}
+            className={CHAMP}
+          />
+
+          {erreur && (
+            <p role="alert" className="font-inter text-red-300 text-sm mt-4">{erreur}</p>
+          )}
+
+          <button type="submit" disabled={envoi} className={BOUTON_PRINCIPAL}>
+            {envoi ? 'Enregistrement…' : 'Enregistrer le mot de passe'}
+          </button>
+
+          {onAnnuler && (
+            <div className="mt-6 text-center">
+              <button type="button" onClick={onAnnuler} className={LIEN_DISCRET}>Annuler</button>
+            </div>
+          )}
+        </form>
+      )}
     </div>
   )
 }
@@ -111,7 +247,7 @@ function Resultats({ filtre, valeurs, initial, onChange, onReset }) {
 
 /* ── Éditeur ────────────────────────────────────────────────────────── */
 
-function Editeur({ client, session, onDeconnexion }) {
+function Editeur({ client, session, onChangerMotDePasse, onDeconnexion }) {
   const [pageActive, setPageActive] = useState(PAGES[0].id)
   const [filtre, setFiltre] = useState('')
   const [valeurs, setValeurs] = useState(DEFAUTS)
@@ -179,6 +315,10 @@ function Editeur({ client, session, onDeconnexion }) {
              className="font-inter text-white/70 hover:text-white text-sm transition-colors">
             Voir le site ↗
           </a>
+          <button onClick={onChangerMotDePasse}
+                  className="font-inter text-white/70 hover:text-white text-sm transition-colors cursor-pointer">
+            Mot de passe
+          </button>
           <button onClick={onDeconnexion}
                   className="font-inter text-white/70 hover:text-white text-sm transition-colors cursor-pointer">
             Se déconnecter
@@ -329,9 +469,20 @@ function Editeur({ client, session, onDeconnexion }) {
 
 /* ── Page ───────────────────────────────────────────────────────────── */
 
+/**
+ * Jeton d'un lien de réinitialisation `/admin#recuperation=<jeton>`, généré
+ * par scripts/lien-mot-de-passe.mjs. Il est dans le fragment : il n'est
+ * jamais envoyé au serveur, ni consigné dans les journaux.
+ */
+export function lireJeton(hash) {
+  return new URLSearchParams(hash.replace(/^#/, '')).get('recuperation') || null
+}
+
 export default function Admin() {
   const [client, setClient] = useState(null)
   const [session, setSession] = useState(undefined)   // undefined = on ne sait pas encore
+  const [jeton, setJeton] = useState(() => lireJeton(window.location.hash))
+  const [changement, setChangement] = useState(false)
 
   useEffect(() => {
     let desabonner = () => {}
@@ -339,11 +490,20 @@ export default function Admin() {
       if (!c) { setSession(null); return }
       setClient(c)
       c.auth.getSession().then(({ data }) => setSession(data.session))
-      const { data: sub } = c.auth.onAuthStateChange((_e, s) => setSession(s))
+      const { data: sub } = c.auth.onAuthStateChange((evenement, s) => {
+        if (evenement === 'SIGNED_OUT') setChangement(false)
+        setSession(s)
+      })
       desabonner = () => sub.subscription.unsubscribe()
     })
     return () => desabonner()
   }, [])
+
+  function finRecuperation() {
+    // Le jeton a servi : il ne doit pas rouvrir le formulaire à l'actualisation.
+    window.history.replaceState(null, '', window.location.pathname + window.location.search)
+    setJeton(null)
+  }
 
   if (!supabaseConfigure) {
     return (
@@ -364,7 +524,26 @@ export default function Admin() {
     return <div className="min-h-screen bg-green-deep" />
   }
 
-  return session
-    ? <Editeur client={client} session={session} onDeconnexion={() => client.auth.signOut()} />
-    : <Connexion client={client} onConnecte={setSession} />
+  // Arrivé par un lien de réinitialisation : connecté ou non, on choisit
+  // d'abord le nouveau mot de passe ; l'éditeur s'ouvre ensuite.
+  if (jeton) {
+    return <NouveauMotDePasse client={client} jeton={jeton} onTermine={finRecuperation} />
+  }
+
+  if (!session) {
+    return <Connexion client={client} onConnecte={setSession} />
+  }
+
+  return (
+    <>
+      <Editeur client={client} session={session}
+               onChangerMotDePasse={() => setChangement(true)}
+               onDeconnexion={() => client.auth.signOut()} />
+      {changement && (
+        <NouveauMotDePasse client={client} email={session.user.email}
+                           onTermine={() => setChangement(false)}
+                           onAnnuler={() => setChangement(false)} />
+      )}
+    </>
+  )
 }
