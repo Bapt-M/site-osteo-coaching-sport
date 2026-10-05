@@ -3,6 +3,7 @@ import { STEPS, GALERIE } from './data/bilan'
 import { MODALITES, REFERENCES } from './data/suivi'
 import { COMPOSANTES, ATHLETES } from './data/projet'
 import { FORMATS } from './data/entreprise'
+import { PUBLICS, ETAPES as ETAPES_REMISE, ESPACES } from './data/remise'
 import { HOURS } from './data/contact'
 import { SECTIONS as ML_SECTIONS, PARAGRAPHES as ML_PARAS } from './data/mentions'
 
@@ -274,11 +275,34 @@ export const PAGES = [
   {
     id: 'remise', titre: 'Programme de remise en forme', route: '/kinesport-furd',
     groupes: [
-      { id: 'page', titre: 'Page', champs: [
+      { id: 'hero', titre: 'Bandeau', champs: [
         champ('remise.surtitre', 'Pastille',         'KINESPORT FURD'),
         champ('remise.titre1',   'Titre, 1re ligne', 'Programme & suivi'),
         champ('remise.titre2',   'Titre, 2e ligne',  'de remise en forme'),
-        champ('remise.texte',    'Texte',            'Cette section est en cours de construction.', true),
+        champ('remise.texte',    'Introduction',     'Selon votre projet et suite à un bilan approfondi, il vous sera proposé un programme adapté, réaliste et évolutif.', true),
+      ]},
+      { id: 'public', titre: 'Pour qui', champs: [
+        champ('remise.public.surtitre', 'Pastille', 'POUR QUI'),
+        champ('remise.public.titre1',   'Titre, 1re ligne', 'Un programme'),
+        champ('remise.public.titre2',   'Titre, 2e ligne',  'pour chacun'),
+        champ('remise.public.texte',    'Texte', "Quel que soit votre point de départ, l'objectif est le même : retrouver le plaisir de bouger, durablement et sans vous blesser. Le double regard d'ostéopathe et de coach sportif permet d'adapter chaque exercice à votre corps.", true),
+        ...depuisListe(PUBLICS, 'remise.public', [['title', 'Profil']]),
+      ]},
+      { id: 'etapes', titre: 'Déroulement', champs: [
+        champ('remise.etapes.surtitre', 'Pastille', 'DÉROULEMENT'),
+        champ('remise.etapes.titre',    'Titre',    'Comment ça se passe'),
+        ...depuisListe(ETAPES_REMISE, 'remise.etape', [['title', 'Titre'], ['body', 'Texte', true]]),
+      ]},
+      { id: 'salle', titre: 'La salle', champs: [
+        champ('remise.salle.surtitre', 'Pastille', 'LA SALLE'),
+        champ('remise.salle.titre1',   'Titre, 1re ligne', 'Un espace équipé'),
+        champ('remise.salle.titre2',   'Titre, 2e ligne',  'pour tous les objectifs'),
+        ...depuisListe(ESPACES, 'remise.espace', [['title', 'Espace'], ['body', 'Texte', true]]),
+      ]},
+      { id: 'cta', titre: 'Contact', champs: [
+        champ('remise.cta.titre',  'Titre',  'Envie de vous y mettre ?'),
+        champ('remise.cta.texte',  'Texte',  'Parlons de votre projet : un premier échange suffit pour fixer le bilan de départ.', true),
+        champ('remise.cta.bouton', 'Bouton', 'Me contacter →'),
       ]},
     ],
   },
