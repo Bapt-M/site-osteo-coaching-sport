@@ -8,10 +8,12 @@ import Champ, { CHAMP } from './admin/Champ'
 /** Entrée du sommaire qui n'est pas une page de textes : photos + textes Actualités. */
 const ONGLET_ACTUALITES = ACTUALITES.id
 
-/** Onglets des fiches (hommages, témoignages), sous « Actualités ». */
+/** Onglets des fiches (hommages, témoignages, ostéopathes, partenaires), sous « Actualités ». */
 const ONGLETS_FICHES = [
   { id: 'fiches-hommage', type: 'hommage', titre: 'Hommages' },
   { id: 'fiches-temoignage', type: 'temoignage', titre: 'Témoignages' },
+  { id: 'fiches-osteopathe', type: 'osteopathe', titre: 'Ostéopathes du cabinet' },
+  { id: 'fiches-partenaire', type: 'partenaire', titre: 'Partenaires santé' },
 ]
 
 /* ── Écran de connexion ─────────────────────────────────────────────── */

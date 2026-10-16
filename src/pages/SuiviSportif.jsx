@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { MODALITES, REFERENCES } from '../content/data/suivi'
 import { useTextes } from '../content/ContenuProvider'
+import Partenaires from '../sections/equipe/Partenaires'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -86,6 +87,9 @@ export default function SuiviSportif() {
 
         </div>
       </section>
+
+      {/* Partenaires santé (fiches gérées dans l'administration) */}
+      <Partenaires />
 
       {/* Avant / Après */}
       <section className="py-24 px-6 bg-green-deep/5">

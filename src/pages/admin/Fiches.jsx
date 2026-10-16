@@ -4,6 +4,8 @@ import FicheFormulaire, { dansLeBucket } from './FicheFormulaire'
 const LIBELLES = {
   hommage: { titre: 'Hommages', aide: 'Affichés sur la page Histoire, dans cet ordre.' },
   temoignage: { titre: 'Témoignages', aide: 'Affichés sur la page Histoire, dans cet ordre ; les 3 premiers aussi sur l’accueil.' },
+  osteopathe: { titre: 'Ostéopathes du cabinet', aide: 'Affichés sur la page Bilan ostéopathique, dans cet ordre : une photo et sa vision de l’ostéopathie.' },
+  partenaire: { titre: 'Partenaires santé', aide: 'Professionnels de santé et spécialistes, affichés sur la page Suivi sportif, dans cet ordre.' },
 }
 
 const PETIT = 'font-inter text-sm hover:underline disabled:opacity-30 disabled:no-underline cursor-pointer'
