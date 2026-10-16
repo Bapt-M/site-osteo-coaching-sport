@@ -278,7 +278,7 @@ test('ostéopathe : nom, titre, vision et une seule photo, sans phrase mise en a
 test('partenaire : titre ou spécialité et courte description', async () => {
   const { client, espions } = fauxClient()
   render(<Fiches client={client} type="partenaire" />)
-  expect(await screen.findByRole('heading', { name: /partenaires santé/i })).toBeInTheDocument()
+  expect(await screen.findByRole('heading', { name: /partenaires/i })).toBeInTheDocument()
   await userEvent.click(screen.getByRole('button', { name: /ajouter une fiche/i }))
   await userEvent.type(screen.getByLabelText(/^nom$/i), 'Dr Martin')
   await userEvent.type(screen.getByLabelText(/titre ou spécialité/i), 'Médecin du sport')

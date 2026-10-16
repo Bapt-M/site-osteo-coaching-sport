@@ -168,7 +168,8 @@ export const PAGES = [
         champ('bilan.titre2',   'Titre, 2e ligne',  '& soin ostéopathique'),
         champ('bilan.chapo',    'Introduction',     'Une approche globale et individualisée du soin ostéopathique — en cabinet, adaptée à chaque patient.', true),
       ]},
-      { id: 'equipe', titre: 'Les ostéopathes du cabinet', champs: [
+      // `fiches` : le groupe affiche aussi, sous ses champs, la gestion des fiches de ce type.
+      { id: 'equipe', titre: 'Les ostéopathes du cabinet', fiches: 'osteopathe', champs: [
         champ('bilan.equipe.surtitre', 'Pastille',         'LE CABINET'),
         champ('bilan.equipe.titre1',   'Titre, 1re ligne', 'Deux ostéopathes,'),
         champ('bilan.equipe.titre2',   'Titre, 2e ligne',  'une même exigence'),
@@ -200,7 +201,7 @@ export const PAGES = [
         champ('suivi.approche.texte',    'Paragraphe 2', "L'ensemble des outils et techniques ostéopathiques disponibles est utilisé pour optimiser la performance, la récupération et la longévité sportive.", true),
         ...depuisListe(MODALITES, 'modalite', [['title', 'Modalité']]),
       ]},
-      { id: 'partenaires', titre: 'Partenaires santé', champs: [
+      { id: 'partenaires', titre: 'Partenaires santé', fiches: 'partenaire', champs: [
         champ('suivi.partenaires.surtitre', 'Pastille',     'RÉSEAU'),
         champ('suivi.partenaires.titre1',   'Titre, 1re ligne', 'Les professionnels'),
         champ('suivi.partenaires.titre2',   'Titre, 2e ligne',  'avec qui je travaille'),
