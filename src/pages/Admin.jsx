@@ -8,7 +8,8 @@ import Champ, { CHAMP } from './admin/Champ'
 /** Entrée du sommaire qui n'est pas une page de textes : photos + textes Actualités. */
 const ONGLET_ACTUALITES = ACTUALITES.id
 
-/** Onglets des fiches (hommages, témoignages), sous « Actualités ». */
+/** Onglets des fiches (hommages, témoignages), sous « Actualités ». Les
+ *  ostéopathes et partenaires se gèrent dans leur page (`fiches` d'un groupe du registre). */
 const ONGLETS_FICHES = [
   { id: 'fiches-hommage', type: 'hommage', titre: 'Hommages' },
   { id: 'fiches-temoignage', type: 'temoignage', titre: 'Témoignages' },
@@ -433,6 +434,11 @@ function Editeur({ client, session, onChangerMotDePasse, onDeconnexion }) {
                                    onChange={majChamp} onReset={reinitialiser} />
                           ))}
                         </div>
+                        {groupe.fiches && (
+                          <div className="mt-8">
+                            <Fiches key={groupe.fiches} client={client} type={groupe.fiches} integre />
+                          </div>
+                        )}
                       </section>
                     ))}
                   </>

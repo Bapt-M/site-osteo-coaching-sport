@@ -227,3 +227,12 @@ create policy "fiches lecture admin"
 
 -- La reprise des fiches d'origine (données) n'est pas dans ce script : elle
 -- a été faite une fois, à la mise en service, depuis FICHES_ORIGINE.
+
+-- ── 7. Ostéopathes du cabinet et partenaires ───────────────────────────────
+-- Deux types de fiches de plus, dans la même table et le même bucket :
+-- `osteopathe` (page Bilan : photo + vision de l'ostéopathie) et
+-- `partenaire` (page Suivi sportif : professionnels de santé et spécialistes).
+
+alter table public.fiches drop constraint if exists fiches_type_check;
+alter table public.fiches add constraint fiches_type_check
+  check (type in ('hommage', 'temoignage', 'osteopathe', 'partenaire'));

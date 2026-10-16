@@ -4,6 +4,19 @@ import { CHAMP } from './Champ'
 
 export const MAX_IMAGES = 4
 
+/**
+ * Ce que le formulaire demande selon le type de fiche : libellés des champs,
+ * présence de la phrase mise en avant, nombre d'images. Hommages et
+ * témoignages gardent le formulaire complet.
+ */
+const COMPLET = { fonction: 'Fonction ou métier', titre: 'Phrase mise en avant', texte: 'Texte', maxImages: MAX_IMAGES, rows: 8 }
+export const FORMULAIRES = {
+  hommage: COMPLET,
+  temoignage: COMPLET,
+  osteopathe: { fonction: 'Titre (ex. « Ostéopathe D.O. »)', titre: null, texte: 'Sa vision de l’ostéopathie', maxImages: 1, rows: 5 },
+  partenaire: { fonction: 'Titre ou spécialité', titre: null, texte: 'Courte description', maxImages: MAX_IMAGES, rows: 4 },
+}
+
 const BOUTON = 'px-6 py-2.5 rounded-full bg-green-accent text-white font-poppins font-bold text-sm ' +
                'hover:bg-teal-accent transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer'
 
@@ -30,6 +43,8 @@ export default function FicheFormulaire({ client, type, fiche, ordre, onFini, on
   const [envoi, setEnvoi] = useState(false)
   const [erreur, setErreur] = useState(null)
   const stockage = client.storage.from('fiches')
+  const config = FORMULAIRES[type] ?? COMPLET
+  const maxImages = config.maxImages
 
   // Les aperçus créés par URL.createObjectURL doivent être libérés une fois inutiles :
   // à leur retrait, à l'annulation du formulaire, ou au démontage — pas seulement à
@@ -45,7 +60,7 @@ export default function FicheFormulaire({ client, type, fiche, ordre, onFini, on
     ?? (dansLeBucket(img.chemin) ? stockage.getPublicUrl(img.chemin).data.publicUrl : img.chemin)
 
   function ajouter(fichier) {
-    if (!fichier || images.length >= MAX_IMAGES) return
+    if (!fichier || images.length >= maxImages) return
     setImages(liste => [...liste, { id: crypto.randomUUID(), fichier, apercu: URL.createObjectURL(fichier), legende: '' }])
     setCleChamp(k => k + 1)
   }
@@ -128,13 +143,13 @@ export default function FicheFormulaire({ client, type, fiche, ordre, onFini, on
           {fiche ? `Modifier « ${fiche.nom} »` : 'Nouvelle fiche'}
         </h3>
         {champ('fiche-nom', 'Nom', nom, setNom, { required: true })}
-        {champ('fiche-fonction', 'Fonction ou métier', fonction, setFonction)}
-        {champ('fiche-titre', 'Phrase mise en avant', titre, setTitre, { multi: true, rows: 2 })}
-        {champ('fiche-texte', 'Texte', texte, setTexte, { multi: true, rows: 8 })}
+        {champ('fiche-fonction', config.fonction, fonction, setFonction)}
+        {config.titre && champ('fiche-titre', config.titre, titre, setTitre, { multi: true, rows: 2 })}
+        {champ('fiche-texte', config.texte, texte, setTexte, { multi: true, rows: config.rows })}
         <p className="font-inter text-xs text-text-secondary/70 -mt-3">Une ligne vide entre deux paragraphes.</p>
 
         <fieldset className="space-y-3">
-          <legend className="font-inter text-text-primary text-sm font-medium mb-2">Images ({images.length}/{MAX_IMAGES})</legend>
+          <legend className="font-inter text-text-primary text-sm font-medium mb-2">{maxImages === 1 ? 'Photo' : 'Images'} ({images.length}/{maxImages})</legend>
           {images.map((img, i) => (
             <div key={img.chemin ?? img.id} className="flex gap-4 items-center">
               <img src={apercu(img)} alt="" className="w-20 h-20 object-cover rounded-lg bg-black/5 shrink-0" />
@@ -147,9 +162,9 @@ export default function FicheFormulaire({ client, type, fiche, ordre, onFini, on
               </button>
             </div>
           ))}
-          {images.length < MAX_IMAGES && (
+          {images.length < maxImages && (
             <div>
-              <label htmlFor="fiche-image" className="block font-inter text-sm text-green-accent mb-1">Ajouter une image</label>
+              <label htmlFor="fiche-image" className="block font-inter text-sm text-green-accent mb-1">{maxImages === 1 ? 'Ajouter une photo' : 'Ajouter une image'}</label>
               <input key={cleChamp} id="fiche-image" type="file" accept="image/*"
                      onChange={e => ajouter(e.target.files?.[0])}
                      className="block font-inter text-sm text-text-secondary" />

@@ -4,12 +4,17 @@ import FicheFormulaire, { dansLeBucket } from './FicheFormulaire'
 const LIBELLES = {
   hommage: { titre: 'Hommages', aide: 'Affichés sur la page Histoire, dans cet ordre.' },
   temoignage: { titre: 'Témoignages', aide: 'Affichés sur la page Histoire, dans cet ordre ; les 3 premiers aussi sur l’accueil.' },
+  osteopathe: { titre: 'Ostéopathes', aide: 'Une fiche par ostéopathe : photo, nom, titre et sa vision de l’ostéopathie, dans cet ordre.' },
+  partenaire: { titre: 'Partenaires', aide: 'Une fiche par professionnel de santé ou spécialiste : photos, nom, titre et courte description, dans cet ordre.' },
 }
 
 const PETIT = 'font-inter text-sm hover:underline disabled:opacity-30 disabled:no-underline cursor-pointer'
 
-/** Onglet d'administration d'un type de fiche : liste, ordre, édition, suppression. */
-export default function Fiches({ client, type }) {
+/**
+ * Onglet d'administration d'un type de fiche : liste, ordre, édition, suppression.
+ * `integre` : affiché dans un groupe d'une page de textes, sous un titre déjà posé.
+ */
+export default function Fiches({ client, type, integre = false }) {
   const [fiches, setFiches] = useState(null)
   const [edition, setEdition] = useState(undefined)   // undefined : aucune ; null : nouvelle ; ligne : existante
   const [message, setMessage] = useState(null)
@@ -73,10 +78,19 @@ export default function Fiches({ client, type }) {
 
   return (
     <>
-      <div className="mb-8">
-        <h2 className="font-poppins font-bold text-text-primary text-2xl">{titre}</h2>
-        <p className="font-inter text-sm text-text-secondary mt-1">{aide}</p>
-      </div>
+      {integre ? (
+        <div className="mb-6">
+          <h4 className="font-poppins font-semibold text-text-primary text-sm">{titre}</h4>
+          <p className="font-inter text-sm text-text-secondary mt-1">
+            {aide} Chaque fiche s’enregistre aussitôt, sans passer par le bouton « Enregistrer » du bas.
+          </p>
+        </div>
+      ) : (
+        <div className="mb-8">
+          <h2 className="font-poppins font-bold text-text-primary text-2xl">{titre}</h2>
+          <p className="font-inter text-sm text-text-secondary mt-1">{aide}</p>
+        </div>
+      )}
 
       {message && (
         <p role="alert" className={`font-inter text-sm mb-6 ${message.type === 'erreur' ? 'text-red-600' : 'text-green-accent'}`}>

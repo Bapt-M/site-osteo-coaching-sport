@@ -258,3 +258,33 @@ test('n’émet pas d’avertissement de clé dupliquée pour deux nouvelles ima
   expect(avertissementsCle).toHaveLength(0)
   consoleErreur.mockRestore()
 })
+
+test('ostéopathe : nom, titre, vision et une seule photo, sans phrase mise en avant', async () => {
+  const { client, espions } = fauxClient()
+  render(<Fiches client={client} type="osteopathe" />)
+  await userEvent.click(await screen.findByRole('button', { name: /ajouter une fiche/i }))
+  expect(screen.queryByLabelText(/phrase mise en avant/i)).not.toBeInTheDocument()
+  await userEvent.type(screen.getByLabelText(/^nom$/i), 'Emmanuel')
+  await userEvent.type(screen.getByLabelText(/^titre/i), 'Ostéopathe D.O.')
+  await userEvent.type(screen.getByLabelText(/vision de l’ostéopathie/i), 'Une approche globale.')
+  await userEvent.upload(screen.getByLabelText(/ajouter une photo/i), new File(['i'], 'a.jpg', { type: 'image/jpeg' }))
+  expect(screen.queryByLabelText(/ajouter une photo/i)).not.toBeInTheDocument()
+  await userEvent.click(screen.getByRole('button', { name: /enregistrer la fiche/i }))
+  await waitFor(() => expect(espions.insert).toHaveBeenCalledWith(expect.objectContaining({
+    type: 'osteopathe', nom: 'Emmanuel', fonction: 'Ostéopathe D.O.', titre: '', texte: 'Une approche globale.',
+  })))
+})
+
+test('partenaire : titre ou spécialité et courte description', async () => {
+  const { client, espions } = fauxClient()
+  render(<Fiches client={client} type="partenaire" />)
+  expect(await screen.findByRole('heading', { name: /partenaires/i })).toBeInTheDocument()
+  await userEvent.click(screen.getByRole('button', { name: /ajouter une fiche/i }))
+  await userEvent.type(screen.getByLabelText(/^nom$/i), 'Dr Martin')
+  await userEvent.type(screen.getByLabelText(/titre ou spécialité/i), 'Médecin du sport')
+  await userEvent.type(screen.getByLabelText(/courte description/i), 'Suivi médical des athlètes.')
+  await userEvent.click(screen.getByRole('button', { name: /enregistrer la fiche/i }))
+  await waitFor(() => expect(espions.insert).toHaveBeenCalledWith(expect.objectContaining({
+    type: 'partenaire', nom: 'Dr Martin', fonction: 'Médecin du sport', texte: 'Suivi médical des athlètes.',
+  })))
+})

@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { STEPS, GALERIE } from '../content/data/bilan'
 import { useTextes } from '../content/ContenuProvider'
 import { LIEN_RDV } from '../content/data/contact'
+import Osteopathes from '../sections/equipe/Osteopathes'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -39,6 +40,9 @@ export default function BilanOsteopathique() {
           </motion.div>
         </div>
       </section>
+
+      {/* Ostéopathes du cabinet (fiches gérées dans l'administration) */}
+      <Osteopathes />
 
       {/* 3 étapes */}
       <section className="py-24 px-6">

@@ -55,3 +55,9 @@ test('les liens Hommages et Témoignages de la hero sont éditables', () => {
   expect(DEFAUTS['hero.hommages']).toBe('HOMMAGES')
   expect(DEFAUTS['hero.temoignages']).toBe('TÉMOIGNAGES')
 })
+
+test('ostéopathes et partenaires se gèrent dans leur page', () => {
+  const groupe = (page, id) => PAGES.find(p => p.id === page).groupes.find(g => g.id === id)
+  expect(groupe('bilan', 'equipe').fiches).toBe('osteopathe')
+  expect(groupe('suivi', 'partenaires').fiches).toBe('partenaire')
+})
