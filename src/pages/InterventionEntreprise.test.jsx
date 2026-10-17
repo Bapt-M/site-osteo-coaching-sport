@@ -18,3 +18,8 @@ test('affiche la section Club Med', () => {
   render(<InterventionEntreprise />, { wrapper: Wrapper })
   expect(screen.getByRole('heading', { name: /club med/i })).toBeInTheDocument()
 })
+
+test('le bouton de contact mène au formulaire de l’accueil', () => {
+  render(<InterventionEntreprise />, { wrapper: Wrapper })
+  expect(screen.getByRole('link', { name: /contact|projet/i })).toHaveAttribute('href', '/#contact')
+})

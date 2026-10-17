@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 import { useTextes } from '../content/ContenuProvider'
 
 const slideIn = (direction) => ({
@@ -53,14 +54,14 @@ export default function About() {
           <p className="font-inter text-text-secondary text-lg leading-relaxed mb-8">
             {textes['apropos.texte2']}
           </p>
-          <motion.a
-            href="#services"
-            className="inline-flex items-center gap-2 font-poppins font-bold text-green-deep border-b-2 border-green-accent pb-0.5"
-            whileHover={{ x: 4 }}
-            transition={{ duration: 0.2 }}
+          {/* La section Services n'est plus sur l'accueil : le parcours complet est sur /histoire. */}
+          <Link
+            to="/histoire"
+            className="inline-flex items-center gap-2 font-poppins font-bold text-green-deep border-b-2 border-green-accent pb-0.5
+                       transition-transform duration-200 hover:translate-x-1"
           >
             En savoir plus →
-          </motion.a>
+          </Link>
         </motion.div>
       </div>
     </section>

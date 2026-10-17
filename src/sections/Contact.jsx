@@ -10,7 +10,7 @@ const slideIn = (direction) => ({
 export default function Contact() {
   const textes = useTextes()
   return (
-    <section id="contact" className="py-24 md:py-36 px-6 bg-site-bg overflow-x-clip">
+    <section id="contact" className="scroll-mt-20 py-24 md:py-36 px-6 bg-site-bg overflow-x-clip">
       <div className="max-w-[1360px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
 
         {/* Image */}
