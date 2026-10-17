@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 import { COMPOSANTES, ATHLETES } from '../content/data/projet'
 import { useTextes } from '../content/ContenuProvider'
 
@@ -166,14 +167,13 @@ export default function ProjetSportif() {
             <p className="font-inter text-text-secondary text-lg mb-10 max-w-lg mx-auto">
               Tout commence par un bilan ostéopathique complet et un rendez-vous de définition d'objectifs.
             </p>
-            <motion.a
-              href="/#contact"
-              className="inline-block px-10 py-4 rounded-full bg-green-deep text-white font-poppins font-bold text-base hover:bg-green-accent hover:text-white transition-colors"
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
+            {/* Lien du routeur (pas de rechargement) : ScrollManager amène jusqu'au formulaire. */}
+            <Link
+              to="/#contact"
+              className="inline-block px-10 py-4 rounded-full bg-green-deep text-white font-poppins font-bold text-base hover:bg-green-accent hover:text-white transition-all hover:scale-[1.04] active:scale-[0.97]"
             >
               {textes['projet.bouton']}
-            </motion.a>
+            </Link>
           </motion.div>
         </div>
       </section>

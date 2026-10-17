@@ -76,12 +76,17 @@ function SlideContent({ slide, index, rawIndex, total }) {
   const textes = useTextes()
   const opacity = useTransform(rawIndex, [index - 0.4, index, index + 0.4], [0, 1, 0])
   const y = useTransform(rawIndex, [index - 0.5, index, index + 0.5], [40, 0, -40])
+  // Les diapositives sont empilées : sans cela, la dernière (au-dessus) capte
+  // les clics de toutes les autres, et « Découvrir » de la 1re mène à la 4e page.
+  const actif = useTransform(opacity, v => v > 0.5)
+  const pointerEvents = useTransform(actif, a => a ? 'auto' : 'none')
+  const visibility = useTransform(opacity, v => v > 0.01 ? 'visible' : 'hidden')
   const navigate = useNavigate()
 
   return (
     <motion.div
       className="absolute"
-      style={{ opacity, y }}
+      style={{ opacity, y, pointerEvents, visibility }}
     >
       <div className="flex items-center gap-3 mb-6">
         <span

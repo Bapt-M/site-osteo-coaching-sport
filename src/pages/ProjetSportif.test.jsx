@@ -18,3 +18,8 @@ test('affiche les athlètes de référence', () => {
   render(<ProjetSportif />, { wrapper: Wrapper })
   expect(screen.getAllByText(/julien motz/i).length).toBeGreaterThan(0)
 })
+
+test('le bouton de contact mène au formulaire de l’accueil', () => {
+  render(<ProjetSportif />, { wrapper: Wrapper })
+  expect(screen.getByRole('link', { name: /contact|projet/i })).toHaveAttribute('href', '/#contact')
+})

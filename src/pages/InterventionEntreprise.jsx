@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 import { FORMATS } from '../content/data/entreprise'
 import { useTextes } from '../content/ContenuProvider'
 
@@ -96,14 +97,13 @@ export default function InterventionEntreprise() {
             <p className="font-inter text-white/60 text-lg mb-10 max-w-lg mx-auto">
               Les modalités sont définies lors d'un entretien préalable, selon vos besoins et votre contexte.
             </p>
-            <motion.a
-              href="/#contact"
-              className="inline-block px-10 py-4 rounded-full bg-green-accent text-white font-poppins font-bold text-base"
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
+            {/* Lien du routeur (pas de rechargement) : ScrollManager amène jusqu'au formulaire. */}
+            <Link
+              to="/#contact"
+              className="inline-block px-10 py-4 rounded-full bg-green-accent text-white font-poppins font-bold text-base transition-transform hover:scale-[1.04] active:scale-[0.97]"
             >
               {textes['entreprise.cta.bouton']}
-            </motion.a>
+            </Link>
           </motion.div>
         </div>
       </section>
