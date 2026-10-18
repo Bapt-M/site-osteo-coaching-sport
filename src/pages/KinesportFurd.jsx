@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
-import { PUBLICS, ETAPES, ESPACES } from '../content/data/remise'
-import { useTextes } from '../content/ContenuProvider'
+import { useImage, useListe, useTextes } from '../content/ContenuProvider'
+import { urlMedia } from '../lib/supabase'
+import Lien from '../components/Lien'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -26,6 +27,7 @@ function Espace({ titre, texte, photos, inverse }) {
   // Deux photos prennent moins de largeur que trois : elles gardent ainsi à
   // peu près la même taille d'un espace à l'autre.
   const duo = photos.length === 2
+  const sansPhoto = photos.length === 0
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
       <motion.div
@@ -33,14 +35,14 @@ function Espace({ titre, texte, photos, inverse }) {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        className={`${duo ? 'lg:col-span-6' : 'lg:col-span-4'} ${inverse ? 'lg:order-2' : ''}`}
+        className={`${sansPhoto ? 'lg:col-span-12' : duo ? 'lg:col-span-6' : 'lg:col-span-4'} ${inverse ? 'lg:order-2' : ''}`}
       >
         <h3 className="font-poppins font-bold text-text-primary text-2xl md:text-3xl mb-4">{titre}</h3>
         <p className="font-inter text-text-secondary text-lg leading-relaxed">{texte}</p>
       </motion.div>
 
       {/* Mobile : défilement horizontal ; à partir de md, une grille d'une ligne. */}
-      <motion.div
+      {!sansPhoto && <motion.div
         variants={stagger}
         initial="hidden"
         whileInView="visible"
@@ -49,9 +51,9 @@ function Espace({ titre, texte, photos, inverse }) {
                     snap-x snap-mandatory [scrollbar-width:none]
                     ${duo ? 'md:grid-cols-2' : 'md:grid-cols-3'}`}
       >
-        {photos.map(({ src, alt }) => (
+        {photos.map(({ src, alt }, i) => (
           <motion.figure
-            key={src}
+            key={i}
             variants={fadeUp}
             className="relative shrink-0 w-[72%] sm:w-[45%] md:w-auto snap-start rounded-2xl overflow-hidden aspect-[3/4] bg-green-deep/5"
           >
@@ -62,14 +64,17 @@ function Espace({ titre, texte, photos, inverse }) {
             </figcaption>
           </motion.figure>
         ))}
-      </motion.div>
+      </motion.div>}
     </div>
   )
 }
 
 export default function KinesportFurd() {
   const textes = useTextes()
-  const mail = textes['contact.mail']
+  const fond = useImage('remise.image')
+  const publics = useListe('remise.publics').filter(p => p.titre)
+  const etapes = useListe('remise.etapes')
+  const espaces = useListe('remise.espaces')
 
   return (
     <main className="bg-site-bg">
@@ -77,7 +82,7 @@ export default function KinesportFurd() {
       <section className="relative min-h-[60vh] flex items-end pb-20 overflow-hidden bg-green-deep">
         <div
           className="absolute inset-0 bg-cover bg-[center_40%] opacity-40"
-          style={{ backgroundImage: 'url(/images/remise-rameur.jpg)' }}
+          style={{ backgroundImage: fond ? `url(${fond})` : 'none' }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-green-deep/30 via-green-deep/60 to-green-deep" />
         <div className="relative z-10 w-full max-w-[1360px] mx-auto px-6 md:px-12 pt-32">
@@ -120,7 +125,7 @@ export default function KinesportFurd() {
             viewport={{ once: true }}
             className="flex flex-col gap-4"
           >
-            {PUBLICS.map((_, i) => (
+            {publics.map((p, i) => (
               <motion.li
                 key={i}
                 variants={fadeUp}
@@ -130,7 +135,7 @@ export default function KinesportFurd() {
                      strokeLinecap="round" strokeLinejoin="round" className="text-green-accent shrink-0" aria-hidden="true">
                   <path d="M20 6 9 17l-5-5" />
                 </svg>
-                <span className="font-poppins font-semibold text-text-primary text-lg">{textes[`remise.public.${i}.title`]}</span>
+                <span className="font-poppins font-semibold text-text-primary text-lg">{p.titre}</span>
               </motion.li>
             ))}
           </motion.ul>
@@ -158,15 +163,15 @@ export default function KinesportFurd() {
             viewport={{ once: true }}
             className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6"
           >
-            {ETAPES.map((etape, i) => (
+            {etapes.map((etape, i) => (
               <motion.li
-                key={etape.num}
+                key={i}
                 variants={fadeUp}
                 className="bg-site-bg border border-text-primary/10 rounded-2xl p-8 hover:border-green-accent/40 transition-colors"
               >
-                <div className="font-poppins font-black text-5xl text-green-accent/25 mb-4 leading-none" aria-hidden="true">{etape.num}</div>
-                <h3 className="font-poppins font-bold text-text-primary text-xl mb-3">{textes[`remise.etape.${i}.title`]}</h3>
-                <p className="font-inter text-text-secondary leading-relaxed">{textes[`remise.etape.${i}.body`]}</p>
+                <div className="font-poppins font-black text-5xl text-green-accent/25 mb-4 leading-none" aria-hidden="true">{String(i + 1).padStart(2, '0')}</div>
+                <h3 className="font-poppins font-bold text-text-primary text-xl mb-3">{etape.titre}</h3>
+                <p className="font-inter text-text-secondary leading-relaxed">{etape.texte}</p>
               </motion.li>
             ))}
           </motion.ol>
@@ -190,12 +195,12 @@ export default function KinesportFurd() {
           </motion.div>
 
           <div className="flex flex-col gap-20">
-            {ESPACES.map((espace, i) => (
+            {espaces.map((espace, i) => (
               <Espace
-                key={espace.title}
-                titre={textes[`remise.espace.${i}.title`]}
-                texte={textes[`remise.espace.${i}.body`]}
-                photos={espace.photos}
+                key={i}
+                titre={espace.titre}
+                texte={espace.texte}
+                photos={(espace.photos ?? []).filter(p => p?.image).map(p => ({ src: urlMedia(p.image), alt: p.legende ?? '' }))}
                 inverse={i % 2 === 1}
               />
             ))}
@@ -216,14 +221,14 @@ export default function KinesportFurd() {
             <p className="font-inter text-white/60 text-lg mb-10 max-w-lg mx-auto">
               {textes['remise.cta.texte']}
             </p>
-            <motion.a
-              href={`mailto:${mail}?subject=${encodeURIComponent('Programme de remise en forme')}`}
-              className="inline-block px-10 py-4 rounded-full bg-green-accent text-white font-poppins font-bold text-base"
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
-            >
-              {textes['remise.cta.bouton']}
-            </motion.a>
+            {textes['remise.cta.bouton'] && (
+              <Lien
+                href={textes['remise.cta.lien']}
+                className="inline-block px-10 py-4 rounded-full bg-green-accent text-white font-poppins font-bold text-base transition-transform hover:scale-[1.04] active:scale-[0.97]"
+              >
+                {textes['remise.cta.bouton']}
+              </Lien>
+            )}
           </motion.div>
         </div>
       </section>

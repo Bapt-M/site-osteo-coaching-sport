@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
-import { COMPOSANTES, ATHLETES } from '../content/data/projet'
-import { useTextes } from '../content/ContenuProvider'
+import { useImage, useListe, useTextes } from '../content/ContenuProvider'
+import { urlMedia } from '../lib/supabase'
+import Lien from '../components/Lien'
+import Lignes from '../components/Lignes'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -15,6 +16,9 @@ const stagger = {
 
 export default function ProjetSportif() {
   const textes = useTextes()
+  const fond = useImage('projet.image')
+  const composantes = useListe('projet.composantes')
+  const athletes = useListe('projet.athletes')
 
   return (
     <main className="bg-site-bg">
@@ -22,7 +26,7 @@ export default function ProjetSportif() {
       <section className="relative min-h-[55vh] flex items-end pb-20 overflow-hidden bg-green-deep">
         <div
           className="absolute inset-0 bg-cover bg-center opacity-30"
-          style={{ backgroundImage: 'url(/images/julien-motz.jpg)' }}
+          style={{ backgroundImage: fond ? `url(${fond})` : 'none' }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-green-deep/40 via-green-deep/60 to-green-deep" />
         <div className="relative z-10 max-w-[1360px] mx-auto px-6 md:px-12 pt-32">
@@ -41,7 +45,7 @@ export default function ProjetSportif() {
       </section>
 
       {/* Citation */}
-      <section className="py-16 px-6 bg-green-deep/5">
+      {textes['projet.citation'] && <section className="py-16 px-6 bg-green-deep/5">
         <div className="max-w-[900px] mx-auto text-center">
           <motion.p
             initial={{ opacity: 0 }}
@@ -50,10 +54,10 @@ export default function ProjetSportif() {
             transition={{ duration: 1 }}
             className="font-poppins font-bold text-text-primary text-2xl md:text-3xl italic leading-relaxed"
           >
-            "Ne dit-on pas que qui peut le plus peut le moins…"
+            {textes['projet.citation']}
           </motion.p>
         </div>
-      </section>
+      </section>}
 
       {/* 6 composantes */}
       <section className="py-24 px-6">
@@ -69,7 +73,7 @@ export default function ProjetSportif() {
               {textes['projet.prise.surtitre']}
             </div>
             <h2 className="font-poppins font-bold text-text-primary text-4xl md:text-5xl">
-              Une approche<br />globale et individualisée
+              <Lignes texte={textes['projet.prise.titre']} />
             </h2>
           </motion.div>
 
@@ -80,17 +84,17 @@ export default function ProjetSportif() {
             viewport={{ once: true }}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
-            {COMPOSANTES.map((c, i) => (
+            {composantes.map((c, i) => (
               <motion.div
-                key={c.label}
+                key={i}
                 variants={fadeUp}
                 className="border border-text-primary/10 rounded-2xl p-8 hover:border-green-accent/40 transition-colors"
               >
                 <div className="font-poppins font-black text-4xl text-green-accent/15 mb-3 leading-none">
                   {String(i + 1).padStart(2, '0')}
                 </div>
-                <h3 className="font-poppins font-bold text-text-primary text-xl mb-2">{c.label}</h3>
-                <p className="font-inter text-text-secondary leading-relaxed">{c.desc}</p>
+                <h3 className="font-poppins font-bold text-text-primary text-xl mb-2">{c.titre}</h3>
+                <p className="font-inter text-text-secondary leading-relaxed">{c.texte}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -111,7 +115,7 @@ export default function ProjetSportif() {
               {textes['projet.athletes.surtitre']}
             </div>
             <h2 className="font-poppins font-bold text-white text-4xl">
-              Julien Motz, Samir Baala,<br /><span className="text-green-accent">et bien d'autres…</span>
+              {textes['projet.athletes.titre1']}<br /><span className="text-green-accent">{textes['projet.athletes.titre2']}</span>
             </h2>
           </motion.div>
 
@@ -122,14 +126,14 @@ export default function ProjetSportif() {
             viewport={{ once: true }}
             className="grid grid-cols-2 md:grid-cols-3 gap-4"
           >
-            {ATHLETES.map(a => (
+            {athletes.map((a, i) => (
               <motion.div
-                key={a.nom}
+                key={i}
                 variants={fadeUp}
                 className="relative rounded-2xl overflow-hidden aspect-[3/4]"
               >
-                {a.img ? (
-                  <img src={a.img} alt={a.nom} className="w-full h-full object-cover" onError={e => { e.target.style.opacity = '0' }} />
+                {a.image ? (
+                  <img src={urlMedia(a.image)} alt={a.nom} className="w-full h-full object-cover" onError={e => { e.target.style.opacity = '0' }} />
                 ) : (
                   <div className="w-full h-full bg-white/5" />
                 )}
@@ -149,7 +153,7 @@ export default function ProjetSportif() {
             transition={{ duration: 0.7, delay: 0.3 }}
             className="mt-8 text-center font-inter text-white/40 text-sm"
           >
-            Les tarifs sont variables, définis en fonction du niveau d'accompagnement demandé et adaptés individuellement à chaque projet.
+            {textes['projet.tarifs']}
           </motion.p>
         </div>
       </section>
@@ -163,17 +167,17 @@ export default function ProjetSportif() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            <h2 className="font-poppins font-bold text-text-primary text-4xl mb-4">Vous avez un projet ?</h2>
+            <h2 className="font-poppins font-bold text-text-primary text-4xl mb-4">{textes['projet.cta.titre']}</h2>
             <p className="font-inter text-text-secondary text-lg mb-10 max-w-lg mx-auto">
-              Tout commence par un bilan ostéopathique complet et un rendez-vous de définition d'objectifs.
+              {textes['projet.cta.texte']}
             </p>
-            {/* Lien du routeur (pas de rechargement) : ScrollManager amène jusqu'au formulaire. */}
-            <Link
-              to="/#contact"
+            {/* Page du site : lien du routeur, ScrollManager amène jusqu'à l'ancre. */}
+            {textes['projet.bouton'] && <Lien
+              href={textes['projet.bouton.lien']}
               className="inline-block px-10 py-4 rounded-full bg-green-deep text-white font-poppins font-bold text-base hover:bg-green-accent hover:text-white transition-all hover:scale-[1.04] active:scale-[0.97]"
             >
               {textes['projet.bouton']}
-            </Link>
+            </Lien>}
           </motion.div>
         </div>
       </section>

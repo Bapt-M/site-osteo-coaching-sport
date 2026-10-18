@@ -236,3 +236,40 @@ create policy "fiches lecture admin"
 alter table public.fiches drop constraint if exists fiches_type_check;
 alter table public.fiches add constraint fiches_type_check
   check (type in ('hommage', 'temoignage', 'osteopathe', 'partenaire'));
+
+-- ── 8. Photos du contenu des pages ──────────────────────────────────────────
+-- Photos envoyées depuis /admin pour les champs « photo » du registre
+-- (bandeaux, galeries, listes). La table `site_content` ne garde que leur
+-- chemin ; les listes y sont enregistrées en JSON.
+
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('medias', 'medias', true, 5242880, '{image/webp,image/jpeg}')
+on conflict (id) do update
+  set public = true, file_size_limit = 5242880, allowed_mime_types = '{image/webp,image/jpeg}';
+
+drop policy if exists "medias ajout admin" on storage.objects;
+create policy "medias ajout admin"
+  on storage.objects for insert
+  to authenticated
+  with check (bucket_id = 'medias' and prive.est_admin());
+
+drop policy if exists "medias modification admin" on storage.objects;
+create policy "medias modification admin"
+  on storage.objects for update
+  to authenticated
+  using (bucket_id = 'medias' and prive.est_admin());
+
+drop policy if exists "medias suppression admin" on storage.objects;
+create policy "medias suppression admin"
+  on storage.objects for delete
+  to authenticated
+  using (bucket_id = 'medias' and prive.est_admin());
+
+drop policy if exists "medias lecture admin" on storage.objects;
+create policy "medias lecture admin"
+  on storage.objects for select
+  to authenticated
+  using (bucket_id = 'medias' and prive.est_admin());
+
+-- La reprise des identifiants légaux (ml.editeur.*) dans la liste
+-- `ml.editeur.lignes` a été faite une fois, à la mise en service.

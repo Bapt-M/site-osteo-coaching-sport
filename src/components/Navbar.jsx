@@ -1,24 +1,17 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence, useScroll, useTransform, useMotionTemplate } from 'framer-motion'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { useTextes } from '../content/ContenuProvider'
-import { LIEN_RDV } from '../content/data/contact'
-
-// Libellés courts des quatre services du hero + l'histoire. « Intervention
-// en entreprise » reste accessible depuis le pied de page.
-const navLinks = [
-  { cle: 'nav.histoire', href: '/histoire' },
-  { cle: 'nav.bilan',    href: '/bilan-osteopathique' },
-  { cle: 'nav.suivi',    href: '/suivi-sportif' },
-  { cle: 'nav.projet',   href: '/projet-sportif' },
-  { cle: 'nav.remise',   href: '/kinesport-furd' },
-]
+import { useListe, useTextes } from '../content/ContenuProvider'
+import { estInterne } from './Lien'
 
 const TEXT_LIGHT = '#ffffff'
 const TEXT_DARK  = '#1A2832'
 
 export default function Navbar() {
   const textes = useTextes()
+  // Liens du menu, modifiables dans l'administration (page Navigation).
+  const navLinks = useListe('nav.liens').filter(l => l.label && l.lien)
+  const rdv = textes['lien.rdv']
   const [menuOpen, setMenuOpen]   = useState(false)
   const [scrolled, setScrolled]   = useState(false)
   const { scrollY } = useScroll()
@@ -67,19 +60,19 @@ export default function Navbar() {
               animate={{ color: textColor }}
               transition={{ duration: 0.18 }}
             >
-              OSTÉO<br /><span className="font-normal">ET COACHING</span><br />DU SPORT
+              {textes['marque.ligne1']}<br /><span className="font-normal">{textes['marque.ligne2']}</span><br />{textes['marque.ligne3']}
             </motion.div>
           </Link>
 
           {/* Liens desktop */}
           <div className="hidden desktop:flex items-center gap-8">
-            {(!isHome || pastHero) && navLinks.map(link => (
-              <NavLink key={link.href} href={link.href} textColor={textColor}>
-                {textes[link.cle]}
+            {(!isHome || pastHero) && navLinks.map((link, i) => (
+              <NavLink key={i} href={link.lien} textColor={textColor}>
+                {link.label}
               </NavLink>
             ))}
             <motion.a
-              href={LIEN_RDV}
+              href={rdv}
               target="_blank"
               rel="noreferrer"
               className="px-5 py-2 rounded-full text-sm font-semibold font-inter bg-green-accent text-white hover:bg-teal-accent transition-colors"
@@ -150,18 +143,22 @@ export default function Navbar() {
             <div className="flex-1 flex flex-col justify-center px-10 gap-1">
               {navLinks.map((link, i) => (
                 <motion.div
-                  key={link.href}
+                  key={i}
                   initial={{ opacity: 0, x: -40 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -40 }}
                   transition={{ duration: 0.4, delay: 0.15 + i * 0.07, ease: [0.22, 1, 0.36, 1] }}
                 >
                   <a
-                    href={link.href}
+                    href={link.lien}
+                    {...(estInterne(link.lien) ? {} : { target: '_blank', rel: 'noreferrer' })}
                     className="block py-4 border-b border-white/10 font-poppins font-bold text-white text-3xl tracking-tight hover:text-cyan-accent transition-colors"
-                    onClick={(e) => { e.preventDefault(); setMenuOpen(false); navigate(link.href) }}
+                    onClick={(e) => {
+                      setMenuOpen(false)
+                      if (estInterne(link.lien)) { e.preventDefault(); navigate(link.lien) }
+                    }}
                   >
-                    {textes[link.cle]}
+                    {link.label}
                   </a>
                 </motion.div>
               ))}
@@ -176,13 +173,13 @@ export default function Navbar() {
               transition={{ duration: 0.4, delay: 0.45 }}
             >
               <a
-                href={LIEN_RDV}
+                href={rdv}
                 target="_blank"
                 rel="noreferrer"
                 className="block w-full text-center px-8 py-4 rounded-full bg-green-accent text-white font-poppins font-bold text-base tracking-wide"
                 onClick={() => setMenuOpen(false)}
               >
-                Prendre rendez-vous
+                {textes['nav.rdv']}
               </a>
             </motion.div>
           </motion.div>
@@ -197,7 +194,8 @@ function NavLink({ href, children, textColor }) {
   return (
     <motion.a
       href={href}
-      onClick={(e) => { e.preventDefault(); navigate(href) }}
+      {...(estInterne(href) ? {} : { target: '_blank', rel: 'noreferrer' })}
+      onClick={(e) => { if (estInterne(href)) { e.preventDefault(); navigate(href) } }}
       className="relative text-sm font-inter font-medium group"
       animate={{ color: textColor }}
       transition={{ duration: 0.18 }}

@@ -1,7 +1,38 @@
 import { motion } from 'framer-motion'
-import { useTextes } from '../content/ContenuProvider'
+import { useListe, useTextes } from '../content/ContenuProvider'
 import { enParagraphes } from '../content/registre'
-import { SECTIONS, PARAGRAPHES, A_COMPLETER } from '../content/data/mentions'
+import { SECTIONS, A_COMPLETER } from '../content/data/mentions'
+
+/** Bloc d'identification : titre et lignes « libellé — valeur » modifiables. */
+function Bloc({ id }) {
+  const textes = useTextes()
+  const lignes = useListe(`ml.${id}.lignes`)
+  return (
+    <motion.section
+      className="mb-12"
+      initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
+    >
+      <h2 className="font-poppins font-bold text-text-primary text-xl mb-5 pb-2 border-b border-black/10">
+        {textes[`ml.section.${id}`]}
+      </h2>
+      <dl className="space-y-3">
+        {lignes.map(({ libelle, valeur }, i) => {
+          const manquant = valeur === A_COMPLETER
+          return (
+            <div key={i} className="flex flex-col sm:flex-row sm:gap-6">
+              <dt className="font-inter text-text-secondary/70 text-sm sm:w-56 sm:shrink-0">{libelle}</dt>
+              <dd className={`font-inter text-sm whitespace-pre-line ${
+                manquant ? 'text-amber-700 bg-amber-50 px-2 py-0.5 rounded' : 'text-text-primary'
+              }`}>
+                {valeur}
+              </dd>
+            </div>
+          )
+        })}
+      </dl>
+    </motion.section>
+  )
+}
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -10,6 +41,7 @@ const fadeUp = {
 
 export default function MentionsLegales() {
   const textes = useTextes()
+  const paragraphes = useListe('ml.paragraphes')
 
   return (
     <main className="bg-site-bg">
@@ -30,46 +62,20 @@ export default function MentionsLegales() {
       <div className="max-w-3xl mx-auto px-6 py-16 md:py-24">
 
         {/* Blocs d'identification */}
-        {SECTIONS.map(section => (
-          <motion.section
-            key={section.id}
-            className="mb-12"
-            initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-          >
-            <h2 className="font-poppins font-bold text-text-primary text-xl mb-5 pb-2 border-b border-black/10">
-              {textes[`ml.section.${section.id}`]}
-            </h2>
-            <dl className="space-y-3">
-              {section.lignes.map(({ cle, libelle }) => {
-                const valeur = textes[cle]
-                const manquant = valeur === A_COMPLETER
-                return (
-                  <div key={cle} className="flex flex-col sm:flex-row sm:gap-6">
-                    <dt className="font-inter text-text-secondary/70 text-sm sm:w-56 sm:shrink-0">{libelle}</dt>
-                    <dd className={`font-inter text-sm whitespace-pre-line ${
-                      manquant ? 'text-amber-700 bg-amber-50 px-2 py-0.5 rounded' : 'text-text-primary'
-                    }`}>
-                      {valeur}
-                    </dd>
-                  </div>
-                )
-              })}
-            </dl>
-          </motion.section>
-        ))}
+        {SECTIONS.map(section => <Bloc key={section.id} id={section.id} />)}
 
         {/* Blocs rédigés */}
-        {PARAGRAPHES.map(({ cle, id }) => (
+        {paragraphes.map(({ titre, texte }, i) => (
           <motion.section
-            key={cle}
+            key={i}
             className="mb-12"
             initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
           >
             <h2 className="font-poppins font-bold text-text-primary text-xl mb-5 pb-2 border-b border-black/10">
-              {textes[`${cle}.titre`]}
+              {titre}
             </h2>
             <div className="space-y-4">
-              {enParagraphes(textes[cle]).map((p, i) => (
+              {enParagraphes(texte).map((p, i) => (
                 <p key={i} className="font-inter text-text-secondary leading-relaxed">{p}</p>
               ))}
             </div>

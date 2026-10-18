@@ -45,6 +45,17 @@ export async function lireContenus() {
   }
 }
 
+/**
+ * URL d'une image du registre. Un chemin qui commence par un seul « / »
+ * désigne une image livrée avec le site, une adresse http(s) est prise telle
+ * quelle ; tout le reste est un objet du bucket `medias`.
+ */
+export const urlMedia = (chemin) => {
+  if (!chemin) return ''
+  if (/^\/(?!\/)/.test(chemin) || /^https?:\/\//.test(chemin)) return chemin
+  return `${url}/storage/v1/object/public/medias/${chemin}`
+}
+
 /** URL publique d'une photo du bucket `photos`. */
 export const urlPhoto = (chemin) => `${url}/storage/v1/object/public/photos/${chemin}`
 

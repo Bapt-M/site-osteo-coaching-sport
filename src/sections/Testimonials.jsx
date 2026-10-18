@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
+import Lien from '../components/Lien'
 import { useTextes } from '../content/ContenuProvider'
 import { useFiches } from '../content/useFiches'
 import { enParagraphes } from '../content/registre'
@@ -92,18 +92,18 @@ export default function Testimonials() {
             {textes['temoins.amorce']}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link
-              to="/histoire#temoignages"
+            <Lien
+              href={textes['temoins.lien1.lien']}
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-green-accent text-white font-poppins font-bold tracking-wide hover:bg-teal-accent transition-colors"
             >
               {textes['temoins.lien1']}
-            </Link>
-            <Link
-              to="/histoire#hommages"
+            </Lien>
+            <Lien
+              href={textes['temoins.lien2.lien']}
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full border border-white/25 text-white font-poppins font-bold tracking-wide hover:bg-white/10 transition-colors"
             >
               {textes['temoins.lien2']}
-            </Link>
+            </Lien>
           </div>
         </motion.div>
       </div>

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
-import { MODALITES, REFERENCES } from '../content/data/suivi'
-import { useTextes } from '../content/ContenuProvider'
+import { useImage, useListe, useTextes } from '../content/ContenuProvider'
+import { urlMedia } from '../lib/supabase'
+import Lignes from '../components/Lignes'
 import Partenaires from '../sections/equipe/Partenaires'
 
 const fadeUp = {
@@ -15,6 +16,10 @@ const stagger = {
 
 export default function SuiviSportif() {
   const textes = useTextes()
+  const fond = useImage('suivi.image')
+  const modalites = useListe('suivi.modalites')
+  const resultats = useListe('suivi.resultats').filter(r => r.image)
+  const references = useListe('suivi.references')
 
   return (
     <main className="bg-site-bg">
@@ -22,7 +27,7 @@ export default function SuiviSportif() {
       <section className="relative min-h-[55vh] flex items-end pb-20 overflow-hidden bg-green-deep">
         <div
           className="absolute inset-0 bg-cover bg-center opacity-30"
-          style={{ backgroundImage: 'url(/images/action-1.jpg)' }}
+          style={{ backgroundImage: fond ? `url(${fond})` : 'none' }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-green-deep/40 via-green-deep/60 to-green-deep" />
         <div className="relative z-10 max-w-[1360px] mx-auto px-6 md:px-12 pt-32">
@@ -55,7 +60,7 @@ export default function SuiviSportif() {
               {textes['suivi.approche.surtitre']}
             </div>
             <h2 className="font-poppins font-bold text-text-primary text-4xl md:text-5xl mb-8 leading-tight">
-              Un suivi ostéopathique<br />spécifique
+              <Lignes texte={textes['suivi.approche.h2']} />
             </h2>
             <p className="font-inter text-text-secondary text-lg leading-relaxed mb-6">
               {textes['suivi.approche.titre']}
@@ -73,14 +78,14 @@ export default function SuiviSportif() {
             viewport={{ once: true }}
             className="flex flex-col gap-4"
           >
-            {MODALITES.map((m) => (
+            {modalites.map((m, i) => (
               <motion.div
-                key={m.title}
+                key={i}
                 variants={fadeUp}
                 className="flex items-center gap-5 border border-text-primary/10 rounded-2xl px-7 py-5 hover:border-green-accent/40 transition-colors"
               >
-                <span className="text-2xl shrink-0">{m.icon}</span>
-                <span className="font-poppins font-semibold text-text-primary text-lg">{m.title}</span>
+                {m.icone && <span className="text-2xl shrink-0">{m.icone}</span>}
+                <span className="font-poppins font-semibold text-text-primary text-lg">{m.titre}</span>
               </motion.div>
             ))}
           </motion.div>
@@ -92,7 +97,7 @@ export default function SuiviSportif() {
       <Partenaires />
 
       {/* Avant / Après */}
-      <section className="py-24 px-6 bg-green-deep/5">
+      {resultats.length > 0 && <section className="py-24 px-6 bg-green-deep/5">
         <div className="max-w-[1360px] mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -110,27 +115,26 @@ export default function SuiviSportif() {
           </motion.div>
 
           <div className="grid grid-cols-2 gap-6 max-w-2xl">
-            {[
-              { src: '/images/avant01.jpg', label: 'Avant' },
-              { src: '/images/apres01.jpg', label: 'Après' },
-            ].map(({ src, label }) => (
+            {resultats.map(({ image, label }, i) => (
               <motion.div
-                key={label}
+                key={i}
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6 }}
                 className="relative rounded-2xl overflow-hidden"
               >
-                <img src={src} alt={label} className="w-full object-cover" />
-                <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-black/50 backdrop-blur-sm">
-                  <span className="font-poppins font-bold text-white text-sm">{label}</span>
-                </div>
+                <img src={urlMedia(image)} alt={label} className="w-full object-cover" />
+                {label && (
+                  <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-black/50 backdrop-blur-sm">
+                    <span className="font-poppins font-bold text-white text-sm">{label}</span>
+                  </div>
+                )}
               </motion.div>
             ))}
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* Références — texte complet */}
       <section className="py-24 px-6 bg-green-deep">
@@ -157,28 +161,28 @@ export default function SuiviSportif() {
             viewport={{ once: true }}
             className="grid grid-cols-1 md:grid-cols-2 gap-8"
           >
-            {REFERENCES.map((ref, i) => (
+            {references.map((ref, i) => (
               <motion.div
-                key={ref.nom}
+                key={i}
                 variants={fadeUp}
                 className="rounded-2xl overflow-hidden"
               >
                 {/* Image */}
                 <div className="relative aspect-[4/3]">
                   <img
-                    src={ref.img}
+                    src={urlMedia(ref.image)}
                     alt={ref.nom}
                     className="w-full h-full object-cover block"
                     onError={e => { e.target.style.opacity = 0.1 }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 px-6 pb-4">
-                    <div className="font-poppins font-bold text-white text-xl">{textes[`reference.${i}.nom`]}</div>
+                    <div className="font-poppins font-bold text-white text-xl">{ref.nom}</div>
                   </div>
                 </div>
                 {/* Texte complet */}
                 <div className="bg-white/5 border border-white/10 rounded-b-2xl px-6 py-5">
-                  <p className="font-inter text-white/75 text-sm leading-relaxed">{textes[`reference.${i}.texte`]}</p>
+                  <p className="font-inter text-white/75 text-sm leading-relaxed">{ref.texte}</p>
                 </div>
               </motion.div>
             ))}

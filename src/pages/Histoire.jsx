@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { TIMELINE, DIPLOMES, PADEL } from '../content/data/histoire'
-import { useTextes } from '../content/ContenuProvider'
+import { useImage, useListe, useTextes } from '../content/ContenuProvider'
+import { urlMedia } from '../lib/supabase'
 import { enParagraphes } from '../content/registre'
 import { useFiches } from '../content/useFiches'
 import { garderAncre } from '../lib/ancre'
@@ -18,6 +18,11 @@ const fadeUp = {
 // accompagnés aujourd'hui.
 export default function Histoire() {
   const textes = useTextes()
+  const fond = useImage('histoire.image')
+  const chapitres = useListe('histoire.chapitres')
+  const diplomes = useListe('histoire.diplomes').filter(d => d.texte)
+  const padel = useListe('histoire.padel').filter(p => p.image)
+  const galerie = useListe('histoire.galerie').filter(p => p.image)
   const fiches = useFiches()
   const hommages = fiches?.filter(f => f.type === 'hommage') ?? []
   const temoignages = fiches?.filter(f => f.type === 'temoignage') ?? []
@@ -42,7 +47,7 @@ export default function Histoire() {
       <section className="relative min-h-[55vh] flex items-end pb-20 overflow-hidden bg-green-deep">
         <div
           className="absolute inset-0 bg-cover bg-center opacity-30"
-          style={{ backgroundImage: 'url(/images/insep.jpg)' }}
+          style={{ backgroundImage: fond ? `url(${fond})` : 'none' }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-green-deep/40 via-green-deep/60 to-green-deep" />
         <div className="relative z-10 max-w-[1360px] mx-auto px-6 md:px-12 pt-32">
@@ -66,9 +71,9 @@ export default function Histoire() {
       {/* Timeline */}
       <section className="py-24 px-6 max-w-[1360px] mx-auto">
         <div className="space-y-28">
-          {TIMELINE.map((item, i) => (
+          {chapitres.map((item, i) => (
             <motion.div
-              key={item.period}
+              key={i}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: '-60px' }}
@@ -77,19 +82,19 @@ export default function Histoire() {
             >
               {/* Image */}
               <div className="md:w-[380px] shrink-0">
-                {item.img ? (
+                {item.image ? (
                   <motion.div
                     variants={fadeUp}
                     className="rounded-2xl overflow-hidden sticky top-24"
                   >
-                    <img src={item.img} alt={item.period} className="w-full h-auto block" />
+                    <img src={urlMedia(item.image)} alt={item.titre} className="w-full h-auto block" />
                   </motion.div>
                 ) : (
                   <motion.div
                     variants={fadeUp}
                     className="rounded-2xl aspect-[4/3] bg-green-deep/5 flex items-center justify-center sticky top-24"
                   >
-                    <span className="font-poppins font-bold text-green-deep/15 text-5xl text-center px-4">{textes[`chapitre.${i}.years`]}</span>
+                    <span className="font-poppins font-bold text-green-deep/15 text-5xl text-center px-4">{item.periode}</span>
                   </motion.div>
                 )}
               </div>
@@ -97,13 +102,13 @@ export default function Histoire() {
               {/* Texte */}
               <div className="flex-1 min-w-0">
                 <motion.div variants={fadeUp} className="text-green-accent font-poppins font-bold text-xs tracking-widest mb-2">
-                  {textes[`chapitre.${i}.years`]}
+                  {item.periode}
                 </motion.div>
                 <motion.h2 variants={fadeUp} className="font-poppins font-bold text-text-primary text-3xl md:text-4xl mb-8">
-                  {textes[`chapitre.${i}.period`]}
+                  {item.titre}
                 </motion.h2>
                 <div className="space-y-5">
-                  {enParagraphes(textes[`chapitre.${i}.paragraphs`]).map((p, j) => (
+                  {enParagraphes(item.texte).map((p, j) => (
                     <motion.p
                       key={j}
                       variants={fadeUp}
@@ -131,11 +136,11 @@ export default function Histoire() {
           >
             <div className="flex-1">
               <div className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-accent font-poppins font-bold text-xs tracking-widest mb-5">
-                MÉDIAS
+                {textes['video.surtitre']}
               </div>
-              <h2 className="font-poppins font-bold text-white text-4xl mb-4">Passage sur FR3</h2>
+              <h2 className="font-poppins font-bold text-white text-4xl mb-4">{textes['video.titre']}</h2>
               <p className="font-inter text-white/60 text-lg leading-relaxed">
-                Reportage France 3 Alsace sur le parcours et la pratique d'Emmanuel Krieger, ostéopathe et coach sportif.
+                {textes['video.texte']}
               </p>
             </div>
 
@@ -174,14 +179,14 @@ export default function Histoire() {
             transition={{ duration: 0.7 }}
           >
             <div className="inline-block px-3 py-1 rounded-full bg-green-accent/10 text-green-accent font-poppins font-bold text-xs tracking-widest mb-8">
-              DIPLÔMES
+              {textes['diplomes.surtitre']}
             </div>
-            <h2 className="font-poppins font-bold text-white text-4xl mb-12">Formations & certifications</h2>
+            <h2 className="font-poppins font-bold text-white text-4xl mb-12">{textes['diplomes.titre']}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {DIPLOMES.map((d, i) => (
-                <div key={d} className="flex items-start gap-4 border border-white/10 rounded-xl p-6">
+              {diplomes.map((d, i) => (
+                <div key={i} className="flex items-start gap-4 border border-white/10 rounded-xl p-6">
                   <span className="text-green-accent mt-1 shrink-0">✓</span>
-                  <span className="font-inter text-white/80 text-base">{textes[`diplome.${i}`]}</span>
+                  <span className="font-inter text-white/80 text-base">{d.texte}</span>
                 </div>
               ))}
             </div>
@@ -211,9 +216,9 @@ export default function Histoire() {
           </motion.div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {PADEL.map(({ src, legende }, i) => (
+            {padel.map(({ image, legende }, i) => (
               <motion.figure
-                key={src}
+                key={i}
                 className="m-0 rounded-xl overflow-hidden relative group"
                 initial={{ opacity: 0, scale: 0.97 }}
                 whileInView={{ opacity: 1, scale: 1 }}
@@ -221,13 +226,13 @@ export default function Histoire() {
                 transition={{ duration: 0.5 }}
               >
                 <img
-                  src={src}
-                  alt={textes[`padel.${i}.legende`]}
+                  src={urlMedia(image)}
+                  alt={legende}
                   className="w-full h-full object-cover aspect-[4/3] block transition-transform duration-500 group-hover:scale-105"
                   onError={e => { e.target.closest('figure').style.display = 'none' }}
                 />
                 <figcaption className="absolute inset-x-0 bottom-0 px-4 py-3 font-inter text-white text-xs bg-gradient-to-t from-black/75 to-transparent">
-                  {textes[`padel.${i}.legende`]}
+                  {legende}
                 </figcaption>
               </motion.figure>
             ))}
@@ -341,16 +346,9 @@ export default function Histoire() {
           <h2 className="font-poppins font-bold text-text-primary text-4xl">{textes['galerie.titre']}</h2>
         </motion.div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {[
-            { src: '/images/sig-vestiaire.jpg', alt: 'Vestiaire SIG Basket' },
-            { src: '/images/equipe-france-u21.jpg', alt: 'Équipe de France U21 — Vittel' },
-            { src: '/images/insep.jpg', alt: 'INSEP' },
-            { src: '/images/malaga.jpg', alt: 'Malaga' },
-            { src: '/images/nissim-manu.jpg', alt: 'Avec Nissim' },
-            { src: '/images/temps-mort-sig.jpg', alt: 'Temps mort SIG' },
-          ].map(({ src, alt }) => (
+          {galerie.map(({ image, legende }, i) => (
             <motion.div
-              key={src}
+              key={i}
               className="rounded-xl overflow-hidden"
               initial={{ opacity: 0, scale: 0.97 }}
               whileInView={{ opacity: 1, scale: 1 }}
@@ -359,8 +357,8 @@ export default function Histoire() {
               whileHover={{ scale: 1.02 }}
             >
               <img
-                src={src}
-                alt={alt}
+                src={urlMedia(image)}
+                alt={legende}
                 className="w-full h-auto block"
                 onError={e => { e.target.parentElement.style.display = 'none' }}
               />

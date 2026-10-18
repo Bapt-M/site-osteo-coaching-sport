@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { lireContenus } from '../lib/supabase'
-import { DEFAUTS } from './defaults'
+import { DEFAUTS, lireListe } from './registre'
+import { urlMedia } from '../lib/supabase'
 
 const ContenuContexte = createContext(DEFAUTS)
 
@@ -33,4 +34,16 @@ export function useTexte(cle) {
 /** Tous les textes courants (utilisé par les composants qui en lisent plusieurs). */
 export function useTextes() {
   return useContext(ContenuContexte)
+}
+
+/** Éléments courants d'une liste du registre. */
+export function useListe(cle) {
+  const textes = useContext(ContenuContexte)
+  return useMemo(() => lireListe(textes[cle], cle), [textes, cle])
+}
+
+/** URL courante d'une image du registre. */
+export function useImage(cle) {
+  const textes = useContext(ContenuContexte)
+  return urlMedia(textes[cle] ?? DEFAUTS[cle])
 }
