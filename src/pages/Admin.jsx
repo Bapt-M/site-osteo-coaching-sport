@@ -1,19 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { getSupabase, supabaseConfigure } from '../lib/supabase'
 import { ACTUALITES, DEFAUTS, PAGES } from '../content/registre'
 import OngletActualites from './admin/Actualites'
 import Fiches from './admin/Fiches'
-import Champ, { CHAMP } from './admin/Champ'
+import Champ, { CHAMP, ContexteMedias, PagesDuSite } from './admin/Champ'
 
 /** Entrée du sommaire qui n'est pas une page de textes : photos + textes Actualités. */
 const ONGLET_ACTUALITES = ACTUALITES.id
 
-/** Onglets des fiches (hommages, témoignages), sous « Actualités ». Les
- *  ostéopathes et partenaires se gèrent dans leur page (`fiches` d'un groupe du registre). */
-const ONGLETS_FICHES = [
-  { id: 'fiches-hommage', type: 'hommage', titre: 'Hommages' },
-  { id: 'fiches-temoignage', type: 'temoignage', titre: 'Témoignages' },
-]
+/** Photos du bucket `medias` citées dans un ensemble de valeurs (champs image, listes en JSON). */
+const MOTIF_MEDIA = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(?:webp|jpe?g)/g
+export const mediasCites = (valeurs) =>
+  new Set(Object.values(valeurs).flatMap(v => String(v ?? '').match(MOTIF_MEDIA) ?? []))
 
 /* ── Écran de connexion ─────────────────────────────────────────────── */
 
@@ -275,6 +273,10 @@ function Editeur({ client, session, onChangerMotDePasse, onDeconnexion }) {
   }, [client])
 
   const modifiees = Object.keys(valeurs).filter(c => valeurs[c] !== initial[c])
+  // Photos envoyées pendant la session : celles qui ne sont plus citées à
+  // l'enregistrement (remplacées entre-temps) sont effacées du bucket.
+  const envoyees = useRef(new Set())
+  const medias = useMemo(() => ({ client, onEnvoi: (c) => envoyees.current.add(c) }), [client])
 
   const majChamp = (cle, v) => setValeurs(prev => ({ ...prev, [cle]: v }))
   const modifsActualites = ACTUALITES.champs.filter(c => valeurs[c.cle] !== initial[c.cle]).length
@@ -293,7 +295,14 @@ function Editeur({ client, session, onChangerMotDePasse, onDeconnexion }) {
       return
     }
     setInitial({ ...valeurs })
-    setMessage({ type: 'succes', texte: `${lignes.length} texte${lignes.length > 1 ? 's' : ''} enregistré${lignes.length > 1 ? 's' : ''}.` })
+    setMessage({ type: 'succes', texte: `${lignes.length} modification${lignes.length > 1 ? 's' : ''} enregistrée${lignes.length > 1 ? 's' : ''}.` })
+
+    // Photos du bucket que plus aucun contenu ne cite : celles que Manu vient
+    // de remplacer ou de retirer, et celles envoyées puis abandonnées.
+    const cites = mediasCites(valeurs)
+    const orphelines = [...new Set([...mediasCites(initial), ...envoyees.current])].filter(c => !cites.has(c))
+    envoyees.current = new Set()
+    if (orphelines.length) await client.storage.from('medias').remove(orphelines)
   }
 
   function reinitialiser(cle) {
@@ -301,10 +310,12 @@ function Editeur({ client, session, onChangerMotDePasse, onDeconnexion }) {
   }
 
   if (etat === 'chargement') {
-    return <p className="font-inter text-text-secondary p-10">Chargement des textes…</p>
+    return <p className="font-inter text-text-secondary p-10">Chargement du contenu…</p>
   }
 
   return (
+    <ContexteMedias.Provider value={medias}>
+    <PagesDuSite />
     <div className="min-h-screen bg-site-bg pb-40">
       <header className="sticky top-0 z-20 bg-green-deep px-6 md:px-10 py-5 flex items-center justify-between gap-4">
         <div>
@@ -333,7 +344,7 @@ function Editeur({ client, session, onChangerMotDePasse, onDeconnexion }) {
         <nav className="hidden md:block w-56 shrink-0 sticky top-28 self-start">
           <input
             type="search" value={filtre} onChange={e => setFiltre(e.target.value)}
-            placeholder="Rechercher un texte…"
+            placeholder="Rechercher…"
             className="w-full rounded-lg border border-black/15 bg-white px-3 py-2 mb-5 font-inter text-sm
                        outline-none focus:border-green-accent transition"
           />
@@ -375,18 +386,6 @@ function Editeur({ client, session, onChangerMotDePasse, onDeconnexion }) {
                 </span>
               )}
             </button>
-            {ONGLETS_FICHES.map(o => (
-              <button
-                key={o.id}
-                onClick={() => { setPageActive(o.id); setFiltre('') }}
-                className={`w-full text-left px-3 py-2 rounded-lg font-inter text-sm transition-colors cursor-pointer mt-1
-                  ${o.id === pageActive && !filtre
-                    ? 'bg-green-accent text-white'
-                    : 'text-text-secondary hover:bg-black/5'}`}
-              >
-                {o.titre}
-              </button>
-            ))}
           </div>
         </nav>
 
@@ -398,17 +397,11 @@ function Editeur({ client, session, onChangerMotDePasse, onDeconnexion }) {
           >
             {PAGES.map(p => <option key={p.id} value={p.id}>{p.titre}</option>)}
             <option value={ONGLET_ACTUALITES}>{ACTUALITES.titre}</option>
-            {ONGLETS_FICHES.map(o => <option key={o.id} value={o.id}>{o.titre}</option>)}
           </select>
 
           {filtre
             ? <Resultats filtre={filtre} valeurs={valeurs} initial={initial} onChange={majChamp} onReset={reinitialiser} />
-            : ONGLETS_FICHES.some(o => o.id === pageActive)
-              // `key` sur le type : un changement d'onglet remonte le composant plutôt que
-              // de réutiliser son état (édition en cours, liste) pour l'autre type de fiche.
-              ? <Fiches key={ONGLETS_FICHES.find(o => o.id === pageActive).type}
-                        client={client} type={ONGLETS_FICHES.find(o => o.id === pageActive).type} />
-              : pageActive === ONGLET_ACTUALITES
+            : pageActive === ONGLET_ACTUALITES
               ? <OngletActualites client={client} valeurs={valeurs} initial={initial}
                                   onChange={majChamp} onReset={reinitialiser} />
               : (() => {
@@ -448,7 +441,7 @@ function Editeur({ client, session, onChangerMotDePasse, onDeconnexion }) {
       </div>
 
       {/* Barre d'enregistrement */}
-      {!((pageActive === ONGLET_ACTUALITES || ONGLETS_FICHES.some(o => o.id === pageActive)) && !modifiees.length) && (
+      {!(pageActive === ONGLET_ACTUALITES && !modifiees.length) && (
         <div className="fixed bottom-0 inset-x-0 z-20 bg-white border-t border-black/10 px-6 py-4">
           <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
             <div className="font-inter text-sm">
@@ -470,6 +463,7 @@ function Editeur({ client, session, onChangerMotDePasse, onDeconnexion }) {
         </div>
       )}
     </div>
+    </ContexteMedias.Provider>
   )
 }
 

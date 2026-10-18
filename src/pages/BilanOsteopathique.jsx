@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion'
-import { STEPS, GALERIE } from '../content/data/bilan'
-import { useTextes } from '../content/ContenuProvider'
-import { LIEN_RDV } from '../content/data/contact'
+import { useImage, useListe, useTextes } from '../content/ContenuProvider'
+import { urlMedia } from '../lib/supabase'
 import Osteopathes from '../sections/equipe/Osteopathes'
 
 const fadeUp = {
@@ -16,6 +15,9 @@ const stagger = {
 
 export default function BilanOsteopathique() {
   const textes = useTextes()
+  const fond = useImage('bilan.image')
+  const etapes = useListe('bilan.etapes')
+  const galerie = useListe('bilan.galerie').filter(p => p.image)
 
   return (
     <main className="bg-site-bg">
@@ -23,7 +25,7 @@ export default function BilanOsteopathique() {
       <section className="relative min-h-[55vh] flex items-end pb-20 overflow-hidden bg-green-deep">
         <div
           className="absolute inset-0 bg-cover bg-center opacity-25"
-          style={{ backgroundImage: 'url(/images/cabinet-1.jpg)' }}
+          style={{ backgroundImage: fond ? `url(${fond})` : 'none' }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-green-deep/40 via-green-deep/60 to-green-deep" />
         <div className="relative z-10 max-w-[1360px] mx-auto px-6 md:px-12 pt-32">
@@ -67,15 +69,15 @@ export default function BilanOsteopathique() {
             viewport={{ once: true }}
             className="grid grid-cols-1 md:grid-cols-3 gap-8"
           >
-            {STEPS.map(step => (
+            {etapes.map((step, i) => (
               <motion.div
-                key={step.num}
+                key={i}
                 variants={fadeUp}
                 className="border border-text-primary/10 rounded-2xl p-8 hover:border-green-accent/40 transition-colors"
               >
-                <div className="font-poppins font-black text-5xl text-green-accent/20 mb-4 leading-none">{step.num}</div>
-                <h3 className="font-poppins font-bold text-text-primary text-xl mb-3">{step.title}</h3>
-                <p className="font-inter text-text-secondary leading-relaxed">{step.body}</p>
+                <div className="font-poppins font-black text-5xl text-green-accent/20 mb-4 leading-none">{String(i + 1).padStart(2, '0')}</div>
+                <h3 className="font-poppins font-bold text-text-primary text-xl mb-3">{step.titre}</h3>
+                <p className="font-inter text-text-secondary leading-relaxed">{step.texte}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -83,12 +85,12 @@ export default function BilanOsteopathique() {
       </section>
 
       {/* Galerie cabinet */}
-      <section className="py-12 px-6 bg-green-deep/5">
+      {galerie.length > 0 && <section className="py-12 px-6 bg-green-deep/5">
         <div className="max-w-[1360px] mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {GALERIE.map(({ src, alt }) => (
+            {galerie.map(({ image, legende }, i) => (
               <motion.div
-                key={src}
+                key={i}
                 className="rounded-xl overflow-hidden aspect-[4/3]"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
@@ -96,12 +98,12 @@ export default function BilanOsteopathique() {
                 transition={{ duration: 0.5 }}
                 whileHover={{ scale: 1.02 }}
               >
-                <img src={src} alt={alt} className="w-full h-full object-cover" onError={e => { e.target.parentElement.style.display = 'none' }} />
+                <img src={urlMedia(image)} alt={legende} className="w-full h-full object-cover" onError={e => { e.target.parentElement.style.display = 'none' }} />
               </motion.div>
             ))}
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* CTA */}
       <section className="py-24 px-6 bg-green-deep">
@@ -117,7 +119,7 @@ export default function BilanOsteopathique() {
               {textes['bilan.cta.texte']}
             </p>
             <motion.a
-              href={LIEN_RDV}
+              href={textes['lien.rdv']}
               target="_blank"
               rel="noreferrer"
               className="inline-block px-10 py-4 rounded-full bg-green-accent text-white font-poppins font-bold text-base"

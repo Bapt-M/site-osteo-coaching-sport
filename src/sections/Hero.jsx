@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { useTextes } from '../content/ContenuProvider'
+import { useImage, useTextes } from '../content/ContenuProvider'
+import Lien from '../components/Lien'
 
-// Photo de fond : arbre-raquette entouré de balles de padel.
-const HERO_IMG = '/images/hero-padel.jpg'
+// Photo de fond (modifiable dans l'administration) : arbre-raquette entouré
+// de balles de padel. Le cadrage ci-dessous est mesuré sur cette photo.
 const IMG_RATIO = 1376 / 768
 
 // Ancrage du logo sur le tamis de la raquette, exprimé en % de la photo
@@ -47,10 +47,10 @@ const HAZE = '205, 216, 226'
 // clonage, `depth` place la balle dans le feuillage (0) ou au premier
 // plan (1) : taille, brume et netteté en découlent.
 const LEAVES = [
-  { cle: 'balle.suivi',  href: '/suivi-sportif',       pos: { left: '32%', top: '26%' }, rot: -18, depth: 0 },
-  { cle: 'balle.projet', href: '/projet-sportif',      pos: { left: '67%', top: '26%' }, rot: 127, depth: 0 },
-  { cle: 'balle.bilan',  href: '/bilan-osteopathique', pos: { left: '27%', top: '50%' }, rot: 62,  depth: 1 },
-  { cle: 'balle.remise', href: '/kinesport-furd',      pos: { left: '70%', top: '50%' }, rot: -96, depth: 1 },
+  { cle: 'balle.suivi',  pos: { left: '32%', top: '26%' }, rot: -18, depth: 0 },
+  { cle: 'balle.projet', pos: { left: '67%', top: '26%' }, rot: 127, depth: 0 },
+  { cle: 'balle.bilan',  pos: { left: '27%', top: '50%' }, rot: 62,  depth: 1 },
+  { cle: 'balle.remise', pos: { left: '70%', top: '50%' }, rot: -96, depth: 1 },
 ]
 
 // Pas d'ombre dans la balle : le titre passe en bleu profond de la charte,
@@ -128,8 +128,8 @@ function Leaf({ label, href, pos, rot = 0, depth = 1 }) {
       style={{ ...pos, width: size, height: size }}
     >
       <motion.div variants={fadeUp} className="w-full h-full">
-      <Link
-        to={href}
+      <Lien
+        href={href}
         className="group relative block w-full h-full rounded-full pointer-events-auto cursor-pointer"
       >
         <span
@@ -160,7 +160,7 @@ function Leaf({ label, href, pos, rot = 0, depth = 1 }) {
             {label}
           </span>
         </span>
-      </Link>
+      </Lien>
       </motion.div>
     </div>
   )
@@ -168,6 +168,7 @@ function Leaf({ label, href, pos, rot = 0, depth = 1 }) {
 
 export default function Hero() {
   const textes = useTextes()
+  const heroImg = useImage('hero.image')
   const heroRef = useRef(null)
   const box = useCoverBox(heroRef)
   const stageStyle = {
@@ -190,7 +191,7 @@ export default function Hero() {
       {/* Fond : photo fixe, sans parallaxe ni effet de profondeur. */}
       <div className="absolute inset-0 z-0">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" style={stageStyle}>
-          <img src={HERO_IMG} alt="" className="w-full h-full object-cover" />
+          <img src={heroImg} alt="" className="w-full h-full object-cover" />
         </div>
       </div>
 
@@ -211,7 +212,9 @@ export default function Hero() {
 
       {/* ── DESKTOP (≥850px) — les 4 balles, aux coins du feuillage ── */}
       <div className="hidden desktop:block absolute inset-0 z-20 pointer-events-none">
-        {LEAVES.map(leaf => <Leaf key={leaf.href} {...leaf} label={textes[leaf.cle]} />)}
+        {LEAVES.map(leaf => (
+          <Leaf key={leaf.cle} {...leaf} label={textes[leaf.cle]} href={textes[`${leaf.cle}.lien`]} />
+        ))}
       </div>
 
       {/* ── Citation + histoire, alignées sur le tronc (tous formats) ──
@@ -242,13 +245,13 @@ export default function Hero() {
                    width: 'max-content', maxWidth: '88vw' }}
         >
           <motion.div variants={fadeUp}>
-            <Link
-              to="/histoire"
+            <Lien
+              href={textes['hero.histoire.lien']}
               className="font-poppins font-extrabold uppercase text-white pointer-events-auto cursor-pointer hover:text-cyan-accent transition-colors"
               style={OVER_PHOTO_STYLE}
             >
               {textes['hero.histoire']}
-            </Link>
+            </Lien>
           </motion.div>
         </div>
 
@@ -259,18 +262,18 @@ export default function Hero() {
         {/* `-my-2` sur le conteneur compense le `py-2` du lien : la zone cliquable
             grandit sans déplacer visuellement le texte dans le ciel. */}
         {[
-          { coin: 'gauche', to: '/histoire#hommages', cle: 'hero.hommages' },
-          { coin: 'droite', to: '/histoire#temoignages', cle: 'hero.temoignages' },
-        ].map(({ coin, to, cle }) => (
+          { coin: 'gauche', cle: 'hero.hommages' },
+          { coin: 'droite', cle: 'hero.temoignages' },
+        ].map(({ coin, cle }) => (
           <motion.div key={coin} data-coin={coin} variants={fadeUp} className="-my-2">
-            <Link
-              to={to}
+            <Lien
+              href={textes[`${cle}.lien`]}
               className="inline-block py-2 font-poppins font-extrabold uppercase text-white pointer-events-auto
                          hover:text-cyan-accent underline-offset-8 decoration-1 hover:underline transition-colors"
               style={COIN_STYLE}
             >
               {textes[cle]}
-            </Link>
+            </Lien>
           </motion.div>
         ))}
       </div>

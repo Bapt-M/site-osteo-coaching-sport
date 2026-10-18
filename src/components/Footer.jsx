@@ -1,18 +1,16 @@
 import { motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
-import { LIEN_RDV } from '../content/data/contact'
+import { useListe, useTextes } from '../content/ContenuProvider'
+import Lien from './Lien'
+import Lignes from './Lignes'
 
-// La page /intervention-entreprise existe toujours mais n'est plus liée
-// depuis la navigation (conservée en archive).
-const PAGES = [
-  { label: 'Histoire et formation', href: '/histoire' },
-  { label: 'Bilan, traitement et soin ostéopathique', href: '/bilan-osteopathique' },
-  { label: 'Suivi des sportifs de haut niveau', href: '/suivi-sportif' },
-  { label: 'Projet sportif personnalisé', href: '/projet-sportif' },
-  { label: 'Programme et suivi de remise en forme', href: '/kinesport-furd' },
-]
+const LIEN = 'text-white/70 hover:text-green-accent transition-colors text-sm font-inter'
 
 export default function Footer() {
+  const textes = useTextes()
+  const pages = useListe('pied.pages').filter(l => l.label)
+  const legal = useListe('pied.legal').filter(l => l.label)
+  const copyright = String(textes['pied.copyright'] ?? '').replace('{annee}', new Date().getFullYear())
+
   return (
     <motion.footer
       className="bg-footer-bg text-white pt-16 pb-10 px-6"
@@ -25,57 +23,47 @@ export default function Footer() {
         {/* Identité */}
         <div>
           <div className="font-poppins font-bold text-lg leading-tight mb-4">
-            OSTÉO<br /><span className="font-normal text-green-accent">ET COACHING</span><br />DU SPORT
+            {textes['marque.ligne1']}<br /><span className="font-normal text-green-accent">{textes['marque.ligne2']}</span><br />{textes['marque.ligne3']}
           </div>
           <p className="text-white/50 text-sm font-inter leading-relaxed">
-            34 Rue de Strasbourg<br />67117 Furdenheim
+            <Lignes texte={textes['pied.adresse']} />
           </p>
           <p className="text-white/50 text-sm font-inter mt-3">
-            Emmanuel Krieger<br />
-            Ostéopathe &amp; Coach sportif
+            <Lignes texte={textes['pied.identite']} />
           </p>
         </div>
 
         {/* Navigation */}
         <div className="flex flex-col gap-3">
-          <h4 className="font-poppins font-bold text-xs tracking-widest text-white/40 uppercase mb-1">Pages</h4>
-          {PAGES.map(({ label, href }) => (
-            <Link
-              key={href}
-              to={href}
-              className="text-white/70 hover:text-green-accent transition-colors text-sm font-inter"
-            >
-              {label}
-            </Link>
+          <h4 className="font-poppins font-bold text-xs tracking-widest text-white/40 uppercase mb-1">{textes['pied.pages.titre']}</h4>
+          {pages.map(({ label, lien }, i) => (
+            <Lien key={i} href={lien} className={LIEN}>{label}</Lien>
           ))}
         </div>
 
         {/* Contact */}
         <div className="flex flex-col gap-3">
-          <h4 className="font-poppins font-bold text-xs tracking-widest text-white/40 uppercase mb-1">Contact</h4>
-          <a
-            href={LIEN_RDV}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 text-white/70 hover:text-green-accent transition-colors text-sm font-inter"
-          >
-            Prendre rendez-vous
-          </a>
-          <div className="mt-2 flex flex-col gap-3">
-            <h4 className="font-poppins font-bold text-xs tracking-widest text-white/40 uppercase">Légal</h4>
-            {[{ label: 'Mentions légales', to: '/mentions-legales' }].map(({ label, to }) => (
-              <Link key={to} to={to} className="text-white/70 hover:text-green-accent transition-colors text-sm font-inter">
-                {label}
-              </Link>
-            ))}
-          </div>
+          <h4 className="font-poppins font-bold text-xs tracking-widest text-white/40 uppercase mb-1">{textes['pied.contact.titre']}</h4>
+          {textes['pied.rdv'] && (
+            <Lien href={textes['lien.rdv']} className={'inline-flex items-center gap-2 ' + LIEN}>
+              {textes['pied.rdv']}
+            </Lien>
+          )}
+          {legal.length > 0 && (
+            <div className="mt-2 flex flex-col gap-3">
+              <h4 className="font-poppins font-bold text-xs tracking-widest text-white/40 uppercase">{textes['pied.legal.titre']}</h4>
+              {legal.map(({ label, lien }, i) => (
+                <Lien key={i} href={lien} className={LIEN}>{label}</Lien>
+              ))}
+            </div>
+          )}
         </div>
 
       </div>
 
       <div className="max-w-[1360px] mx-auto mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-        <p className="text-white/30 text-xs font-inter">© {new Date().getFullYear()} Emmanuel Krieger. Tous droits réservés.</p>
-        <p className="text-white/20 text-xs font-inter">Furdenheim, Alsace</p>
+        <p className="text-white/30 text-xs font-inter">{copyright}</p>
+        <p className="text-white/20 text-xs font-inter">{textes['pied.lieu']}</p>
       </div>
     </motion.footer>
   )

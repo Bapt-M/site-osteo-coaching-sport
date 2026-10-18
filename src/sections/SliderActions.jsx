@@ -1,8 +1,21 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
-import { useTextes } from '../content/ContenuProvider'
-import { SLIDES } from '../content/data/slides'
+import { useListe } from '../content/ContenuProvider'
+import { TEINTES } from '../content/data/slides'
+import { urlMedia } from '../lib/supabase'
+import { estInterne } from '../components/Lien'
+
+/** Diapositives modifiables dans l'administration ; les couleurs, elles, tournent en boucle. */
+function useSlides() {
+  return useListe('carrousel').map((s, i) => ({
+    ...s,
+    num: String(i + 1).padStart(2, '0'),
+    bg: urlMedia(s.image),
+    bgMobile: urlMedia(s.imageMobile),
+    ...TEINTES[i % TEINTES.length],
+  }))
+}
 
 /** Vrai en dessous du point de rupture `desktop` (850 px). */
 function useEstMobile() {
@@ -19,10 +32,13 @@ function useEstMobile() {
 }
 
 export default function SliderActions() {
+  const SLIDES = useSlides()
   const trackRef = useRef(null)
   const { scrollYProgress } = useScroll({ target: trackRef, offset: ['start start', 'end end'] })
 
-  const rawIndex = useTransform(scrollYProgress, [0, 1], [0, SLIDES.length - 1])
+  const rawIndex = useTransform(scrollYProgress, [0, 1], [0, Math.max(0, SLIDES.length - 1)])
+
+  if (!SLIDES.length) return null
 
   return (
     <section ref={trackRef} className="relative" style={{ height: `${SLIDES.length * 100}vh` }}>
@@ -67,13 +83,12 @@ function SlideBackground({ slide, index, rawIndex }) {
   return (
     <motion.div
       className="absolute inset-0 bg-cover bg-center"
-      style={{ backgroundImage: `url(${fond})`, opacity }}
+      style={{ backgroundImage: fond ? `url(${fond})` : 'none', opacity }}
     />
   )
 }
 
 function SlideContent({ slide, index, rawIndex, total }) {
-  const textes = useTextes()
   const opacity = useTransform(rawIndex, [index - 0.4, index, index + 0.4], [0, 1, 0])
   const y = useTransform(rawIndex, [index - 0.5, index, index + 0.5], [40, 0, -40])
   // Les diapositives sont empilées : sans cela, la dernière (au-dessus) capte
@@ -99,21 +114,22 @@ function SlideContent({ slide, index, rawIndex, total }) {
       </div>
       <h2 className="font-poppins font-bold text-5xl md:text-7xl text-white leading-tight mb-6 whitespace-pre-line"
         style={{ textShadow: '0 2px 18px rgba(0,0,0,0.6)' }}>
-        {textes[slide.cleTitre]}
+        {slide.titre}
       </h2>
       <p className="font-inter text-white/85 text-lg max-w-lg mb-8 leading-relaxed"
         style={{ textShadow: '0 1px 10px rgba(0,0,0,0.65)' }}>
-        {textes[slide.cleTexte]}
+        {slide.texte}
       </p>
-      <motion.a
-        href={slide.href}
-        onClick={e => { e.preventDefault(); navigate(slide.href) }}
+      {slide.cta && slide.lien && <motion.a
+        href={slide.lien}
+        {...(estInterne(slide.lien) ? {} : { target: '_blank', rel: 'noreferrer' })}
+        onClick={e => { if (estInterne(slide.lien)) { e.preventDefault(); navigate(slide.lien) } }}
         className={`inline-flex items-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r ${slide.accent} text-white font-poppins font-bold tracking-wide`}
         whileHover={{ scale: 1.04 }}
         whileTap={{ scale: 0.97 }}
       >
-        {textes[slide.cleCta]} →
-      </motion.a>
+        {slide.cta} →
+      </motion.a>}
     </motion.div>
   )
 }
@@ -127,7 +143,7 @@ function DotButton({ index, rawIndex, trackRef, total, dot }) {
     if (!el) return
     const rect = el.getBoundingClientRect()
     const totalHeight = el.offsetHeight - window.innerHeight
-    const targetScroll = window.scrollY + rect.top + (index / (total - 1)) * totalHeight
+    const targetScroll = window.scrollY + rect.top + (total > 1 ? index / (total - 1) : 0) * totalHeight
     window.scrollTo({ top: targetScroll, behavior: 'smooth' })
   }
 

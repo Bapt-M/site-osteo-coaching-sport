@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
-import { useTextes } from '../content/ContenuProvider'
+import { useImage, useTextes } from '../content/ContenuProvider'
+import Lien from '../components/Lien'
 
 const slideIn = (direction) => ({
   hidden: { opacity: 0, x: direction === 'left' ? -60 : 60 },
@@ -9,6 +9,7 @@ const slideIn = (direction) => ({
 
 export default function About() {
   const textes = useTextes()
+  const photo = useImage('apropos.image')
   return (
     <section id="about" className="py-24 md:py-36 px-6 bg-site-bg overflow-x-clip">
       <div className="max-w-[1360px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
@@ -21,14 +22,16 @@ export default function About() {
           viewport={{ once: true, margin: '-80px' }}
         >
           <div className="relative rounded-2xl overflow-hidden aspect-[4/5]">
-            <img
-              src="/images/manu-padel-square.jpg"
-              alt="Emmanuel Krieger au Padel Square"
-              className="w-full h-full object-cover"
-              onError={e => { e.target.style.display = 'none' }}
-            />
+            {photo && (
+              <img
+                src={photo}
+                alt={textes['apropos.nom']}
+                className="w-full h-full object-cover"
+                onError={e => { e.target.style.display = 'none' }}
+              />
+            )}
             <div className="absolute bottom-6 left-6 right-6 glass rounded-xl p-4">
-              <div className="font-poppins font-bold text-text-primary">Emmanuel Krieger</div>
+              <div className="font-poppins font-bold text-text-primary">{textes['apropos.nom']}</div>
               <div className="font-inter text-sm text-text-secondary mt-0.5">{textes['apropos.legende']}</div>
             </div>
           </div>
@@ -54,14 +57,15 @@ export default function About() {
           <p className="font-inter text-text-secondary text-lg leading-relaxed mb-8">
             {textes['apropos.texte2']}
           </p>
-          {/* La section Services n'est plus sur l'accueil : le parcours complet est sur /histoire. */}
-          <Link
-            to="/histoire"
-            className="inline-flex items-center gap-2 font-poppins font-bold text-green-deep border-b-2 border-green-accent pb-0.5
-                       transition-transform duration-200 hover:translate-x-1"
-          >
-            En savoir plus →
-          </Link>
+          {textes['apropos.bouton'] && (
+            <Lien
+              href={textes['apropos.bouton.lien']}
+              className="inline-flex items-center gap-2 font-poppins font-bold text-green-deep border-b-2 border-green-accent pb-0.5
+                         transition-transform duration-200 hover:translate-x-1"
+            >
+              {textes['apropos.bouton']}
+            </Lien>
+          )}
         </motion.div>
       </div>
     </section>

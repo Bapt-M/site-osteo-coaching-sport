@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion'
-import { useTextes } from '../content/ContenuProvider'
-import { HOURS, LIEN_RDV } from '../content/data/contact'
+import { useImage, useListe, useTextes } from '../content/ContenuProvider'
 
 const slideIn = (direction) => ({
   hidden: { opacity: 0, x: direction === 'left' ? -60 : 60 },
@@ -9,6 +8,8 @@ const slideIn = (direction) => ({
 
 export default function Contact() {
   const textes = useTextes()
+  const photo = useImage('contact.image')
+  const horaires = useListe('contact.horaires')
   return (
     <section id="contact" className="scroll-mt-20 py-24 md:py-36 px-6 bg-site-bg overflow-x-clip">
       <div className="max-w-[1360px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
@@ -21,7 +22,7 @@ export default function Contact() {
           whileInView="visible"
           viewport={{ once: true }}
         >
-          <img src="/images/bureau.jpg" alt="Cabinet" className="w-full h-full object-cover" onError={e => e.target.style.display='none'} />
+          {photo && <img src={photo} alt="Cabinet" className="w-full h-full object-cover" onError={e => e.target.style.display='none'} />}
           <div className="absolute inset-0 bg-gradient-to-t from-site-bg/60 to-transparent" />
         </motion.div>
 
@@ -66,7 +67,7 @@ export default function Contact() {
 
           {/* CTA */}
           <motion.a
-            href={LIEN_RDV}
+            href={textes['lien.rdv']}
             target="_blank"
             rel="noreferrer"
             className="flex w-full justify-center py-4 rounded-xl bg-green-accent text-white font-poppins font-bold text-base tracking-wide"
@@ -81,17 +82,17 @@ export default function Contact() {
             <div className="px-6 py-4 border-b border-black/10">
               <p className="text-text-secondary/60 text-xs font-poppins uppercase tracking-widest">{textes['contact.horaires.titre']}</p>
             </div>
-            {HOURS.map((h, i) => (
+            {horaires.map((h, i) => (
               <motion.div
-                key={h.day}
+                key={i}
                 className="flex justify-between items-center px-6 py-3 border-b border-black/[0.06] last:border-0"
                 initial={{ opacity: 0, x: 16 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.05, duration: 0.4 }}
               >
-                <span className="font-inter text-text-primary text-sm">{textes[`jour.${i}.day`]}</span>
-                <span className="font-poppins font-bold text-green-deep text-sm">{textes[`jour.${i}.hours`]}</span>
+                <span className="font-inter text-text-primary text-sm">{h.jour}</span>
+                <span className="font-poppins font-bold text-green-deep text-sm">{h.horaire}</span>
               </motion.div>
             ))}
           </div>
